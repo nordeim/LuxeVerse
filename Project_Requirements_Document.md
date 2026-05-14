@@ -184,28 +184,32 @@ LuxeVerse follows a **composable commerce architecture** — modular, API-first,
 
 | Component | Technology | Purpose | Implementation Details |
 |-----------|------------|---------|------------------------|
-| **Core Framework** | Next.js 14.2+ | SSR/SSG, App Router | Parallel routes, server components, streaming SSR |
-| **Language** | TypeScript 5.3+ | Type safety | Strict mode, path aliases, discriminated unions |
-| **UI Framework** | React 18.3+ | Component architecture | Concurrent features, Suspense boundaries, transitions |
-| **Styling System** | Tailwind CSS 3.4+ | Utility-first CSS | Custom design tokens, JIT, CSS variables integration |
+| **Core Framework** | Next.js 16+ | SSR/SSG, App Router | Parallel routes, server components, streaming SSR |
+| **Language** | TypeScript 6+ | Type safety | Strict mode, path aliases, discriminated unions |
+| **UI Framework** | React 19+ | Component architecture | Concurrent features, Suspense boundaries, transitions |
+| **Styling System** | Tailwind CSS 4+ | Utility-first CSS | Custom design tokens, JIT, CSS variables integration |
 | **Component Library** | Shadcn/UI + Radix | Accessible primitives | Custom theme variants, compound components |
-| **Animation** | Framer Motion 11+ | Complex animations | GPU-accelerated, gesture support, layout animations |
+| **Animation** | Framer Motion 12+ | Complex animations | GPU-accelerated, gesture support, layout animations |
 | **3D Graphics** | Three.js + React Three Fiber | Product visualization | WebGL 2.0, physics engine, environment maps |
-| **State Management** | Zustand 4.5+ | Global state | Persist middleware, devtools, immer integration |
+| **State Management** | Zustand 5+ | Global state | Persist middleware, devtools, immer integration |
 | **Server State** | TanStack Query 5+ | Data fetching | Optimistic updates, infinite queries, prefetching |
-| **Forms** | React Hook Form + Zod | Validation | Type-safe schemas, field-level validation |
+| **Forms** | React Hook Form 7+ + Zod 4+ | Validation | Type-safe schemas, field-level validation |
 | **Rich Text** | Lexical | Content editing | Collaborative editing, custom blocks |
 | **Map/Location** | Mapbox GL JS | Store locator, delivery zones | Vector tiles, custom styling |
 | **Charts/Dashboard** | Recharts + D3.js | Analytics visualization | Custom chart components |
 | **Internationalization** | next-intl + ICU MessageFormat | i18n | Server-side locale detection, RTL support |
+
+```bash
+npm install react-hook-form@7.75.0 zod@4.4.0 @hookform/resolvers@5.2.2
+```
 
 #### Backend Architecture
 
 | Component | Technology | Purpose | Implementation Details |
 |-----------|------------|---------|------------------------|
 | **API Framework** | tRPC + GraphQL (Hybrid) | Type-safe APIs | tRPC for internal, GraphQL for public/flexible queries |
-| **ORM** | Prisma 5.10+ | Database abstraction | Migrations, seeding, relation filtering |
-| **Database** | PostgreSQL 16 | Primary datastore | JSONB for flexibility, full-text search, row-level security |
+| **ORM** | Prisma 7+ | Database abstraction | Migrations, seeding, relation filtering |
+| **Database** | PostgreSQL 17 | Primary datastore | JSONB for flexibility, full-text search, row-level security |
 | **Cache Layer** | Redis 7+ | Performance cache | Pub/sub for real-time, session store, rate limiting |
 | **Search Engine** | Algolia + Typesense | Hybrid search | Faceted search, typo-tolerance, AI re-ranking |
 | **File Storage** | AWS S3 + CloudFront | Media delivery | Multi-region CDN, image transforms, video streaming |
