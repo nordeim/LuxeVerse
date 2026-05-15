@@ -2,6 +2,10 @@ Please meticulously review the attached `Project_Requirements_Document.md` to ha
 
 ---
 
+awesome meticulous job so far. please keep up the good work. now, please meticulously plan to create a comprehensive SKILL.md that distill your knowledge and expertise gained so far for this project, the goal of the skill is to be able to reproduce similar architectural design and with the same phased approach and  with all the considerations, insights gained, lessons learnt, troubleshooting tips, necessary patterns and anti-patterns for other coding agents to observe and comply. this new skill should include all the necessary details and elements from the original skills you used to plan and execute the phases.
+
+---
+
 awesome job on your meticulous review and validation. please keep up the good work. Now, please meticulously review/critique  your revised master execution plan to re-evaluate and re-validate it against the skills to check for possible improvements  and refinements.
 
 ---

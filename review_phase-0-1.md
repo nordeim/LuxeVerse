@@ -1060,3 +1060,418 @@ Issues:
   
 ### 1.5 Authentication & Security 
 
+Continue the meticulous review of the phase-1.md document, which was cut short at the "Authentication & Security" section. Let me read the remaining portion of the file to complete my analysis.  
+
+  
+read /home/project/LuxeVerse/phase-1.md:220  
+  
+  unitPrice Decimal  @db.Decimal(10, 2)  
+}  
+  
+// === ORDER (Skeleton for Phase 1) ===  
+model Order {  
+  id              String   @id @default(cuid())  
+  orderNumber     String   @unique  
+  userId          String  
+  user            User     @relation(fields: [userId], references: [id])  
+  status          String   @default("PENDING")  
+... (1371 more lines, ctrl+o to expand)  
+[Truncated: 1379 lines shown (50.0KB limit)]  
+  
+
+Let me continue reading the remaining portion of phase-1.md to complete the review.  
+
+  
+read /home/project/LuxeVerse/phase-1.md:1599  
+  
+          <div className="flex items-center gap-2" role="group" aria-labelledby={qtyId}>  
+            <span id={qtyId} className="sr-only">Quantity</span>  
+            <button  
+              onClick={() => handleUpdateQty(optimisticQty - 1)}  
+              disabled={optimisticQty <= 1 || isLoading}  
+              className="flex h-7 w-7 items-center justify-center rounded-md border border-obsidian-200 text-obsidian-600 hover:bg-obsidian-100 disabled:opacity-50 transition-colors"  
+              aria-label="Decrease quantity"  
+            >−</button>  
+            <span className="w-6 text-center text-sm font-medium text-obsidian-900">{optimisticQty}</span>  
+            <button  
+... (1133 more lines, ctrl+o to expand)  
+  
+
+Error: 504 status code (no body)  
+
+The user wants me to continue the meticulous review of phase-0.md and phase-1.md. I have now read both files completely (phase-1.md was read in multiple parts). Let me provide a continued and complete review of the remaining sections  
+of phase-1.md, particularly the Authentication & Security section (1.5) which was the last part.  
+  
+From my previous review, I had already identified several critical issues in Phase 0 and the early parts of Phase 1. Let me now synthesize the complete review with what I've read from the rest of phase-1.md.  
+  
+Let me organize the review into:  
+  
+1. Phase 0 Summary (already covered)  
+2. Phase 1 complete review (continuing from where I left off)  
+3. New issues found in the remaining sections (1.4 Checkout and 1.5 Auth)  
+  
+From the remaining content, I need to check:  
+  
+Sub-Phase 1.4 (Checkout & Payments):  
+- createCheckoutAction - server action with Zod v4, Stripe mock, Prisma order creation  
+- page.tsx - multi-step checkout shell  
+- ShippingStep.tsx - form validation  
+- PaymentStep.tsx - Stripe Elements  
+- ReviewStep.tsx and ConfirmationStep.tsx  
+  
+Sub-Phase 1.5 (Authentication & Security):  
+- crypto.ts - bcrypt  
+- auth.ts - NextAuth v5  
+- auth.actions.ts - login/register actions  
+- middleware.ts - auth guard, rate limiting  
+- stores/auth.ts - ephemeral Zustand store  
+- AuthForm.tsx - accessible form  
+- login/page.tsx and register/page.tsx  
+- ProtectedRoute.tsx - client guard  
+  
+I already identified in my previous response:  
+- useOptimistic type mismatch in QuickAdd (boolean vs null)  
+- document access in RSC for StickyAddToBar  
+- params as Promise (Next.js version issue)  
+- <a> instead of <Link>  
+- prose prose-obsidian undefined  
+- bg-gradient-to-r deprecated in v4  
+- Missing @tailwindcss/typography plugin  
+- window.location.href instead of useRouter  
+- ShippingStep race condition  
+  
+Now for 1.4 and 1.5:  
+- loadStripe uses process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY! with ! assertion. While expedient, it should ideally be validated.  
+- The checkout action uses Object.fromEntries(formData.entries()) which could fail if form has array-like values. But this is minor.  
+- PaymentStep has elements.on("ready" and PaymentElement onReady - duplicate ready handling. Also elements from useElements() can be null, and elements.on() would throw. This is a runtime error.  
+- ReviewStep has hardcoded prices ($100.00, $108.00) which is placeholder data but should be noted.  
+- ConfirmationStep uses window.location.href instead of router.  
+- Auth forms use <a href> instead of <Link>.  
+- middleware.ts in-memory rateLimitMap won't work in serverless/edge because memory is not shared between requests. The comment acknowledges this but the implementation is misleading.  
+- middleware.ts uses auth from NextAuth v5 as the middleware function. In NextAuth v5 / Auth.js, this is the correct pattern.  
+- ProtectedRoute.tsx uses PDPSkeleton as loading state for auth - this is semantically weird (product detail skeleton for auth loading).  
+- In auth.ts - session.user.id and session.user.role assignments. Need to check if the session callback type augmentation is done correctly for NextAuth v5.  
+- crypto.randomUUID() used in cart.service.ts but not imported/polyfilled. In Node 18+ it's global, but in test environments without it, it would fail.  
+  
+Let me now provide a complete, comprehensive review.  
+
+Here is the complete and meticulous review of phase-0.md and phase-1.md, covering all remaining sub-phases with findings synthesized against the PRD, MEP, and all three skills.  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Phase 0 & Phase 1 — Complete Validation Report  
+  
+Recap: Phase 0 Findings  
+  
+┌───────────┬────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────┐  
+│ Severity  │ Issue                                      │ Details                                                                       │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🔴 High   │ Raw window scroll listener + useState      │ Navbar triggers re-renders at 60fps. Must use useThrottledScroll (skill §19). │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟡 Medium │ Emoji used instead of Lucide icons         │ 🔍 and 🛍 in Navbar. PRD §3.3 specifies Lucide React.                         │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟡 Medium │ Magic number pt-16 for navbar offset       │ Should use CSS variable.                                                      │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟡 Medium │ SkipLink inside <Navbar>                   │ Should be first child of <body>, before nav.                                  │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟢 Low    │ vitest.config.ts imports @tailwindcss/vite │ Unnecessary for test runner.                                                  │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟢 Low    │ Button defaults to type="submit"           │ Should default to type="button".                                              │  
+├───────────┼────────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────┤  
+│ 🟢 Low    │ ErrorBoundary only logs to console         │ Should integrate telemetry (Sentry/Datadog per PRD).                          │  
+└───────────┴────────────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────┘  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Phase 1 — Complete Review (All Sub-Phases)  
+  
+### 1.1 Data & API Foundation (Recap)  
+  
+┌─────────────┬────────────────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐  
+│ Severity    │ Issue                                                      │ Details                                                                                                                                             │  
+├─────────────┼────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
+│ 🔴 Critical │ mapCart and service functions use any                      │ function mapCart(cart: any) and item: any will FAIL tsc --noEmit under strict. Must be replaced with Prisma-generated types or explicit interfaces. │  
+├─────────────┼────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
+│ 🟡 Medium   │ Postal code regex ^\d{3,10}$ rejects international formats │ UK, Canada, and others use alphanumeric postal codes. PRD §9 targets global i18n.                                                                   │  
+├─────────────┼────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
+│ 🟢 Low      │ Multiple createCartService(ctx.prisma) instantiations      │ Minor perf hit; should reuse service instance.                                                                                                      │  
+└─────────────┴────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+### 1.2 Product Discovery UI (PLP/PDP)  
+  
+┌─────────────┬─────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+│ Severity    │ Issue                                       │ Details                                                                                                                                                                    │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🔴 Critical │ document.getElementById called in RSC       │ In PDP page.tsx, StickyAddToBar receives targetRef={{ current: document.getElementById(...) }}. In a Server Component, document is undefined. Throws ReferenceError during │ 
+│             │                                             │ SSR/ISR.                                                                                                                                                                   │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🔴 Critical │ ref callback timing broken                  │ The targetRef passed to StickyAddToBar uses an empty ref callback that never assigns. Even if fixed, StickyAddToBar evaluates the ref before the DOM element is created.   │ 
+│             │                                             │ Must be a Client Component with useRef + useEffect.                                                                                                                        │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High     │ useOptimistic type mismatch                 │ setOptimisticAdded(null) where useOptimistic<boolean, ...>(false, ...) expects a boolean. TypeScript error. Should be setOptimisticAdded(true) or update the updateFn      │ 
+│             │                                             │ signature.                                                                                                                                                                 │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High     │ params treated as a Promise                 │ const { category } = await params; — In Next.js 15+ stable, params is a plain object, not a Promise. await may cause runtime errors. Verify against exact Next.js 16 API.  │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High     │ <a> used instead of <Link> for internal     │ Navbar, Footer, AuthForm, and ConfirmationStep use <a href>, causing full page reloads. Breaks SPA experience. Must use next/link.                                         │ 
+│             │ navigation                                  │                                                                                                                                                                            │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High     │ prose prose-obsidian class is undefined     │ The prose class requires the @tailwindcss/typography plugin, which is not listed in Phase 0 dependencies. Silently ignored.                                                │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium   │ bg-gradient-to-r is Tailwind v3 syntax      │ In v4, this is bg-linear-to-r. The super-frontend-design and tailwind-patterns skills enforce v4.                                                                          │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium   │ Focus trap triggerRef points to the wrong   │ triggerRef is the close button inside the drawer. Focus should return to the element that opened the drawer (cart icon). Currently returns focus to a disappearing         │ 
+│             │ element                                     │ element.                                                                                                                                                                   │ 
+├─────────────┼─────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟢 Low      │ animate-slide-up is undefined               │ Referenced in StickyAddToBar but no @keyframes defined in globals.css.                                                                                                     │ 
+└─────────────┴─────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+### 1.3 Cart & State Management  
+  
+What was done well:  
+- Zustand partialize: (state) => ({ items: state.items }) correctly persists only domain data. ✅  
+- useOptimistic + startTransition for instant quantity/remove feedback. ✅  
+- useFocusTrap properly integrated into CartDrawer. ✅  
+- Empty state with actionable "Continue Shopping" CTA. ✅  
+  
+Issues found:  
+  
+┌───────────┬──────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+│ Severity  │ Issue                                            │ Details                                                                                                                                                                 │ 
+├───────────┼──────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium │ FreeShippingProgress uses bg-gradient-to-r       │ Tailwind v3 syntax. Must be bg-linear-to-r in v4.                                                                                                                       │ 
+├───────────┼──────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium │ Emojis in FreeShippingProgress and CartDrawer    │ 🎉 and 🛍 used instead of Lucide icons. Violates PRD and luxury aesthetic.                                                                                              │ 
+├───────────┼──────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium │ useOptimistic in CartItem has wrong update       │ useOptimistic(item.quantity, (_, newQty: number) => newQty) — The second argument to the update function is the value passed to the setter, not a separate new value.   │ 
+│           │ signature                                        │ Should be useOptimistic(item.quantity) and setOptimisticQty(prev => newQty).                                                                                            │ 
+├───────────┼──────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium │ useCart hook calls crypto.randomUUID() without   │ Works in modern browsers but may fail in jsdom tests. The Phase 0 setup.ts does polyfill this, so test-only concern.                                                    │ 
+│           │ import/polyfill                                  │                                                                                                                                                                         │ 
+├───────────┼──────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟢 Low    │ useCart creates mock item inline with hardcoded  │ unitPrice: 100 is placeholder. Should be marked TODO more explicitly as integration point.                                                                              │ 
+│           │ price                                            │                                                                                                                                                                         │ 
+└───────────┴──────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+### 1.4 Checkout & Payments  
+  
+What was done well:  
+- useActionState + Zod v4 .issues[0].message correctly used. ✅  
+- Stripe PaymentElement for PCI SAQ-A compliance. ✅  
+- Focus management with stepRef.current?.focus() on step change. ✅  
+- aria-current="step" on stepper. ✅  
+  
+Issues found:  
+  
+┌────────────┬─────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+│ Severity   │ Issue                                   │ Details                                                                                                                                                                         │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🔴         │ elements.on("ready") will throw at      │ elements from useElements() can be null initially. Calling elements.on("ready", ...) when elements is null will throw TypeError: Cannot read properties of null. Guard with if  │ 
+│ Critical   │ runtime                                 │ (elements) or use PaymentElement's onReady prop only.                                                                                                                           │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🔴         │ Duplicate onReady handling              │ PaymentElement has its own onReady prop AND elements.on("ready"). This is redundant and fragile. Prefer the onReady prop only.                                                  │ 
+│ Critical   │                                         │                                                                                                                                                                                 │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High    │ ShippingStep race condition with        │ The onSubmit handler checks if (state.status !== "error") onNext() synchronously after dispatching the action. useActionState updates asynchronously. The check reads the       │ 
+│            │ state.status                            │ previous state's status, not the new one. Must use useEffect to watch state and transition on success.                                                                          │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High    │ checkoutSchema does not match form data │ checkoutSchema expects { address: {...}, email: string } but the form submits flat fields (firstName, lastName, line1, etc.). Object.fromEntries(formData) will produce flat    │ 
+│            │ shape                                   │ keys, which checkoutSchema will reject. The server action flattens FormData but never assembles it into the nested checkoutSchema shape.                                        │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High    │ window.location.href used instead of    │ ConfirmationStep uses window.location.href for navigation. Triggers full page reload. Must use useRouter().push().                                                              │ 
+│            │ useRouter                               │                                                                                                                                                                                 │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ <a> tags instead of <Link> in Review    │ Terms links on checkout use <a>.                                                                                                                                                │ 
+│            │ step                                    │                                                                                                                                                                                 │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ Hardcoded mock values in checkout       │ $100.00 total, $108.00 with tax, and mock product prod_mock are all hardcoded. The ReviewStep also hardcodes all pricing. Must be dynamically calculated from the cart.         │ 
+│            │ action                                  │                                                                                                                                                                                 │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ orderNumber collision risk              │ LV-${Date.now().toString().slice(-6)} collides under load. Should use crypto.randomUUID() with a prefix, or sequential generation from DB.                                      │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ Missing cartItems to orderItems mapping │ Checkout action creates a mock order item. In production, it must iterate the actual cart items from useCart or the database.                                                   │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟢 Low     │ revalidatePath("/checkout") after order │ Revalidating the checkout page after creating an order is unnecessary. Should redirect to confirmation or account.                                                              │ 
+│            │ creation                                │                                                                                                                                                                                 │ 
+├────────────┼─────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟢 Low     │ CheckoutState includes clientSecret in  │ While not inherently wrong, clientSecret from Stripe should ideally be handled more securely. It's ephemeral, so acceptable, but worth noting.                                  │ 
+│            │ plain text                              │                                                                                                                                                                                 │ 
+└────────────┴─────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+### 1.5 Authentication & Security  
+  
+What was done well:  
+- NextAuth v5 with JWT strategy, role/session callbacks. ✅  
+- @node-rs/bcrypt for edge-safe password hashing. ✅  
+- httpOnly/secure cookies via NextAuth. ✅  
+- Middleware enforces CSP, HSTS, X-Frame-Options. ✅  
+- Auth Zustand store is ephemeral (no persist middleware). Correct for security. ✅  
+- useActionState in forms with Zod v4 validation. ✅  
+  
+Issues found:  
+  
+┌────────────┬────────────────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
+│ Severity   │ Issue                              │ Details                                                                                                                                                                              │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🔴         │ prisma imported directly in        │ The NextAuth config in auth.ts imports prisma directly. This runs at the middleware/edge level where direct Prisma client instantiation may not be supported (depends on driver).    │ 
+│ Critical   │ auth.ts                            │ The createContext in tRPC already acknowledges this as "placeholder." For production, Prisma Accelerate or a separate DB connection strategy is needed. At minimum, verify driver    │ 
+│            │                                    │ compatibility.                                                                                                                                                                       │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High    │ auth callback passes req but       │ export default auth((req: NextRequest) => { ... }) — In NextAuth v5 (Auth.js), the auth helper from next-auth does pass the request, but the middleware typing and behavior should   │ 
+│            │ NextAuth v5 signature differs      │ be verified against the exact NextAuth v5 release. The auth export from auth.ts needs callbacks for authorized check if using the standard middleware pattern.                       │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 High    │ <a> instead of <Link> in auth      │ AuthForm.tsx uses <a href="/register"> and <a href="/login">. Causes full page reload on auth toggle.                                                                                │ 
+│            │ forms                              │                                                                                                                                                                                      │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ In-memory rateLimitMap will not    │ The comment says "single-region MVP" but in serverless (Vercel, AWS Lambda), the in-memory Map resets on every cold start. Concurrent requests from the same IP across different     │ 
+│            │ work in production                 │ instances won't share state. Better to label this explicitly as "not production ready" rather than "MVP."                                                                            │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ user.password cast to string       │ In auth.ts, verifyPassword(password, user.password) — user.password is typed as String? in Prisma. While the code checks !user.password above, the strict TypeScript narrowing could │ 
+│            │ without null check                 │ still complain.                                                                                                                                                                      │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ ProtectedRoute uses PDPSkeleton    │ Loading the auth guard shows a product detail skeleton. Semantically incorrect for auth loading state. Should use a generic LoadingSpinner or AuthSkeleton.                          │ 
+│            │ for loading                        │                                                                                                                                                                                      │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ ProtectedRoute redirect logic will │ If isLoading is false and isAuthenticated is false, it calls router.replace(fallbackUrl). But the component renders <></> immediately after, then the effect runs again. In Next.js, │ 
+│            │ loop                               │ the router replace may not complete before the component unmounts, but this pattern is fragile. Consider using middleware for this.                                                  │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ signIn from next-auth in server    │ Calling signIn inside a server action is technically supported in NextAuth v5, but it creates a cookie/session. Make sure the redirectTo behaves correctly and doesn't cause         │ 
+│            │ actions                            │ navigation loops with the middleware.                                                                                                                                                │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟡 Medium  │ middleware.ts CSP allows           │ While necessary for some frameworks, unsafe-inline and unsafe-eval in script-src weaken CSP. For production, consider using nonces or hashes. The comment says "adjust for           │ 
+│            │ 'unsafe-inline' and 'unsafe-eval'  │ production" which is correct, but the default is weak.                                                                                                                               │ 
+├────────────┼────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ 
+│ 🟢 Low     │ crypto global not imported in      │ crypto.randomUUID() is used but not explicitly imported. Works in Node 18+ but good practice to be explicit.                                                                         │ 
+│            │ cart.service.ts                    │                                                                                                                                                                                      │ 
+└────────────┴────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Cross-Cutting Issues (Phase 0 + Phase 1)  
+  
+### TypeScript Strictness Violations  
+  
+┌──────────────────────────────────┬─────────────┬─────────────────────────────────────────────────────────────────┐  
+│ Issue                            │ Count       │ Action Required                                                 │  
+├──────────────────────────────────┼─────────────┼─────────────────────────────────────────────────────────────────┤  
+│ any in service mapCart functions │ 2 locations │ Replace with Prisma.CartGetPayload or explicit typed interfaces │  
+├──────────────────────────────────┼─────────────┼─────────────────────────────────────────────────────────────────┤  
+│ any in product service getBySlug │ 1 location  │ Add explicit return type                                        │  
+└──────────────────────────────────┴─────────────┴─────────────────────────────────────────────────────────────────┘  
+  
+### Tailwind v4 Migration Gaps  
+  
+┌──────────────────────────────┬──────────────────────────┬───────────────────────────────────────────┐  
+│ Issue                        │ Count                    │ Correct v4 Syntax                         │  
+├──────────────────────────────┼──────────────────────────┼───────────────────────────────────────────┤  
+│ bg-gradient-to-r             │ 1 (FreeShippingProgress) │ bg-linear-to-r                            │  
+├──────────────────────────────┼──────────────────────────┼───────────────────────────────────────────┤  
+│ focus-visible:outline-hidden │ Multiple                 │ ✅ Correct (new in v4)                    │  
+├──────────────────────────────┼──────────────────────────┼───────────────────────────────────────────┤  
+│ prose class                  │ 1 (PDP page.tsx)         │ Install @tailwindcss/typography or remove │  
+└──────────────────────────────┴──────────────────────────┴───────────────────────────────────────────┘  
+  
+### Next.js App Router Anti-Patterns  
+  
+┌─────────────────────────────┬─────────┬─────────────────────────────────────────────┐  
+│ Anti-Pattern                │ Count   │ Correct Approach                            │  
+├─────────────────────────────┼─────────┼─────────────────────────────────────────────┤  
+│ <a href> for internal links │ 5 files │ next/link <Link>                            │  
+├─────────────────────────────┼─────────┼─────────────────────────────────────────────┤  
+│ window.location.href        │ 2 files │ useRouter().push()                          │  
+├─────────────────────────────┼─────────┼─────────────────────────────────────────────┤  
+│ document access in RSC      │ 1 file  │ Move to Client Component                    │  
+├─────────────────────────────┼─────────┼─────────────────────────────────────────────┤  
+│ params as Promise           │ 2 files │ Verify Next.js 16 API (likely plain object) │  
+└─────────────────────────────┴─────────┴─────────────────────────────────────────────┘  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Final Compliance Matrix  
+  
+┌───────────────────────────┬─────────┬───────────────────────────────────────────────┬──────────────────────┐  
+│ Requirement               │ Phase 0 │ Phase 1                                       │ Status               │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Next.js 16 App Router     │ ✅      │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ TypeScript 6 Strict       │ ✅      │ ⚠ any in services                            │ Fix mapCart          │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Tailwind v4 CSS-first     │ ✅      │ ⚠ v3 gradient syntax                         │ Fix bg-gradient-to-r │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Zod v4 .issues API        │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Zustand partialize        │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ React 19 useActionState   │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ React 19 useOptimistic    │ N/A     │ ⚠ Type mismatch                              │ Fix QuickAddButton   │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ PCI SAQ-A (Stripe)        │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ WCAG AAA                  │ ✅      │ ⚠ role="radio" on buttons, focus trap issues │ Minor fixes          │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ NextAuth v5               │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Anti-Generic Aesthetic    │ ✅      │ ✅                                            │ Excellent            │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ next/image CLS prevention │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ RSC/Client boundaries     │ N/A     │ ⚠ document in RSC, ref timing                │ Fix PDP              │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Security (CSP, HSTS)      │ N/A     │ ✅                                            │ Good                 │  
+├───────────────────────────┼─────────┼───────────────────────────────────────────────┼──────────────────────┤  
+│ Rate Limiting             │ N/A     │ ⚠ In-memory only                             │ Document as non-prod │  
+└───────────────────────────┴─────────┴───────────────────────────────────────────────┴──────────────────────┘  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Recommended Priority Fixes (Before Phase 2)  
+  
+### Must Fix (Blocks CI/Runtime)  
+  
+1. Replace any in mapCart and getBySlug with proper typed interfaces.  
+2. Fix document.getElementById in RSC — Move StickyAddToBar logic to a Client Component.  
+3. Fix elements.on("ready") in PaymentStep — Remove or guard with if (elements).  
+4. Fix ShippingStep race condition — Use useEffect to watch state and call onNext().  
+5. Fix checkoutSchema / FormData shape mismatch — Flatten schema or assemble nested object from FormData.  
+  
+### Should Fix (Quality/Security)  
+  
+6. Replace all <a href> internal links with next/link.  
+7. Replace window.location.href with useRouter().push().  
+8. Fix useOptimistic type mismatch in QuickAddButton.  
+9. Fix bg-gradient-to-r to bg-linear-to-r.  
+10. Verify params type in Next.js 16 (remove await if not a Promise).  
+11. Add @tailwindcss/typography or remove prose class.  
+12. Document rate limiting as development-only.  
+  
+### Could Fix (Polish)  
+  
+13. Add CSS variable for navbar height instead of pt-16.  
+14. Move SkipLink outside <Navbar>.  
+15. Use Link in auth form toggle.  
+16. Fix focus trap triggerRef to point to opener, not close button.  
+17. Replace emojis with Lucide icons.  
+  
+────────────────────────────────────────────────────────────────────────────────  
+  
+Verdict  
+  
+Phase 0 is production-ready with minor polish items (scroll listener, emoji icons).  
+  
+Phase 1 is architecturally sound and skill-compliant at the conceptual level, but contains several critical runtime and type errors that must be fixed before moving to Phase 2. The most severe are:  
+1. document access in RSC (runtime crash)  
+2. any in service layer (CI failure)  
+3. elements.on("ready") null reference (runtime crash in checkout)  
+4. Shipping step race condition (UX bug)  
+5. Schema/FormData shape mismatch (validation always fails)  
+  
+Once these are addressed, the foundation for Phase 2 (Cinematic Experience) is solid.
