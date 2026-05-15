@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* === OKLCH LUXURY PALETTE (Anti-Generic) === */
+  --color-obsidian-50: oklch(0.98 0.002 260);
+  --color-obsidian-100: oklch(0.95 0.005 260);
+  --color-obsidian-200: oklch(0.88 0.008 260);
+  --color-obsidian-300: oklch(0.76 0.012 260);
+  --color-obsidian-400: oklch(0.64 0.016 260);
+  --color-obsidian-500: oklch(0.52 0.020 260);
+  --color-obsidian-600: oklch(0.40 0.018 260);
+  --color-obsidian-700: oklch(0.30 0.015 260);
+  --color-obsidian-800: oklch(0.20 0.010 260);
+  --color-obsidian-900: oklch(0.12 0.005 260);
+  --color-obsidian-950: oklch(0.08 0.003 260);
+
+  --color-neon-pink: oklch(0.65 0.28 350);
+  --color-neon-cyan: oklch(0.85 0.18 190);
+  --color-neon-lime: oklch(0.88 0.22 130);
+
+  --color-metallic-gold: oklch(0.78 0.14 85);
+  --color-metallic-silver: oklch(0.82 0.02 260);
+  --color-metallic-champagne: oklch(0.88 0.06 75);
+
+  --color-atmosphere-deep: oklch(0.15 0.04 280);
+  --color-atmosphere-midnight: oklch(0.18 0.03 240);
+
+  --color-error: oklch(0.55 0.22 25);
+  --color-error-light: oklch(0.95 0.05 25);
+  --color-success: oklch(0.60 0.18 145);
+  --color-success-light: oklch(0.95 0.05 145);
+
+  /* === FLUID TYPOGRAPHY SCALE === */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --text-3xl: clamp(2rem, 1.7rem + 1.5vw, 3rem);
+  --text-4xl: clamp(2.5rem, 2rem + 2.5vw, 4rem);
+  --text-hero: clamp(3.5rem, 2.5rem + 5vw, 8rem);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* === GOLDEN-RATIO SPACING === */
+  --space-3xs: 0.236rem;
+  --space-2xs: 0.382rem;
+  --space-xs: 0.618rem;
+  --space-sm: 1rem;
+  --space-md: 1.618rem;
+  --space-lg: 2.618rem;
+  --space-xl: 4.236rem;
+  --space-2xl: 6.854rem;
+
+  /* === LUXURY EASING CURVES === */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-luxe: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-dramatic: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* === LAYOUT & Z-INDEX === */
+  --navbar-height: 64px;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-body);
+    color: var(--color-obsidian-900);
+    background-color: var(--color-obsidian-50);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-neon-cyan);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .container-custom {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+  }
+}
+
+/* === WCAG 2.3.3 REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
