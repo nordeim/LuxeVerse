@@ -21,7 +21,7 @@ export function PriceDisplay({ current, compareAt, currency, installments }: Pri
       {hasDiscount && (
         <>
           <span className="text-sm text-obsidian-500 line-through">
-            {formatCurrency(compareAt!, currency)}
+            {formatCurrency(compareAt, currency)}
           </span>
           <span className="text-xs font-medium text-neon-pink">
             Save {formatCurrency(savings, currency)}

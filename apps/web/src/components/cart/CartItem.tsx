@@ -2,6 +2,7 @@
 
 import { useOptimistic, startTransition, useId } from "react";
 import Image from "next/image";
+import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
 import type { CartItem as CartItemType } from "@/stores/cart";
 
@@ -33,7 +34,7 @@ export function CartItem({ item }: CartItemProps): JSX.Element {
 
   return (
     <div className="flex gap-4 py-4 border-b border-obsidian-200 last:border-0">
-      <div className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-md bg-obsidian-100">
+      <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-md bg-obsidian-100">
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
@@ -57,7 +58,7 @@ export function CartItem({ item }: CartItemProps): JSX.Element {
             )}
           </div>
           <span className="text-sm font-semibold text-obsidian-900">
-            ${(item.totalPrice / 100).toFixed(2)}
+            {formatCurrency(item.totalPrice)}
           </span>
         </div>
         <div className="flex items-center justify-between">

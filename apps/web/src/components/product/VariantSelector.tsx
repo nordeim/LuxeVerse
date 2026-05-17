@@ -58,7 +58,7 @@ export function VariantSelector({
               "relative flex items-center justify-center rounded-md border transition-all duration-200 ease-luxe focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neon-cyan",
               type === "color"
                 ? "h-8 w-8"
-                : "h-9 min-w-[2.5rem] px-3 text-sm font-medium",
+                : "h-9 min-w-btn-sm px-3 text-sm font-medium",
               isSelected
                 ? "border-obsidian-900 ring-1 ring-obsidian-900"
                 : "border-obsidian-200 hover:border-obsidian-400",

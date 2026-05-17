@@ -44,7 +44,7 @@ export function ProductGallery({ images }: ProductGalleryProps): JSX.Element {
             key={idx}
             onClick={() => handleThumbClick(idx)}
             className={cn(
-              "relative aspect-[3/4] w-16 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200",
+              "relative aspect-[3/4] w-16 shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200",
               activeIndex === idx
                 ? "border-obsidian-900"
                 : "border-transparent hover:border-obsidian-300"

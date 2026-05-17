@@ -1,5 +1,7 @@
 node_modules/
 .next/
+dist/
+*.tsbuildinfo
 venv/
 .venv/
 .venv
@@ -14,3 +16,5 @@ upload/
 .gemini
 .claude
 .agents
+.env.local
+.env.*.local

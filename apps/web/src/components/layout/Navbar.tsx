@@ -41,7 +41,7 @@ export function Navbar(): JSX.Element {
       <nav
         ref={navRef}
         className={cn(
-          "fixed top-0 left-0 right-0 z-[200] transition-all duration-300 ease-luxe",
+          "fixed top-0 left-0 right-0 z-sticky transition-all duration-300 ease-luxe",
           isScrolled
             ? "bg-obsidian-50/80 backdrop-blur-md shadow-sm"
             : "bg-transparent"

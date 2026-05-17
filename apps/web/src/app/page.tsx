@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HomePage(): JSX.Element {
   return (
-    <section className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
+    <section className="flex min-h-hero flex-col items-center justify-center px-4 text-center">
       <h1 className="text-hero font-display font-light tracking-tight text-obsidian-950">
         Digital Haute Couture
       </h1>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { X, ShoppingBag } from "lucide-react";
 import { cn } from "@luxeverse/utils";
 import { Button } from "@luxeverse/ui";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
@@ -62,9 +63,7 @@ export function CartDrawer({ freeShippingThreshold = 50000 }: CartDrawerProps): 
             className="rounded-md p-2 text-obsidian-600 hover:bg-obsidian-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neon-cyan transition-colors"
             aria-label="Close cart"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -73,9 +72,7 @@ export function CartDrawer({ freeShippingThreshold = 50000 }: CartDrawerProps): 
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <div className="text-4xl opacity-50" aria-hidden="true">
-                <svg className="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
+                <ShoppingBag className="h-16 w-16" aria-hidden="true" />
               </div>
               <h3 className="text-lg font-display text-obsidian-900">
                 Your bag is empty

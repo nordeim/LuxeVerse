@@ -45,7 +45,7 @@ export function StickyAddToBar({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[200] border-t border-obsidian-200 bg-obsidian-50/95 backdrop-blur-md shadow-sm animate-slide-up"
+      className="fixed bottom-0 left-0 right-0 z-product-bar border-t border-obsidian-200 bg-obsidian-50/95 backdrop-blur-md shadow-sm animate-slide-up"
       role="complementary"
       aria-label="Sticky add to cart bar"
     >

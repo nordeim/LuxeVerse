@@ -70,6 +70,12 @@
   --z-modal: 400;
   --z-toast: 500;
   --z-tooltip: 600;
+
+  /* === DESIGN TOKENS (replacing arbitrary values) === */
+  --aspect-product: 3/4;
+  --min-h-hero: 80vh;
+  --min-w-btn-sm: 2.5rem;
+  --z-product-bar: 200;
 }
 
 @layer base {
@@ -98,6 +104,23 @@
     max-width: 1280px;
     margin-inline: auto;
     padding-inline: var(--space-md);
+  }
+}
+
+/* === ANIMATION KEYFRAMES === */
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* === SCROLLBAR HIDE UTILITY === */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 

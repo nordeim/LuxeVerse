@@ -14,7 +14,7 @@ export function QuickAddButton({ productId }: QuickAddButtonProps): JSX.Element 
 
   const handleQuickAdd = (): void => {
     startTransition(async () => {
-      setOptimisticAdded(null as unknown as never);
+      setOptimisticAdded(false);
       await addItem({ productId, variantId: null, quantity: 1 });
     });
   };

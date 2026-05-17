@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ProductListItem } from "@/types";
 import { Badge } from "@luxeverse/ui";
+import { formatCurrency } from "@/lib/utils";
 import { QuickAddButton } from "./QuickAddButton";
 
 interface ProductCardProps {
@@ -11,7 +12,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps): JSX.Element {
   return (
     <article className="group relative flex flex-col gap-3">
-      <Link href={`/shop/outerwear/${product.slug}`} className="relative aspect-[3/4] overflow-hidden rounded-lg bg-obsidian-100 block">
+      <Link href={`/shop/outerwear/${product.slug}`} className="relative aspect-product overflow-hidden rounded-lg bg-obsidian-100 block">
         {product.primaryImage ? (
           <Image
             src={product.primaryImage}
@@ -34,11 +35,11 @@ export function ProductCard({ product }: ProductCardProps): JSX.Element {
         </h3>
         <div className="flex items-baseline gap-2">
           <span className="text-base font-semibold text-obsidian-900">
-            ${(product.price / 100).toFixed(2)}
+            {formatCurrency(product.price)}
           </span>
           {product.compareAtPrice && product.compareAtPrice > product.price && (
             <span className="text-sm text-obsidian-500 line-through">
-              ${(product.compareAtPrice / 100).toFixed(2)}
+              {formatCurrency(product.compareAtPrice)}
             </span>
           )}
         </div>
