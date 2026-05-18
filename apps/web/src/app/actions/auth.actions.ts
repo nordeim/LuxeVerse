@@ -1,20 +1,15 @@
 "use server";
 
-import { z } from "zod";
-import { signIn } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { loginSchema, registerSchema } from "@/lib/schemas";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, verifyPassword } from "@/lib/crypto";
+import { loginSchema, registerSchema } from "@/lib/schemas";
 
 export type AuthState = {
   status: "idle" | "success" | "error";
   message?: string;
 };
 
-const initialState: AuthState = { status: "idle" };
-
-// ─── Login Action ─────────────────────────────────────────────────────────
+// ─── Login Action ──────────────────────────────────────────────────────────
 export async function loginAction(
   _prevState: AuthState,
   formData: FormData
@@ -44,15 +39,11 @@ export async function loginAction(
       return { status: "error", message: "Invalid email or password." };
     }
 
-    // Sign in via NextAuth
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/account",
-    });
-
+    // NOTE: The actual session creation is handled by the NextAuth API route.
+    // The AuthForm component should call signIn("credentials", ...) on the client
+    // after receiving status "success".
     return { status: "success" };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Authentication failed. Please try again.",
@@ -60,7 +51,7 @@ export async function loginAction(
   }
 }
 
-// ─── Register Action ────────────────────────────────────────────────────
+// ─── Register Action ────────────────────────────────────────────────────────
 export async function registerAction(
   _prevState: AuthState,
   formData: FormData
@@ -99,15 +90,10 @@ export async function registerAction(
       },
     });
 
-    // Auto-login after registration
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/account",
-    });
-
+    // NOTE: The client AuthForm component should call signIn("credentials", ...)
+    // after receiving status "success" to create the session.
     return { status: "success" };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Registration failed. Please try again.",
