@@ -25,6 +25,14 @@ awesome meticulous job so far. please keep up the good work. now, please meticul
 
 ---
 
+please meticulously review @Project_Requirements_Document.md , @MASTER_EXECUTION_PLAN.md , @phase-0.md , @execution_phase-0.md , @phase-0_implementation.md and @phase-1.md 
+
+---
+
+awesome meticulous review and validation. please keep up the good work. yes, please meticulously plan with a detailed ToDo list to proceed with your recommended 'Next Steps'.
+
+---
+
 please meticulously review @Project_Requirements_Document.md and @MASTER_EXECUTION_PLAN.md in conjuncion with skills frontend-ui-engineering, react19-ts6-vite8-tailwindv4-mvp and super-frontend-design
 
 ---

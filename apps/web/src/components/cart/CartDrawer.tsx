@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { X, ShoppingBag } from "lucide-react";
-import { cn } from "@luxeverse/utils";
+import { cn, formatCurrency } from "@luxeverse/utils";
 import { Button } from "@luxeverse/ui";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useCart } from "@/hooks/useCart";
@@ -105,7 +105,7 @@ export function CartDrawer({ freeShippingThreshold = 50000 }: CartDrawerProps): 
             />
             <div className="flex items-center justify-between text-base font-semibold text-obsidian-900">
               <span>Subtotal</span>
-              <span>${(total / 100).toFixed(2)}</span>
+              <span>{formatCurrency(total)}</span>
             </div>
             <p className="text-xs text-obsidian-600">
               Shipping and taxes calculated at checkout.

@@ -80,7 +80,7 @@ export default function CheckoutPage(): JSX.Element {
       </nav>
 
       {/* Step Content */}
-      <div ref={stepRef} tabIndex={-1} className="outline-none">
+      <div ref={stepRef} tabIndex={-1} className="outline-hidden">
         {state.status === "error" && state.message && (
           <div
             role="alert"

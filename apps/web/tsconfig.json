@@ -7,5 +7,6 @@
       "@ui/*": ["../../packages/ui/src/*"],
       "@utils/*": ["../../packages/utils/src/*"]
     }
-  }
+  },
+  "include": ["src", "next-env.d.ts", ".next/types/**/*.ts"]
 }
