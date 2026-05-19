@@ -2,3 +2,11 @@
 > @luxeverse/web@0.1.0 typecheck /home/project/LuxeVerse/apps/web
 > tsc --noEmit
 
+src/app/search/page.tsx(32,8): error TS2304: Cannot find name 'query'.
+src/app/search/page.tsx(53,138): error TS2304: Cannot find name 'query'.
+src/app/search/page.tsx(70,36): error TS6133: 'searchParams' is declared but its value is never read.
+src/components/product/ProductViewer3D.tsx(6,29): error TS7016: Could not find a declaration file for module 'three'. '/home/project/LuxeVerse/node_modules/.pnpm/three@0.184.0/node_modules/three/build/three.module.js' implicitly has an 'any' type.
+  If the 'three' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three'
+src/components/sections/HeroSection.tsx(17,43): error TS2304: Cannot find name 'setIsVideoReady'.
+src/components/shared/BeforeAfterSlider.tsx(33,18): error TS2304: Cannot find name 'cn'.
+ ELIFECYCLE  Command failed with exit code 2.

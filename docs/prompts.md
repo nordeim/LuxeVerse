@@ -39,9 +39,17 @@ You will now systematically re-evaluate the Phase 1 implementation, validate the
 
 ---
 
+please meticulously review and validate @phase-2.md against @MASTER_EXECUTION_PLAN.md , @Project_Requirements_Document.md and @skills/luxeverse-architect-skill/SKILL.md to ensure alignment, then meticulously plan to create a detailed implementation plan with ToDo list for Phase 2
+
+---
+
 please meticulously review @Project_Requirements_Document.md and @MASTER_EXECUTION_PLAN.md in conjuncion with skills frontend-ui-engineering, react19-ts6-vite8-tailwindv4-mvp and super-frontend-design
 
 ---
 
 VALIDATE - please meticulously plan to proceed with Phase 0 execution.
+
+---
+
+yes, confirm all as suggested. please proceed meticulously with the corrected plan.
 

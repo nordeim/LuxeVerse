@@ -1,29 +1,59 @@
-import type { ReactElement } from "react";
-import Link from "next/link";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { HeroSection } from "@/components/sections/HeroSection";
+import { FeaturedCollections } from "@/components/sections/FeaturedCollections";
+import { NewArrivals } from "@/components/sections/NewArrivals";
+import { EditorialHighlight } from "@/components/sections/EditorialHighlight";
+import { BrandStory } from "@/components/sections/BrandStory";
+import { NewsletterSection } from "@/components/sections/NewsletterSection";
+import { SocialProof } from "@/components/sections/SocialProof";
+import { CategoryShowcase } from "@/components/sections/CategoryShowcase";
+import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 
-export default function HomePage(): ReactElement {
+export const metadata: Metadata = {
+  title: "LuxeVerse | Cinematic Luxury Commerce",
+  description: "Where cinematic storytelling meets intelligent commerce. Discover curated collections, AI-powered styling, and immersive product experiences.",
+  openGraph: {
+    title: "LuxeVerse | Cinematic Luxury Commerce",
+    description: "Redefining luxury commerce through cinematic experiences and intelligent personalization.",
+    images: ["/og-home.jpg"],
+  },
+};
+
+export default function HomePage() {
   return (
-    <section className="flex min-h-hero flex-col items-center justify-center px-4 text-center">
-      <h1 className="text-hero font-display font-light tracking-tight text-obsidian-950">
-        Digital Haute Couture
-      </h1>
-      <p className="mt-6 max-w-2xl text-lg text-obsidian-700">
-        Where cinematic storytelling meets intelligent commerce.
-      </p>
-      <div className="mt-10 flex gap-4">
-        <Link
-          href="/shop"
-          className="rounded-lg bg-metallic-champagne px-6 py-3 text-obsidian-950 font-medium hover:bg-metallic-gold transition-colors"
-        >
-          Explore Collection
-        </Link>
-        <Link
-          href="/editorial"
-          className="rounded-lg border border-obsidian-900/20 px-6 py-3 text-obsidian-900 font-medium hover:bg-obsidian-900/5 transition-colors"
-        >
-          Read Editorial
-        </Link>
-      </div>
-    </section>
+    <main className="flex flex-col gap-0">
+      {/* Hero: Client Island for video/animation */}
+      <HeroSection />
+
+      {/* Featured Collections: RSC */}
+      <Suspense fallback={<div className="h-64 bg-obsidian-100 animate-pulse" />}>
+        <FeaturedCollections />
+      </Suspense>
+
+      {/* New Arrivals: Client Island for carousel */}
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <NewArrivals />
+      </Suspense>
+
+      {/* Editorial Highlight: RSC */}
+      <Suspense fallback={<div className="h-96 bg-obsidian-100 animate-pulse" />}>
+        <EditorialHighlight />
+      </Suspense>
+
+      {/* Brand Story: Client Island for parallax */}
+      <BrandStory />
+
+      {/* Category Showcase: RSC */}
+      <Suspense fallback={<ProductGridSkeleton />}>
+        <CategoryShowcase />
+      </Suspense>
+
+      {/* Social Proof: RSC */}
+      <SocialProof />
+
+      {/* Newsletter: Client Island for form */}
+      <NewsletterSection />
+    </main>
   );
 }
