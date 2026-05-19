@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import type { ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth";
 import type { UserRole } from "@/lib/auth";
@@ -16,7 +17,7 @@ export function ProtectedRoute({
   children,
   requiredRole,
   fallbackUrl = "/login",
-}: ProtectedRouteProps): JSX.Element {
+}: ProtectedRouteProps): ReactElement {
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
 

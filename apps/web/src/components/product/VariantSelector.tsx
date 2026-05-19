@@ -1,13 +1,14 @@
 "use client";
 
 import { useId, useCallback, useTransition } from "react";
+import type { ReactElement } from "react";
 import { cn } from "@luxeverse/utils";
 
 export interface VariantOption {
   id: string;
   name: string;
   value: string;
-  colorHex?: string;
+  colorHex?: string | null;
   inventory: number;
 }
 
@@ -23,9 +24,9 @@ export function VariantSelector({
   options,
   selectedId,
   onSelect,
-}: VariantSelectorProps): JSX.Element {
+}: VariantSelectorProps): ReactElement {
   const groupId = useId();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -40,6 +41,7 @@ export function VariantSelector({
     <div
       role="radiogroup"
       aria-label={`Select ${type}`}
+      aria-labelledby={groupId}
       className="flex flex-wrap gap-2"
     >
       {options.map((opt) => {

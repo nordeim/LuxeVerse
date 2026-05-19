@@ -2,7 +2,6 @@ import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { prisma } from "@/lib/prisma";
 import { createCartService } from "../services/cart.service";
-import type { OrderItem, OrderData } from "@/types";
 
 export const orderRouter = router({
   checkout: publicProcedure
@@ -22,7 +21,7 @@ export const orderRouter = router({
         email: z.string().email(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ ctx }) => {
       const cartService = createCartService();
       const cart = await cartService.getOrCreate(ctx.user?.id ?? null, ctx.sessionId ?? crypto.randomUUID());
 

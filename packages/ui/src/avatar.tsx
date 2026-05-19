@@ -14,7 +14,7 @@ export function Avatar({
   size = "md",
   shape = "circle",
   alt,
-}: AvatarProps): JSX.Element {
+}: AvatarProps) {
   const initials = fallback
     .split(" ")
     .map((n) => n[0])

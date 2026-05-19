@@ -29,6 +29,7 @@
     "@trpc/client": "^11.17.0",
     "@trpc/react-query": "^11.17.0",
     "@trpc/server": "^11.17.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "next": "^16.2.6",
     "next-auth": "^4.24.14",
@@ -36,6 +37,7 @@
     "react-dom": "^19.2.6",
     "stripe": "^17.7.0",
     "superjson": "^2.2.6",
+    "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },

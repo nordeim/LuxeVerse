@@ -1,12 +1,12 @@
-import { Suspense } from "react";
 import { createProductService } from "@/server/services/product.service";
-import { prisma } from "@/lib/prisma";
+import { Suspense } from "react";
+import type { ReactElement } from "react";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 
 export const revalidate = 60;
 
-export default async function ShopPage(): Promise<JSX.Element> {
+export default async function ShopPage(): Promise<ReactElement> {
   const service = createProductService();
   const products = await service.list({ limit: 12 });
 

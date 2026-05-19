@@ -38,8 +38,6 @@ export async function createCheckoutAction(
     };
   }
 
-  const data = parsed.data;
-
   try {
     // Calculate totals (mock cart from session/user cart)
     const subtotal = 10000; // cents

@@ -13,7 +13,7 @@ export const productRouter = router({
         })
         .optional()
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx: _ctx, input }) => {
       const service = createProductService();
       return service.list({
         limit: input?.limit ?? 12,
@@ -24,7 +24,7 @@ export const productRouter = router({
 
   getBySlug: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx: _ctx, input }) => {
       const service = createProductService();
       const product = await service.getBySlug(input.slug);
       if (!product) throw new Error("Product not found.");
@@ -38,7 +38,7 @@ export const productRouter = router({
         limit: z.number().int().positive().optional(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx: _ctx, input }) => {
       const service = createProductService();
       return service.getRelated(input.productId, input.limit ?? 4);
     }),

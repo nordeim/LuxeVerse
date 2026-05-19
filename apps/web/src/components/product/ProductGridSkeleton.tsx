@@ -1,4 +1,5 @@
-export function ProductGridSkeleton(): JSX.Element {
+import type { ReactElement } from "react";
+export function ProductGridSkeleton(): ReactElement {
   return (
     <div
       className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"

@@ -1,6 +1,7 @@
+import type { ReactElement } from "react";
 import Link from "next/link";
 
-export default function HomePage(): JSX.Element {
+export default function HomePage(): ReactElement {
   return (
     <section className="flex min-h-hero flex-col items-center justify-center px-4 text-center">
       <h1 className="text-hero font-display font-light tracking-tight text-obsidian-950">

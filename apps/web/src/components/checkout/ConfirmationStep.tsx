@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -8,7 +9,7 @@ interface ConfirmationStepProps {
   orderId: string;
 }
 
-export function ConfirmationStep({ orderId }: ConfirmationStepProps): JSX.Element {
+export function ConfirmationStep({ orderId }: ConfirmationStepProps): ReactElement {
   const router = useRouter();
 
   return (

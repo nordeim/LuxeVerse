@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Product, ProductListItem, ProductDetail } from "@/types";
+import type { ProductListItem, ProductDetail } from "@/types";
 import type { PrismaClient } from "@prisma/client";
 
 export interface ProductService {

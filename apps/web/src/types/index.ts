@@ -48,6 +48,9 @@ export interface Product {
   variants: ProductVariant[];
 }
 
+// Product detail (for PDP pages)
+export interface ProductDetail extends Product {}
+
 // === PRODUCTS LIST (lightweight) ===
 export interface ProductListItem {
   id: string;
@@ -74,6 +77,7 @@ export interface CartItem {
 
 export interface CartData {
   id: string;
+  userId: string | null;
   items: CartItem[];
   subtotal: number;
   itemCount: number;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import type { ReactElement } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@luxeverse/ui";
@@ -15,7 +16,7 @@ interface PaymentStepProps {
   clientSecret: string | null;
 }
 
-function PaymentForm({ onNext, onBack }: Omit<PaymentStepProps, "clientSecret">): JSX.Element {
+function PaymentForm({ onNext, onBack }: Omit<PaymentStepProps, "clientSecret">): ReactElement {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ function PaymentForm({ onNext, onBack }: Omit<PaymentStepProps, "clientSecret">)
   );
 }
 
-export function PaymentStep({ onNext, onBack, clientSecret }: PaymentStepProps): JSX.Element {
+export function PaymentStep({ onNext, onBack, clientSecret }: PaymentStepProps): ReactElement {
   if (!clientSecret) {
     return (
       <div className="py-12 text-center text-obsidian-600">

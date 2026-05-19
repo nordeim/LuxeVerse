@@ -8,7 +8,7 @@ export interface SeparatorProps {
 export function Separator({
   orientation = "horizontal",
   className,
-}: SeparatorProps): JSX.Element {
+}: SeparatorProps) {
   return (
     <div
       role="separator"

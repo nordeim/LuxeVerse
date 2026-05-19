@@ -1,6 +1,7 @@
 "use client";
 
 import { useOptimistic, startTransition, useId } from "react";
+import type { ReactElement } from "react";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
@@ -10,7 +11,7 @@ interface CartItemProps {
   item: CartItemType;
 }
 
-export function CartItem({ item }: CartItemProps): JSX.Element {
+export function CartItem({ item }: CartItemProps): ReactElement {
   const { updateItem, removeItem, isLoading } = useCart();
   const [optimisticQty, setOptimisticQty] = useOptimistic(
     item.quantity,

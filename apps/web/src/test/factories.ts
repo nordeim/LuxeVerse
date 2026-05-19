@@ -57,7 +57,7 @@ export interface User {
   id: string;
   email: string;
   name: string | null;
-  role: string;
+  role: UserRole;
   avatar: string | null;
   createdAt: string;
 }

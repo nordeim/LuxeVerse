@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
+import type { ReactElement } from "react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Button } from "@luxeverse/ui";
-import { Input } from "@luxeverse/ui";
+import { Button, Input } from "@luxeverse/ui";
 import type { AuthState } from "@/app/actions/auth.actions";
 
 interface AuthFormProps {
@@ -12,13 +13,35 @@ interface AuthFormProps {
   initialState: AuthState;
 }
 
-export function AuthForm({ type, action, initialState }: AuthFormProps): JSX.Element {
+export function AuthForm({ type, action, initialState }: AuthFormProps): ReactElement {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const formId = useId();
 
+  // Track credentials so we can call signIn after server action success
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // On server action success, call NextAuth signIn to establish session
+  useEffect(() => {
+    if (state.status === "success" && email && password) {
+      void signIn("credentials", {
+        email,
+        password,
+        callbackUrl: "/",
+      });
+    }
+  }, [state.status, email, password]);
+
   return (
     <form
-      action={formAction}
+      action={(formData) => {
+        // Capture credentials before form submission
+        const emailValue = String(formData.get("email") ?? "");
+        const passwordValue = String(formData.get("password") ?? "");
+        setEmail(emailValue);
+        setPassword(passwordValue);
+        formAction(formData);
+      }}
       className="flex flex-col gap-5"
       aria-labelledby={`${formId}-title`}
     >

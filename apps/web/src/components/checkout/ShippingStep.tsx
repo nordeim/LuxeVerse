@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import type { ReactElement } from "react";
 import { Input } from "@luxeverse/ui";
 import { Button } from "@luxeverse/ui";
 
@@ -10,7 +11,7 @@ interface ShippingStepProps {
 
 type FormState = { status: "idle" | "error" | "success"; message?: string };
 
-export function ShippingStep({ onNext }: ShippingStepProps): JSX.Element {
+export function ShippingStep({ onNext }: ShippingStepProps): ReactElement {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(
     async (_prev: FormState, formData: FormData) => {
       const firstName = String(formData.get("firstName"));

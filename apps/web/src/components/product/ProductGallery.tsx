@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import type { ReactElement } from "react";
 import Image from "next/image";
 import { cn } from "@luxeverse/utils";
 
@@ -15,7 +16,7 @@ export interface ProductGalleryProps {
   images: GalleryImage[];
 }
 
-export function ProductGallery({ images }: ProductGalleryProps): JSX.Element {
+export function ProductGallery({ images }: ProductGalleryProps): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 

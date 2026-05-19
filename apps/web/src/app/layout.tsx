@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { SkipLink } from "@/components/shared/SkipLink";
@@ -48,7 +49,7 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}): ReactElement {
   return (
     <html
       lang="en"

@@ -1,5 +1,6 @@
-import NextAuth from "next-auth";
+import NextAuth, { type AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import type { DefaultSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/crypto";
 import { loginSchema } from "@/lib/schemas";
@@ -13,8 +14,22 @@ export interface AuthUser {
   role: UserRole;
 }
 
+// Extend next-auth types
+declare module "next-auth" {
+  interface Session {
+    user?: DefaultSession["user"] & { id: string; role: UserRole };
+  }
+
+  interface User {
+    id: string;
+    email: string;
+    name: string | null;
+    role: UserRole;
+  }
+}
+
 // NextAuth v4 configuration for App Router
-const authConfig = {
+const authConfig: AuthOptions = {
   providers: [
     Credentials({
       name: "credentials",
@@ -42,17 +57,17 @@ const authConfig = {
       },
     }),
   ],
-  session: { strategy: "jwt" as const, maxAge: 30 * 24 * 60 * 60 },
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   callbacks: {
-    async jwt({ token, user }: { token: Record<string, unknown>; user?: AuthUser }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = (user as AuthUser).role;
       }
       return token;
     },
-    async session({ session, token }: { session: { user?: Record<string, unknown> }; token: Record<string, unknown> }) {
-      if (token && session.user) {
+    async session({ session, token }) {
+      if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as UserRole;
       }
@@ -64,7 +79,6 @@ const authConfig = {
     error: "/login",
   },
   secret: process.env.AUTH_SECRET,
-  trustHost: true,
 };
 
 // v4: NextAuth returns the handler function

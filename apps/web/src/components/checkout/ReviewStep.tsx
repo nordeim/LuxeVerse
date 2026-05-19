@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 "use client";
 
 import { Button } from "@luxeverse/ui";
@@ -9,7 +10,7 @@ interface ReviewStepProps {
   isPending: boolean;
 }
 
-export function ReviewStep({ onBack, onSubmit, isPending }: ReviewStepProps): JSX.Element {
+export function ReviewStep({ onBack, onSubmit, isPending }: ReviewStepProps): ReactElement {
   return (
     <section
       aria-labelledby="review-heading"

@@ -1,20 +1,17 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import Image from "next/image";
+import type { ReactElement } from "react";
 import { createProductService } from "@/server/services/product.service";
-import { prisma } from "@/lib/prisma";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { VariantSelector } from "@/components/product/VariantSelector";
 import { PriceDisplay } from "@/components/product/PriceDisplay";
 import { StickyAddToBar } from "@/components/product/StickyAddToBar";
-import { PDPSkeleton } from "@/components/product/PDPSkeleton";
 import { Button } from "@luxeverse/ui";
 
 interface PDPProps {
   params: { category: string; slug: string };
 }
 
-export default async function ProductPage({ params }: PDPProps): Promise<JSX.Element> {
+export default async function ProductPage({ params }: PDPProps): Promise<ReactElement> {
   const { slug } = params;
 
   const service = createProductService();

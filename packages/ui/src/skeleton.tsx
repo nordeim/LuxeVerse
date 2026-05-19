@@ -12,7 +12,7 @@ export function Skeleton({
   height = "1rem",
   className,
   rounded = "md",
-}: SkeletonProps): JSX.Element {
+}: SkeletonProps) {
   return (
     <div
       className={cn(

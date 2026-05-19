@@ -37,26 +37,21 @@ export const cartRouter = router({
         quantity: z.number().int().min(1),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const service = createCartService();
       return service.updateItem(input.itemId, input.quantity);
     }),
 
   removeItem: publicProcedure
     .input(z.object({ itemId: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const service = createCartService();
-      // getOrCreate not needed for remove, service already handles
-      const cart = await service.getOrCreate(
-        ctx.user?.id ?? null,
-        ctx.sessionId ?? crypto.randomUUID()
-      );
       return service.removeItem(input.itemId);
     }),
 
   clearCart: publicProcedure
     .input(z.object({ cartId: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const service = createCartService();
       return service.clearCart(input.cartId);
     }),

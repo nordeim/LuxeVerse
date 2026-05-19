@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { CartData, CartItem } from "@/types";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 export interface CartService {
   getOrCreate(userId: string | null, sessionId: string): Promise<CartData>;
@@ -37,6 +37,7 @@ function mapCart(cart: CartWithItems): CartData {
 
   return {
     id: cart.id,
+    userId: cart.userId ?? null,
     items,
     subtotal: items.reduce((sum, i) => sum + i.totalPrice, 0),
     itemCount: items.reduce((sum, i) => sum + i.quantity, 0),

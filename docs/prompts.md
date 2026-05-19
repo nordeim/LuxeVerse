@@ -33,6 +33,12 @@ awesome meticulous review and validation. please keep up the good work. yes, ple
 
 ---
 
+awesome meticulous job so far. please keep up the good work. we will stick to the current stable release v4 for NextAuth. now, please meticulously re-evaluate and re-validate the identified gaps and issues/bugs in the current Phase 1 implementation to identify the root causes and the optimal fixes. then meticulously plan to create a detailed remediation plan with ToDo list to apply the validated optimal fixes to the validated Phase 1 gaps and issues/bugs. review and validate the plan before proceeding to execute it. use TDD approach to make code changes.
+
+You will now systematically re-evaluate the Phase 1 implementation, validate the root causes of the IDENTIFIED gaps, and create a detailed remediation plan with a ToDo list. To ensure accuracy before proceeding with any code changes, you will meticulously review all existing files and the detailed execution plan using the Task tool.
+
+---
+
 please meticulously review @Project_Requirements_Document.md and @MASTER_EXECUTION_PLAN.md in conjuncion with skills frontend-ui-engineering, react19-ts6-vite8-tailwindv4-mvp and super-frontend-design
 
 ---

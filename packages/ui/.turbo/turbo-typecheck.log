@@ -1,0 +1,4 @@
+
+> @luxeverse/ui@0.1.0 typecheck /home/project/LuxeVerse/packages/ui
+> tsc --noEmit
+

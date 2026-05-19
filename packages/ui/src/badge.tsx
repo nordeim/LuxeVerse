@@ -11,7 +11,7 @@ export function Badge({
   variant = "default",
   children,
   className,
-}: BadgeProps): JSX.Element {
+}: BadgeProps) {
   return (
     <span
       className={cn(
