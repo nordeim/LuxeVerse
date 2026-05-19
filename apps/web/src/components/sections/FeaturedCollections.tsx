@@ -34,7 +34,7 @@ export function FeaturedCollections() {
                   height={750}
                   className="h-full w-full object-cover transition-transform duration-700 ease-luxe group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950/60 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-obsidian-950/60 to-transparent" />
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <h3 className="text-xl font-display font-medium">{col.name}</h3>

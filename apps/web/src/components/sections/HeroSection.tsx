@@ -35,7 +35,7 @@ export function HeroSection() {
           <source src="/hero-desktop.mp4" type="video/mp4" />
         </video>
         {/* Cinematic Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-obsidian-950/40 via-transparent to-obsidian-950/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-obsidian-950/40 via-transparent to-obsidian-950/80" />
         <div className="absolute inset-0 bg-[url('/grain.png')] opacity-10 mix-blend-overlay" />
       </motion.div>
 
@@ -89,7 +89,7 @@ export function HeroSection() {
         <motion.div
           animate={prefersReducedMotion ? {} : { y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="h-6 w-px bg-gradient-to-b from-transparent to-metallic-champagne"
+          className="h-6 w-px bg-linear-to-b from-transparent to-metallic-champagne"
         />
       </motion.div>
     </section>

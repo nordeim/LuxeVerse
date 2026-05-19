@@ -5,9 +5,10 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
-No test files found, exiting with code 1
+ ✓ src/lib/utils.test.ts (2 tests) 7ms
 
-include: **/*.{test,spec}.?(c|m)[jt]s?(x)
-exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  06:49:53
+   Duration  1.08s (transform 52ms, setup 33ms, collect 10ms, tests 7ms, environment 638ms, prepare 119ms)
 
- ELIFECYCLE  Test failed. See above for more details.

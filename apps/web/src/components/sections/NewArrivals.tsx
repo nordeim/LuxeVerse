@@ -51,7 +51,7 @@ export function NewArrivals() {
         </div>
         <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {products.map((p) => (
-            <article key={p.id} className="flex-shrink-0 w-64 snap-start">
+            <article key={p.id} className="shrink-0 w-64 snap-start">
               <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-obsidian-100 mb-3">
                 <Image src={p.image} alt={p.name} width={300} height={400} className="h-full w-full object-cover" />
               </div>

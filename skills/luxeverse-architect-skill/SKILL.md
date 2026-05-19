@@ -2,7 +2,10 @@
 
 ## Comprehensive Architectural & Execution Framework for Cinematic, Production-Grade, Anti-Generic Web Platforms
 
-**Version**: 3.0.0
+**Version**: 3.1.0
+**Date**: 2026-05-20
+**Scope**: Phase 0–2 validated (Foundation, Core Commerce, Cinematic Experience)
+**New Since v3.0.0**: Next.js 16 `params` plain-object API, React 19 `JSX.Element` removal, `useOptimistic` vs `useState` decision matrix, Framer Motion v12 `useReducedMotion`, static build Prisma isolation, R3F dynamic import pattern, `force-dynamic` for Prisma-dependent pages
 **Source**: Distilled from full Phase 0–1 execution on LuxeVerse v3.0, plus cross-skill synthesis from claude-md, super-frontend-design, react19-ts6-vite8-tailwindv4-mvp, nextjs16-tailwind4, frontend-ui-engineering, clean-code, framework-templates
 **Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`
 **When to Use**: Any project requiring Next.js 16, React 19, TypeScript 6, Tailwind v4, Prisma, tRPC, Zustand, NextAuth v5, or any subset thereof. The phased approach, RSC/Client split, and design system are universally applicable.
@@ -778,6 +781,109 @@ useEffect(() => { if (state.status === "success") onNext(); }, [state.status, on
 ### Mistake #15: Ignoring `useId()` for ARIA Pairs
 **Fix**: `const id = useId();` then `<label htmlFor={id}>` + `<input id={id} />`. Never hardcode IDs in reusable components.
 
+### Mistake #16: `await params` in Next.js 16 App Router
+**Fix**: `params` is a **plain object** in Next.js 16, NOT a Promise. Direct destructuring only.
+```tsx
+// ❌ WRONG (Next.js 16)
+export default async function Page({ params }: Props) {
+  const { slug } = await params; // ❌ params is NOT a Promise
+  // ...
+}
+
+// ✅ CORRECT
+export default function Page({ params }: Props) {
+  const { slug } = params; // ✅ Direct destructuring
+  // ...
+}
+```
+**Why**: Next.js 16 App Router changed `params` from a resolved Promise to a plain object at runtime. `await` on a plain object throws no error but is semantically wrong and can cause subtle hydration mismatches.
+
+### Mistake #17: `JSX.Element` Return Type in React 19
+**Fix**: Remove explicit `: JSX.Element` / `: ReactElement` return types entirely. TypeScript infers them.
+```tsx
+// ❌ WRONG (React 19)
+export function HeroSection(): JSX.Element { ... }
+
+// ✅ CORRECT (inferred return type)
+export function HeroSection() { ... }
+```
+**Why**: React 19 removed the global `JSX` namespace. Explicit `JSX.Element` triggers `TS2307: Cannot find namespace 'JSX'`. If you absolutely need an explicit type, use `import type { ReactElement } from "react"`, but inferred is preferred.
+
+### Mistake #18: `useOptimistic` for Simple Boolean Toggles
+**Fix**: Use `useState` instead. `useOptimistic` is for complex state where you need a separate "optimistic" branch from the server-confirmed branch.
+```tsx
+// ❌ WRONG — overcomplicated for a simple toggle
+const [optimisticAdded, setOptimisticAdded] = useOptimistic(false, () => true);
+setOptimisticAdded(null); // ❌ Type error: null !== boolean
+
+// ✅ CORRECT
+const [isAdded, setIsAdded] = useState(false);
+setIsAdded(true);
+```
+**When to use `useOptimistic`**: Multi-step forms, cart quantity updates, message sending — where the server response will eventually confirm/reject the optimistic state. NOT for simple boolean toggles.
+
+### Mistake #19: Emojis in UI
+**Fix**: Replace ALL emojis with Lucide icons (or custom SVGs).
+```tsx
+// ❌ WRONG (emoji)
+<button>📷</button>
+
+// ✅ CORRECT (Lucide)
+import { Camera } from "lucide-react";
+<button><Camera className="h-5 w-5" /></button>
+```
+**Why**: Emojis render inconsistently across platforms, break accessibility (screen readers may read them as "camera with flash" or not at all), and violate the anti-generic mandate.
+
+### Mistake #20: `async` / `Promise<>` on Components Without Data Fetch
+**Fix**: Remove `async` and return type when a component only renders static/mock data.
+```tsx
+// ❌ WRONG — async without any await inside
+export async function FeaturedCollections(): Promise<JSX.Element> { ... }
+
+// ✅ CORRECT
+export function FeaturedCollections() { ... }
+```
+**Why**: Marking a component `async` when it doesn't fetch data is misleading to other developers and can cause subtle TypeScript errors. Only use `async` when you truly `await` a server-side fetch.
+
+### Mistake #21: `window.location.href` for Internal Navigation in Client Islands
+**Fix**: Use `useRouter().push()` from `next/navigation` for all internal navigation.
+```tsx
+// ❌ WRONG (full page reload!)
+window.location.href = `/search?q=${query}`;
+
+// ✅ CORRECT (SPA navigation)
+const router = useRouter();
+router.push(`/search?q=${query}`);
+```
+**Why**: `window.location.href` causes a full page reload, losing all client-side state (Zustand, React Query, scroll position). `useRouter().push()` preserves the SPA experience.
+
+### Mistake #22: `notFound()` Import When Building Static Pages Without DB
+**Fix**: If a page calls Prisma during build time (static generation) and the DB isn't available, the build will crash. Either:
+1. Add `export const dynamic = "force-dynamic"` to skip static generation, OR
+2. Provide mock data fallback in the component.
+```tsx
+// ✅ Option 1: Force dynamic (server-rendered on demand)
+export const dynamic = "force-dynamic";
+
+// ✅ Option 2: Try/catch with mock fallback
+async function SearchResults() {
+  let products;
+  try {
+    products = await createProductService().list({ limit: 12 });
+  } catch {
+    products = MOCK_PRODUCTS; // Fallback for static builds
+  }
+  // ...
+}
+```
+
+### Mistake #23: Missing `@types/three` for R3F Components
+**Fix**: Install `@types/three` as a dev dependency when using `@react-three/fiber` and `@react-three/drei`.
+```bash
+pnpm add -D @types/three
+```
+**Why**: `@react-three/fiber` and `@react-three/drei` use Three.js types internally. Without `@types/three`, TypeScript will fail with `Cannot find module 'three' or its corresponding type declarations`.
+
 ---
 
 ## 6. Component Architecture (RSC-First, Client Islands)
@@ -1033,6 +1139,61 @@ small: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)
 4. **Session**: `getServerSession` is deprecated in favor of `auth()` from `next-auth`.
 5. **Config**: The `authOptions` structure is different. In v5, you define a `config` and pass it to `NextAuth`.
 
+### Next.js 16: `params` is a Plain Object (Not a Promise)
+**Error**: `await params` compiles but produces undefined at runtime,or causes hydration mismatches.
+**Fix**: Directly destructure `params` without `await`.
+```tsx
+// ❌ WRONG
+export default async function Page({ params }: { params: { slug: string } }) {
+  const { slug } = await params;
+}
+
+// ✅ CORRECT
+export default function Page({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+}
+```
+**See**: Mistake #16 for full explanation.
+
+### Next.js 16: `searchParams` is NOT a Promise
+**Error**: Treating `searchParams` as a Promise in `page.tsx` props.
+**Fix**: `searchParams` is a read-only plain object. Do not `await` it.
+```tsx
+// ❌ WRONG
+export default async function Page({ searchParams }: Props) {
+  const resolved = await searchParams; // ❌ No! searchParams is already resolved
+}
+
+// ✅ CORRECT
+export default function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const query = searchParams.q ?? "";
+}
+```
+
+### Next.js 16: `experimental.ppr` Merged into `cacheComponents`
+**Error**: `experimental.ppr: "incremental"` causes build failure.
+**Fix**: In Next.js 16+, `experimental.ppr` has been merged into `cacheComponents`. Remove `ppr` from `next.config.ts`.
+```ts
+// ❌ WRONG (Next.js 16+)
+const nextConfig = {
+  experimental: { ppr: "incremental" } // ❌ Removed in v16
+};
+
+// ✅ CORRECT
+const nextConfig = {
+  // Remove `ppr` entirely — the feature is now enabled by default
+  // via `cacheComponents` behavior
+};
+```
+**Next.js Lint Deprecated in Config**: v16 removed `eslint` key from `next.config.ts`. Remove:
+```ts
+// ❌ WRONG (Next.js 16+)
+eslint: { ignoreDuringBuilds: false },
+
+// ✅ CORRECT — configure eslint separately
+```
+**Note**: The `eslint` configuration is now in `.eslintrc.*` or `eslint.config.mjs` only. The `next.config.ts` key is unrecognized and causes a warning at build time.
+
 ### React 19: `Cannot find namespace 'JSX'`
 **Root**: React 19 removed the global `JSX` namespace.
 **Fix 1**: Import types for ReactElement: `import type { ReactElement } from "react"`.
@@ -1091,6 +1252,22 @@ if (typeof window !== "undefined") { ... }
 4. **Focus rings are non-negotiable**: `outline: 2px solid var(--color-neon-cyan)` with 2px offset.
 5. **Lucide icons only**: No emojis. No inline SVGs without `aria-hidden`.
 
+### Phase 2 (Cinematic Experience & Advanced Discovery)
+17. **`params` / `searchParams` are NOT Promises in Next.js 16**: Direct destructuring only. `await params` is a silent bug that compiles but causes runtime failures.
+18. **`JSX.Element` is BANNED in React 19**: Remove all explicit `: JSX.Element` return types. TypeScript infers them. If you must be explicit, use `ReactElement` (imported).
+19. **`useOptimistic` is NOT for simple boolean toggles**: React 19 `useOptimistic` requires `(state, optimisticValue)` reducer signature. For simple toggles, `useState` is simpler and safer.
+20. **No emojis in UI, ever**: Use Lucide icons exclusively. Emojis break a11y and violate the anti-generic mandate.
+21. **`async` on components without data fetch is misleading**: If a component only renders mock/static data, removing `async` prevents TypeScript errors and confusion.
+22. **`useRouter().push()` replaces ALL `window.location.href`**: In Client Islands, ALL internal navigation must use `useRouter().push()`. Never `window.location.href`.
+23. **Static builds crash when Prisma pages lack DB**: Add `export const dynamic = "force-dynamic"` to all pages that call Prisma during static generation. Or provide a mock data fallback in try/catch.
+24. **`@types/three` is REQUIRED for R3F**: When using `@react-three/fiber` and `@react-three/drei`, install `@types/three` as a dev dependency.
+25. **`useReducedMotion` from Framer Motion is the source of truth**: Check `useReducedMotion()` at the component level for all animated elements. Do NOT rely solely on CSS `@media (prefers-reduced-motion: reduce)` for JS-driven animations.
+26. **`"use client"` must be the VERY FIRST LINE in the file**: Even before `import type`. Any expression before the directive invalidates it.
+27. **`next/image` must have explicit `width` and `height`** (or `fill`): Omitting dimensions causes CLS (Cumulative Layout Shift) and TypeScript errors in Next.js 16.
+28. **`next/dynamic` with `ssr: false` for Three.js/WebGL**: R3F + Drei must be dynamically imported with `{ ssr: false, loading: <Skeleton /> }`. Never import them directly in a page that is statically rendered.
+29. **`startTransition` wraps all URL state mutations**: When updating `searchParams` from Client Islands, wrap the mutation in `startTransition()` to prevent UI blocking.
+30. **`skipLibCheck: true` is MANDATORY for R3F + Framer Motion**: Both libraries have complex internal types that can conflict with strict TS settings. Do NOT remove `skipLibCheck`.
+
 ### Phase 1
 1. **Never persist UI state in Zustand**: `partialize: (state) => ({ items: state.items })` only.
 2. **Zod v4 `.issues[0].message` not `.errors[0]`**: API changed between v3 and v4.
@@ -1105,7 +1282,7 @@ if (typeof window !== "undefined") { ... }
 11. **`useCallback` for stable props passed to memoized children**: Prevents re-render cascades.
 12. **`useId()` for all ARIA pairs**: Never hardcode IDs in reusable components.
 13. **`noUnusedLocals` catches dead code early**: Disabled underscore prefix convention — TypeScript ignores `_` prefixes by default in modern versions, but `noUnusedLocals` still catches them. Remove or use the variable.
-14. **`React.ReactElement` /** `ReactElement` vs `JSX.Element`**: React 19 removed the global `JSX` namespace. Always `import type { ReactElement } from 'react'` and use `ReactElement`.
+14. **`React.ReactElement` / `ReactElement` vs `JSX.Element`**: React 19 removed the global `JSX` namespace. Always `import type { ReactElement } from 'react'` and use `ReactElement`.
 15. **Prisma types after schema change**: Run `pnpm db:generate` to update types before `tsc --noEmit`.
 16. **Workspace packages need explicit build/export**: Returning `PaymentIntentResult` from `createPaymentService` requires the interface to be exported. If `payment.service.ts` adds a new export, update `index.ts` or `package.json` exports map.
 
@@ -1137,11 +1314,39 @@ if (typeof window !== "undefined") { ... }
 ❌ partialize: (s) => s               → ✅ partialize: (s) => ({ items: s.items })
 ```
 
-### Next.js App Router
+### Next.js App Router (Next.js 16+)
 ```
 ❌ async function Page({ params }) { const p = await params }  → ✅ const { slug } = params
 ❌ <a href="/shop">                     → ✅ <Link href="/shop">
 ❌ window.location.href                → ✅ router.push("/path")
+❌ searchParams is Promise             → ✅ searchParams is plain object
+❌ JSX.Element return type             → ✅ inferred return type (or ReactElement)
+❌ experimental.ppr: "incremental"     → ✅ remove ppr key entirely (merged into cacheComponents)
+❌ next.config.ts: eslint key           → ✅ remove eslint key (separate .eslintrc only)
+```
+
+### React 19
+```
+❌ JSX.Element return type               → ✅ inferred return type (no explicit type)
+❌ useOptimistic for simple toggles       → ✅ useState for simple, useOptimistic for complex server-confirmed state
+❌ Emoji icons (📷, 🎉, ✕)               → ✅ Lucide icons only
+❌ sync `if (state.status) navigate()`   → ✅ `useEffect(() => { if (state.status) navigate() }, [state])`
+```
+
+### Next.js Build / Static Generation
+```
+❌ Prisma pages without DB at build time           → ✅ export const dynamic = "force-dynamic"
+❌ R3F directly imported (ssr)                     → ✅ next/dynamic with ssr: false
+❌ `use client` after `import type`                → ✅ `use client` MUST be the very first line
+❌ next.config.ts: eslint key                      → ✅ remove, use .eslintrc or eslint.config.mjs only
+❌ experimental.ppr key                            → ✅ removed in Next.js 16, now via cacheComponents
+```
+
+### Framer Motion v12 + R3F
+```
+❌ useScroll without useReducedMotion fallback         → ✅ always check useReducedMotion()
+❌ Direct R3F import in page                           → ✅ next/dynamic with ssr: false, loading skeleton
+❌ Missing @types/three                                 → ✅ pnpm add -D @types/three
 ```
 
 ### Prisma

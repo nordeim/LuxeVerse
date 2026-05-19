@@ -24,7 +24,7 @@ export function ProductEmbed({ product }: ProductEmbedProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <div className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-md bg-obsidian-100">
+      <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-md bg-obsidian-100">
         <Image src={product.image} alt={product.name} width={64} height={80} className="h-full w-full object-cover" />
       </div>
       <div className="flex flex-1 flex-col gap-1">

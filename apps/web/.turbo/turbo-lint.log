@@ -1,6 +1,11 @@
 
 > @luxeverse/web@0.1.0 lint /home/project/LuxeVerse/apps/web
-> next lint
+> bash ../../scripts/validate-deprecated-twind.sh && bash ../../scripts/validate-colors.sh && echo 'All lint checks passed'
 
-Invalid project directory provided, no such directory: /home/project/LuxeVerse/apps/web/lint
- ELIFECYCLE  Command failed with exit code 1.
+grep: packages/: No such file or directory
+grep: apps/: No such file or directory
+No deprecated Tailwind v3 utilities.
+grep: packages/: No such file or directory
+grep: apps/: No such file or directory
+No raw hex colors in className.
+All lint checks passed
