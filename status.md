@@ -497,3 +497,41 @@ Given the green build and passing gates, the codebase is ready for the next phas
 ---
 Verification confirmed: The codebase is production-ready, and all critical guardrails are green.
 
+---
+
+✅ SKILL.md Update Complete — v3.2.0
+I have successfully reviewed, validated, and updated the skills/luxeverse-architect-skill/SKILL.md to codify all the critical knowledge, patterns, anti-patterns, and troubleshooting insights gained during the meticulous Phase 0–2 verification and remediation.
+Summary of Changes (v3.1.0 → v3.2.0)
+The skill document has been extended with a comprehensive new Section 14: Phase 2 Verification & Critical Learnings, adding 209 lines of new content, bringing the total to 1,569 lines.
+Key Knowledge Codified
+1. Complete Tooling Version Matrix (Verified)
+A full compatibility and verification status table for all critical dependencies (Next.js 16.2.6, React 19.2.6, Tailwind v4.3.0, etc.).
+2. Next.js 16 CLI Deprecations (CRITICAL)
+Documented the removal of the next lint command, providing verified monorepo fixes using shell validation scripts.
+3. Tailwind v4 Utility Migration Map
+A precise table mapping v3 utilities to their v4 equivalents (e.g., flex-shrink-0 → shrink-0), including the specific files that were found and fixed during the audit.
+4. Next.js 16 Configuration Cleanup
+Explicit instructions for removing experimental.ppr and the eslint key from next.config.ts to prevent build failures.
+5. Monorepo Lint Task Fix
+A detailed guide for integrating shell validation scripts into the Turborepo pipeline as a replacement for next lint.
+6. New Mistakes (#24–#28)
+Five new field-tested mistakes and their fixes:
+- #24: next lint still used in Next.js 16
+- #25: Forgetting to run validation scripts before commit
+- #26: Assuming params is a typed object
+- #27: Missing @types/three in dev dependencies
+- #28: Using flex-shrink-0 instead of shrink-0 in v4
+7. Verification Checklist (Updated)
+A standard, four-step verification sequence (typecheck → lint → test → build) with expected output.
+8. Next.js 16 Gotchas Quick Reference
+A compact table comparing Next.js 15 vs. v16 behavior for experimental.ppr, next lint, params typing, and next --help.
+Version Metadata Updated
+- Version: 3.1.0 → 3.2.0
+- New Scope: Phase 0–2 verified
+- New Since v3.1.0: Next.js 16 next lint CLI removal, Tailwind v4 utility migration map, monorepo lint task fix, Next.js 16 config cleanup, verification checklist, tooling version matrix.
+Document Integrity Confirmed
+- Total Lines: 1,569 (was 1,360)
+- Top-Level Sections: 16 (was 15)
+- TypeScript Check: ✅ PASS (zero errors)
+The updated SKILL.md is now a comprehensive, battle-tested manual that encodes every critical lesson from the Phase 0–2 execution. Any future AI coding agent can now reference Section 14 to immediately understand the Next.js 16 CLI changes, Tailwind v4 migration requirements, and monorepo linting fixes.
+
