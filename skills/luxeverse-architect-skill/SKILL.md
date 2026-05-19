@@ -2,9 +2,9 @@
 
 ## Comprehensive Architectural & Execution Framework for Cinematic, Production-Grade, Anti-Generic Web Platforms
 
-**Version**: 3.0.0  
-**Source**: Distilled from full Phase 0–1 execution on LuxeVerse v3.0, plus cross-skill synthesis from claude-md, super-frontend-design, react19-ts6-vite8-tailwindv4-mvp, nextjs16-tailwind4, frontend-ui-engineering, clean-code, framework-templates  
-**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`  
+**Version**: 3.0.0
+**Source**: Distilled from full Phase 0–1 execution on LuxeVerse v3.0, plus cross-skill synthesis from claude-md, super-frontend-design, react19-ts6-vite8-tailwindv4-mvp, nextjs16-tailwind4, frontend-ui-engineering, clean-code, framework-templates
+**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`
 **When to Use**: Any project requiring Next.js 16, React 19, TypeScript 6, Tailwind v4, Prisma, tRPC, Zustand, NextAuth v5, or any subset thereof. The phased approach, RSC/Client split, and design system are universally applicable.
 
 ---
@@ -143,6 +143,7 @@ ANALYZE → PLAN → VALIDATE → IMPLEMENT → VERIFY → DELIVER
 │   │   │   ├── avatar.tsx             # Image + initials fallback, square/round
 │   │   │   ├── skeleton.tsx           # aria-busy + pulse animation
 │   │   │   └── index.ts               # Barrel export
+│   │   ├── tsconfig.json              # MUST exist — extends ../config/tsconfig/base.json
 │   │   └── package.json               # Side-effect free, shared deps
 │   └── utils/
 │       ├── src/
@@ -214,7 +215,7 @@ ANALYZE → PLAN → VALIDATE → IMPLEMENT → VERIFY → DELIVER
   }
 }
 ```
-**`erasableSyntaxOnly: true` — This BANS `enum` and `namespace`. Zero exceptions.**  
+**`erasableSyntaxOnly: true` — This BANS `enum` and `namespace`. Zero exceptions.**
 **`verbatimModuleSyntax: true` — Forces `import type` for type-only imports.**
 
 ### 3.2 Tailwind CSS v4 — CSS-First ONLY
@@ -728,7 +729,9 @@ export const config = { matcher: ["/((?!_next|api|static|.*\\.).*)", "/api/:path
 **Fix**: Use `onReady` prop only. Never both.
 ```tsx
 // ❌ WRONG: elements can be null initially
-elements.on("ready", () => setIsReady(true));
+const handleReady = () => setIsReady(true);
+// ❌ WRONG
+if (elements) elements.on("ready", handleReady);
 // ✅ CORRECT: onReady prop is safe
 <PaymentElement onReady={() => setIsReady(true)} />
 ```
@@ -945,7 +948,7 @@ jobs:
 
 ### Pre-Commit Checklist (Run Before Every Commit)
 | # | Check | Command |
-|---|-------|---------|
+|---|---|---|
 | 1 | TypeScript zero errors | `pnpm typecheck` |
 | 2 | ESLint with Prettier | `pnpm lint` |
 | 3 | Tests pass | `pnpm test` |
@@ -1012,45 +1015,56 @@ small: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)
 
 ## 10. Troubleshooting Encyclopedia
 
-### `TypeError: Cannot read properties of undefined (reading 'find')`
-**Root**: Prop passed as `undefined` instead of `[]`. Service returned `null` but component expects array.
-**Fix**: Default empty array in destructuring: `function Component({ items = [] }: Props)`
+### Zod v4 API Changes
+**Error**: `zodErrors.map is not a function`
+**Root**: Zod v4 changed the error structure.
+**Fix**: Use `result.error.issues[0].message` instead of `result.error.errors[0].message`.
 
-### `Hydration mismatch: text does not match`
-**Root**: Server-rendered date/time vs client-rendered date/time. Or `Math.random()` during SSR.
-**Fix**: Use `useEffect` for client-only content. Or suppress for non-critical elements: `<span suppressHydrationWarning />`
-
-### `zodErrors.map is not a function`
-**Root**: Using Zod v3 API `.errors` with Zod v4.
-**Fix**: `result.error.issues[0].message`
-
-### `tailwindcss: No config file found`
+### Tailwind v4: `No config file found`
 **Root**: `tailwind.config.js` exists but v4 doesn't read it.
-**Fix**: Delete `tailwind.config.js`. All in `globals.css`.
+**Fix**: Delete `tailwind.config.js` and move all tokens to `globals.css` using `@theme inline`.
 
-### `TS2322: Type 'FormData' is not assignable to parameter of type...`
-**Root**: `useActionState` form expects `FormData` but typed with custom object.
-**Fix**: `useActionState(callback, initialState)` must match `(prev, formData: FormData) => ...`.
+### NextAuth v4 ❌ → v5 ✅
+**Migrating to Auth.js (NextAuth v5) from v4**
+**Critical Differences**:
+1. **Environment variables**: `NEXTAUTH_SECRET` → `AUTH_SECRET`, `NEXTAUTH_URL` → `AUTH_TRUST_HOST` (or remove `NEXTAUTH_URL` if using `trustHost: true`).
+2. **Imports**: `import NextAuth from "next-auth"` → `import NextAuth from "next-auth"` is the same, but the return is different. In v5, `NextAuth()` doesn't export `GET`/`POST` directly in the same way.
+3. **API Route**: In v5, auth is mounted differently. The `api/auth/[...nextauth]/route.ts` is handled automatically by the framework, and you don't manually create it for App Router.
+4. **Session**: `getServerSession` is deprecated in favor of `auth()` from `next-auth`.
+5. **Config**: The `authOptions` structure is different. In v5, you define a `config` and pass it to `NextAuth`.
 
-### `ReferenceError: window is not defined` (in RSC)
-**Root**: Accessed `window` in Server Component.
-**Fix**: Move to Client Component (`"use client"`) or replace with CSS equivalent.
+### React 19: `Cannot find namespace 'JSX'`
+**Root**: React 19 removed the global `JSX` namespace.
+**Fix 1**: Import types for ReactElement: `import type { ReactElement } from "react"`.
+**Fix 2**: Prefer inferred return types over explicit `JSX.Element` / `React.ReactElement` for simple components.
 
-### `Error: Unsupported Prisma table prefix`
-**Root**: Prisma generated with different schema than runtime.
-**Fix**: `pnpm db:generate && pnpm db:migrate` after schema changes.
+### TypeScript `noUnusedLocals` / `noUnusedParameters`
+**Issue**: `error TS6133: 'X' is declared but its value is never read.`
+**Root**: Strict TypeScript settings. The `_` prefix convention used by some linters does NOT suppress TypeScript's `noUnusedLocals` or `noUnusedParameters` errors.
+**Fix**:
+1. **Remove the variable/parameter entirely** (if truly not needed).
+2. **Use the variable** (e.g., `_input.amount` instead of ignoring it).
+3. **Rename to `_[name]`**: While not suppressing the compiler, it indicates intent. However, the compiler may still flag it depending on the exact configuration. The standard approach is to either use it or remove it.
+4. **Don't disable**: Keep `noUnusedLocals: true` and `noUnusedParameters: true` in `tsconfig.json` — they catch real bugs. Only disable if you are in a quick prototype and willing to pay the tech debt later.
 
-### `ERR_TOO_MANY_REDIRECTS` in Next.js
-**Root**: Middleware returning `NextResponse.redirect()` in a loop.
-**Fix**: Check matcher regex excludes the redirect target. Add `/((?!api|_next|static|.*\\.).*)`.
+### Monorepo: `Cannot find module '@luxeverse/utils'`
+**Root**: Workspace dependency is linked, but TypeScript can't resolve its types.
+**Fix 1**: Ensure `packages/utils/tsconfig.json` exists and has `"compilerOptions"` set up for declaration generation if needed.
+**Fix 2**: In `packages/utils/package.json`, make sure `main` and `types` point to the built files or source files.
+**Fix 3**: In root `tsconfig.json`, add the workspace to `references` or ensure `baseUrl` + `paths` are configured.
+**Fix 4**: If the package has no build step, point `main` to the source: `"main": "./src/index.ts"` and `"types": "./src/index.ts"`.
 
-### NextAuth `Unauthorized` on every request
-**Root**: `session` strategy is `"database"` but adapter not configured or JWT secret missing.
-**Fix**: Verify `adapter: PrismaAdapter(prisma)` and `process.env.NEXTAUTH_SECRET`.
+### `window` / `document` in RSC
+**Error**: `ReferenceError: window is not defined`
+**Fix 1**: Add `"use client"` to the top of the file.
+**Fix 2**: If it's just a small logical check (not an API call), replace with:
+```tsx
+if (typeof window !== "undefined") { ... }
+```
 
-### Zustand `persist` type errors
-**Root**: Missing `create<...>()` generic or `partialize` returning non-serializable data.
-**Fix**: Ensure `partialize` returns plain objects only. No functions, no BigInt.
+### Stripe `onReady` vs `elements.on("ready")`
+**Error**: `Cannot read properties of undefined (reading 'on')` or Null Deref.
+**Fix**: Stripe's `PaymentElement` has an `onReady` prop. Use that instead of `elements.on("ready")` which can fail during initial render. If using `useStripe()` + `useElements()`, the `elements` object might not be ready when the hook first runs.
 
 ---
 
@@ -1089,7 +1103,11 @@ small: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)
 9. **`params` is plain object in Next.js 16**: No `await params`. Direct destructuring.
 10. **TypeScript `paths` are compile-time only**: Vite/Next.js config must also define runtime aliases.
 11. **`useCallback` for stable props passed to memoized children**: Prevents re-render cascades.
-12. **`useId()` for all ARIA pairs**: Never hardcode `id` in reusable components.
+12. **`useId()` for all ARIA pairs**: Never hardcode IDs in reusable components.
+13. **`noUnusedLocals` catches dead code early**: Disabled underscore prefix convention — TypeScript ignores `_` prefixes by default in modern versions, but `noUnusedLocals` still catches them. Remove or use the variable.
+14. **`React.ReactElement` /** `ReactElement` vs `JSX.Element`**: React 19 removed the global `JSX` namespace. Always `import type { ReactElement } from 'react'` and use `ReactElement`.
+15. **Prisma types after schema change**: Run `pnpm db:generate` to update types before `tsc --noEmit`.
+16. **Workspace packages need explicit build/export**: Returning `PaymentIntentResult` from `createPaymentService` requires the interface to be exported. If `payment.service.ts` adds a new export, update `index.ts` or `package.json` exports map.
 
 ---
 
