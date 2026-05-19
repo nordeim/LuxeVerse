@@ -1,5 +1,6 @@
-import type { ReactElement } from "react";
 "use client";
+
+import type { ReactElement } from "react";
 
 import { useRouter } from "next/navigation";
 import { Button } from "@luxeverse/ui";

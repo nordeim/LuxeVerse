@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { RichTextRenderer } from "@/components/editorial/RichTextRenderer";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 interface ArticlePageProps {
   params: { slug: string };
 }

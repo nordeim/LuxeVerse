@@ -1,0 +1,6 @@
+
+> @luxeverse/web@0.1.0 lint /home/project/LuxeVerse/apps/web
+> next lint
+
+Invalid project directory provided, no such directory: /home/project/LuxeVerse/apps/web/lint
+ ELIFECYCLE  Command failed with exit code 1.

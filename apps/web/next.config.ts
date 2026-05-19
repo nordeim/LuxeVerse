@@ -2,9 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  experimental: {
-    ppr: "incremental",
-  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.luxeverse.com" },
@@ -14,9 +11,6 @@ const nextConfig: NextConfig = {
   },
   typescript: {
     ignoreBuildErrors: false,
-  },
-  eslint: {
-    ignoreDuringBuilds: false,
   },
 };
 

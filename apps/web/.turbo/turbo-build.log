@@ -1,0 +1,41 @@
+
+> @luxeverse/web@0.1.0 build /home/project/LuxeVerse/apps/web
+> next build
+
+▲ Next.js 16.2.6 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.3s
+  Running TypeScript ...
+  Finished TypeScript in 7.3s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/6) ...
+  Generating static pages using 3 workers (1/6) 
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  Generating static pages using 3 workers (2/6) 
+  Generating static pages using 3 workers (4/6) 
+✓ Generating static pages using 3 workers (6/6) in 334ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /account
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/trpc
+├ ○ /checkout
+├ ƒ /editorial
+├ ƒ /editorial/[slug]
+├ ○ /login
+├ ○ /register
+├ ƒ /search
+├ ƒ /shop
+└ ƒ /shop/[category]/[slug]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

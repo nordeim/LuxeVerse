@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { ArticleCard } from "@/components/editorial/ArticleCard";
 import { PDPSkeleton } from "@/components/product/PDPSkeleton";
 
+export const dynamic = "force-dynamic";
+
 // Mock data. In production: await prisma.editorial.findMany...
 const EDITORIALS = [
   { id: "1", slug: "architecture-of-silence", category: "Design", title: "The Architecture of Silence", excerpt: "How negative space defines luxury in the digital age.", cover: "/editorial/1.jpg", author: "Elena Voss", readTime: 6, featured: true },

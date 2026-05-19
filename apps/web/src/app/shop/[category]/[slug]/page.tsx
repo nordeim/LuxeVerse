@@ -7,6 +7,8 @@ import { PriceDisplay } from "@/components/product/PriceDisplay";
 import { StickyAddToBar } from "@/components/product/StickyAddToBar";
 import { Button } from "@luxeverse/ui";
 
+export const dynamic = "force-dynamic";
+
 interface PDPProps {
   params: { category: string; slug: string };
 }

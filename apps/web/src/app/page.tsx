@@ -10,6 +10,8 @@ import { SocialProof } from "@/components/sections/SocialProof";
 import { CategoryShowcase } from "@/components/sections/CategoryShowcase";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "LuxeVerse | Cinematic Luxury Commerce",
   description: "Where cinematic storytelling meets intelligent commerce. Discover curated collections, AI-powered styling, and immersive product experiences.",

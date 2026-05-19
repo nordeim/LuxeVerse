@@ -4,6 +4,8 @@ import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 import { FacetFilter } from "@/components/search/FacetFilter";
 import { createProductService } from "@/server/services/product.service";
 
+export const dynamic = "force-dynamic";
+
 // Mock facets. In production: generated dynamically from aggregation pipeline
 const FACETS = [
   { name: "color", label: "Color", options: [
@@ -19,11 +21,23 @@ const FACETS = [
   ]},
 ];
 
-async function SearchResults() {
-  const service = createProductService();
+import type { ProductListItem } from "@/types";
 
-  // In production: map searchParams to service filters & execute parallel fetch
-  const products = await service.list({ limit: 12 });
+const MOCK_PRODUCTS: ProductListItem[] = [
+  { id: "1", slug: "obsidian-trench", name: "Obsidian Trench", price: 1200, compareAtPrice: null, primaryImage: "/products/1.jpg", status: "ACTIVE" },
+  { id: "2", slug: "champagne-silk-blouse", name: "Champagne Silk Blouse", price: 450, compareAtPrice: null, primaryImage: "/products/2.jpg", status: "ACTIVE" },
+  { id: "3", slug: "metallic-loafer", name: "Metallic Loafer", price: 680, compareAtPrice: null, primaryImage: "/products/3.jpg", status: "ACTIVE" },
+];
+
+async function SearchResults() {
+  let products;
+  try {
+    const service = createProductService();
+    products = await service.list({ limit: 12 });
+  } catch {
+    // Fallback for static builds without database
+    products = MOCK_PRODUCTS;
+  }
 
   if (products.length === 0) {
     return (

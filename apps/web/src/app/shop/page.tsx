@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ShopPage(): Promise<ReactElement> {
   const service = createProductService();

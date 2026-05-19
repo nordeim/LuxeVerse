@@ -1,5 +1,6 @@
-import type { ReactElement } from "react";
 "use client";
+
+import type { ReactElement } from "react";
 
 import { Button } from "@luxeverse/ui";
 import Link from "next/link";

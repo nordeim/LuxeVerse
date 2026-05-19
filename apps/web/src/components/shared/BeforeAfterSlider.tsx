@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
+import { cn } from "@luxeverse/utils";
 
 export interface BeforeAfterSliderProps {
   before: string;
@@ -47,7 +48,7 @@ export function BeforeAfterSlider({ before, after, altBefore, altAfter, width, h
         className="absolute top-0 bottom-0 w-1 bg-metallic-champagne shadow-md"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-obsidian-50 shadow-md">
-          <span className="text-xs text-obsidian-900">↔</span>
+          <span className="text-xs text-obsidian-900">←</span>
         </div>
       </motion.div>
     </div>
