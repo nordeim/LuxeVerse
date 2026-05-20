@@ -133,3 +133,35 @@ Here is a summary of the completed work:
 - Troubleshooting: Added practical guides for Prisma schema sync issues and Tailwind v4 migration.
 Verification: All changes pass pnpm typecheck, pnpm build, and pnpm lint.
 
+I've successfully updated the SKILL.md with the latest insights from the recent work. The document was expanded to include the following:
+---
+Summary of Changes to SKILL.md
+New Mistakes Added (#24-29)
+- #24: Prisma Schema Synchronization - Run prisma generate after schema changes.
+- #25: Updating prisma.create() Calls - Include new required fields.
+- #26: trending/rating Fields - Don't assume field names are in the schema.
+- #27: Raw <a> Tags - Use <Link> from next/link for internal navigation.
+- #28: Assuming Component Existence - A gap analysis document is not a source of truth.
+- #29: Arbitrary z-index Values - Use @theme inline for custom z-indexes.
+New Sections Added
+- Prisma Schema/Type Synchronization Matrix: Symptoms, causes, and fixes.
+- Search tRPC Implementation (Phase 2): Router endpoints, client wiring table, and key gotchas.
+- Tailwind v4 Upgrade Patterns: Complete utility mapping table.
+- Anti-Pattern Prevention Matrix: A comprehensive reference table.
+- Verification Commands Cheat Sheet: Copy-pasteable commands.
+Files Changed
+skills/luxeverse-architect-skill/SKILL.md (+178 lines)
+
+✦ I have successfully updated AGENTS.md using the agents-md skill. The file is now a compact, high-signal instruction set that reflects the actual state of the codebase at the end of Phase 2.
+
+Key Updates Applied:
+ 1. Verified Tech Stack: Updated versions for Next.js (16.2.6), React (19.2.6), TypeScript (6.0.3), and Prisma (6.19.3).
+ 2. Linting Fix: Documented that next lint is removed in Next.js 16 and replaced by custom shell validation scripts (pnpm lint).
+ 3. Project Status: Formally logged the completion of Phase 2 (Cinematic Experience) and the transition into Phase 3 (AI & Personalization).
+ 4. Refined "Mistake Magnets":
+     * Added the Next.js 16 params rule (they are plain objects, not Promises).
+     * Added the React 19 JSX.Element ban (types are now inferred or use ReactElement).
+     * Added the Prisma Schema Sync rule (regenerate client after schema changes).
+     * Streamlined existing rules for Tailwind v4, Zustand selectors, and RSC boundaries.
+ 5. Cleaned Up Noise: Removed redundant design system details and "Meticulous Approach" essays, moving toward a "Would an agent likely miss this?" litmus test for every line.
+

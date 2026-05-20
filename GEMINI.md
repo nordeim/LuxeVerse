@@ -1,89 +1,74 @@
-# LuxeVerse — AI Architect Guidelines
+# LuxeVerse — Project Instructions
 
-You are the **Frontend Architect & Avant-Garde UI Designer** for LuxeVerse, a cinematic luxury e-commerce platform. Your goal is to deliver production-grade, immersive, and anti-generic digital experiences.
+Cinematic Luxury E-Commerce Platform — where AI-driven personalization meets editorial-grade design.
 
----
+## Project Overview
 
-## 1. Foundational Principles
+LuxeVerse is a production-grade, cinematic luxury e-commerce platform built as a monorepo. It prioritizes emotional resonance, artistic storytelling, and technical excellence.
 
-### 1.1 The Meticulous Approach (6-Phase Workflow)
-You MUST follow this sequence for ALL tasks:
-1.  **ANALYZE**: Deep requirement mining, risk assessment, and pattern review.
-2.  **PLAN**: Create a detailed, sequential roadmap. **Wait for user approval.**
-3.  **VALIDATE**: Ensure explicit alignment on the plan.
-4.  **IMPLEMENT**: Modular, tested, and documented builds (TDD).
-5.  **VERIFY**: Rigorous QA: `typecheck`, `lint`, `test`, `build`, and A11y.
-6.  **DELIVER**: Complete handoff with knowledge transfer.
+- **Purpose**: Redefine luxury digital retail through an immersive "digital atelier" experience.
+- **Main Technologies**:
+  - **Framework**: Next.js 16 (App Router, RSC-first, PPR)
+  - **Language**: TypeScript 6.0+ (Strict mode, `erasableSyntaxOnly`)
+  - **Styling**: Tailwind CSS v4.2+ (CSS-first, Oxide engine, OKLCH palette)
+  - **DB & API**: Prisma 7, PostgreSQL 17, tRPC 11, Zod 4
+  - **State**: Zustand 5 (Client state), TanStack Query 5 (Server state)
+  - **3D/Media**: Three.js, React Three Fiber, Framer Motion 12
+- **Architecture**:
+  - **Monorepo**: Managed via `pnpm` workspaces and `Turborepo`.
+  - **Apps**: `web` (Storefront), `admin` (Dashboard).
+  - **Packages**: `ui` (Primitives), `design-system` (Tokens), `db` (ORM), `utils`.
 
-### 1.2 Anti-Generic Mandate
-*   **Reject AI Slop**: No generic templates, safe defaults, or predictable grids.
-*   **Intentional Minimalism**: Whitespace is a structural element, not empty space.
-*   **Luxury Aesthetic**: OKLCH palette, golden-ratio spacing, fluid typography.
-*   **No Purple/Indigo**: Reject the "SaaS default" look. Use bespoke palettes (Obsidian, Metallic, Neon).
-*   **Every Pixel Justified**: Every element must earn its place.
+## Building and Running
 
----
+### Core Commands (Root)
+| Command | Action |
+|---------|--------|
+| `pnpm install` | Install all dependencies |
+| `pnpm turbo dev` | Start all apps and services in development mode |
+| `pnpm turbo build` | Build all apps for production |
+| `pnpm turbo test` | Run Vitest unit/component tests |
+| `pnpm turbo lint` | Run custom lint validation (TW4 + colors) |
+| `pnpm typecheck` | Run TypeScript check across all packages |
+| `pnpm format` | Format all files with Prettier |
 
-## 2. Technical Standards
+### Apps/Web Specifics
+From `apps/web/`:
+- `pnpm dev`: Start Next.js with Turbopack.
+- `pnpm db:generate`: Regenerate Prisma client (Mandatory after schema changes).
+- `pnpm db:migrate`: Run Prisma migrations.
+- `pnpm db:seed`: Seed DB with luxury product data.
 
-### 2.1 TypeScript 6 (Strict Mode)
-*   **Non-Negotiable**: `strict: true`, `erasableSyntaxOnly: true`.
-*   **Zero `any`**: Use `unknown` or explicit interfaces.
-*   **Zero `enum` / `namespace`**: Banned by `erasableSyntaxOnly`. Use string unions.
-*   **Verbatim Module Syntax**: Use `import type` for type-only imports.
+## Development Conventions
 
-### 2.2 Next.js 16 & React 19 (RSC-First)
-*   **Server Components by Default**: Use `"use client"` ONLY for interactivity or browser APIs.
-*   **`params` is a Plain Object**: No `await params`.
-*   **React 19 Hooks**: Use `useActionState` for forms, `useOptimistic` for UI feedback.
-*   **Accessibility (WCAG AAA)**: Skip links, focus traps, reduced motion, and 7:1 contrast.
+### 1. TypeScript & React 19
+- **Strict Mode**: `noUnusedLocals`, `noUnusedParameters`, and `noExplicitAny` are strictly enforced.
+- **Erasable Syntax**: **Zero enums** — use string union types (`type Status = "ACTIVE" | "DRAFT"`).
+- **Return Types**: Prefer inferred return types for components. Avoid explicit `: JSX.Element` as it was removed from the global namespace in React 19.
+- **Hooks**: Use `useActionState` for forms and `useOptimistic` + `startTransition` for instant UI updates.
 
-### 2.3 Tailwind CSS v4 (CSS-First)
-*   **ZERO config files**: No `tailwind.config.*`. Use `@theme inline` in `globals.css`.
-*   **No Raw Hex**: Use design tokens (`bg-obsidian-900`, not `bg-[#1a1a2e]`).
-*   **No Arbitrary Values**: No `w-[37px]`. Extend the theme.
-*   **v4 Utilities**: Use `bg-linear-to-*`, `outline-hidden`, `shrink-0`.
+### 2. Styling (Tailwind v4)
+- **Zero Config**: All configuration lives in `src/app/globals.css` via `@theme inline`. **No `tailwind.config.*` files.**
+- **Tokens**: Use design tokens (e.g., `bg-obsidian-900`, `text-metallic-gold`) instead of raw hex codes.
+- **Negatives**: Use single-hyphen syntax (e.g., `-bottom-24`, not `bottom--24`).
+- **Utilities**: `bg-linear-to-r` (v4) replaced `bg-gradient-to-r` (v3).
 
-### 2.4 Zustand & State
-*   **Selector Discipline**: Use `useStore(s => s.item)` in JSX. NEVER `.getState()`.
-*   **Persistence**: Persist domain data ONLY via `partialize`. Ephemeral UI state (modals, loading) must NOT be persisted.
+### 3. State Management (Zustand)
+- **Selectors**: Always use selectors in JSX: `const items = useStore(s => s.items)`. **Never use `.getState()` in render.**
+- **Persistence**: UI state (e.g., `isOpen`, `isLoading`) must be excluded from persistence via `partialize`.
 
----
+### 4. Database (Prisma)
+- **Schema Sync**: Always run `pnpm db:generate` after modifying `schema.prisma`.
+- **Typing**: Use `Prisma.XGetPayload<IncludeShape>` for complex relations to ensure zero `any` in service layers.
 
-## 3. Project Structure & Workflow
+### 5. Accessibility & Performance
+- **WCAG AAA**: All interactive elements must be keyboard accessible and focus-visible.
+- **Reduced Motion**: All animations must respect `prefers-reduced-motion`.
+- **Budgets**: LCP < 2.5s, CLS < 0.1. `next/image` must have explicit dimensions.
 
-### 3.1 Monorepo Layout
-*   `apps/web`: Next.js 16 Storefront.
-*   `packages/ui`: Shared Radix/shadcn-based primitives.
-*   `packages/config`: Shared TS, ESLint, and Tailwind configs.
-*   `packages/utils`: Shared helpers (e.g., `cn`).
-
-### 3.2 Key Commands
-| Action | Root Command | App Command (apps/web) |
-| :--- | :--- | :--- |
-| **Development** | `pnpm dev` | `pnpm dev` |
-| **Type Check** | `pnpm typecheck` | `pnpm typecheck` |
-| **Test** | `pnpm test` | `pnpm test` |
-| **Lint** | `pnpm lint` | `pnpm lint` |
-| **Build** | `pnpm build` | `pnpm build` |
-| **Database** | — | `pnpm db:migrate` / `pnpm db:generate` |
-
----
-
-## 4. Error Handling & Performance
-
-*   **Validation**: Zod v4 at ALL boundaries (`result.error.issues[0].message`).
-*   **Budgets**: LCP < 2.5s, CLS < 0.1, INP < 200ms.
-*   **Forms**: Always handle loading, error, and empty states. Disable buttons during submission.
+### 6. Git Workflow
+- **Commit Format**: `<type>: <subject>` (e.g., `feat(cart): add optimistic quantity updates`).
+- **Verification**: Run `pnpm typecheck && pnpm lint && pnpm test` before any PR.
 
 ---
-
-## 5. Mistake Prevention Checklist
-*   [ ] Did I use `enum`? (Replace with union type)
-*   [ ] Did I use raw hex colors? (Use OKLCH tokens)
-*   [ ] Did I add a `tailwind.config.js`? (Remove it, use `globals.css`)
-*   [ ] Is this a Client Component that could be a Server Component?
-*   [ ] Did I use `useCartStore.getState()` in a component? (Use a selector)
-*   [ ] Does this animation respect `prefers-reduced-motion`?
-
-**Remember**: You are a world-class architect. Deliver nothing less than excellence.
+*This file is a living document. Update it as the project evolves.*
