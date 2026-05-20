@@ -39,7 +39,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U luxeverse_user"]
+      test: ["CMD-SHELL", "pg_isready -U $$(echo $$POSTGRES_USER 2>/dev/null || echo luxeverse_user)"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -80,27 +80,30 @@ services:
   # ==========================================================================
   frontend:
     build:
-      context: ../apps/web/
-      dockerfile: ../docker/Dockerfile.web.dev   # your corrected Alpine Dockerfile
+      context: ../
+      dockerfile: ./docker/Dockerfile.web.dev
     container_name: luxeverse-frontend
+    env_file:
+      - .env
     environment:
-      # Server‑side only – never prefixed with NEXT_PUBLIC_
-      BACKEND_INTERNAL_URL: http://backend:8000
+      DATABASE_URL: postgresql://luxeverse_user:${DB_PASSWORD:-luxeverse_dev_password}@postgres:5432/luxeverse_db
+      NEXTAUTH_URL: http://localhost:3000
+      REDIS_URL: redis://redis:6379
       NODE_ENV: development
     # Do NOT publish 3000 to the host – nginx will proxy HTTPS
     expose:
       - "3000"
     volumes:
-      - ../../frontend:/app
-      # fence off dependencies that were installed in the image
+      - ../:/app
       - /app/node_modules
-      - /app/.next
+      - /app/apps/web/.next
     depends_on:
-      - backend
+      - postgres
+      - redis
     networks:
       - luxeverse-network
     restart: unless-stopped
-    command: ["npm", "run", "dev"]   # no "npm install" here
+    command: ["npm", "run", "dev"]
 
   # ==========================================================================
   # Nginx 1.x – SSL Termination, reverse proxy to Next.js
@@ -109,7 +112,7 @@ services:
     image: nginx:1-alpine
     container_name: luxeverse-nginx
     ports:
-      - "443:443"
+      - "8443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
@@ -126,8 +129,6 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
-    driver: local
-  backend_static:
     driver: local
 
 # =============================================================================
