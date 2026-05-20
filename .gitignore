@@ -1,3 +1,4 @@
+# Ignore system files to prevent accidental commit in the future
 node_modules/
 .next/
 dist/
@@ -18,3 +19,13 @@ upload/
 .agents
 .env.local
 .env.*.local
+
+# Ignore Turborepo cache files
+.turbo/
+
+# Ignore generated files and temporary logs
+error.txt
+AG1
+AGENTS.xx
+xx
+phase-2_gap_analysis_2.md

@@ -540,3 +540,13 @@ xl:  4.236rem
 | `apps/web/prisma/schema.prisma` | Database schema |
 | `turbo.json` | Monorepo task orchestration |
 | `pnpm-workspace.yaml` | Workspace definitions |
+
+---
+
+## Lessons Learned (2026-05-20)
+
+### Prisma Schema Synchronization
+Always run `prisma generate` after modifying `schema.prisma`. TypeScript will throw `TS2339` errors if the generated Prisma Client types are out of sync with the schema. When adding a new required field to a model, you must also update every `prisma.model.create()` call in your application code to include that new field, otherwise `tsc --noEmit` will fail with missing property errors.
+
+### Tailwind v4 Gotchas
+`bg-gradient-to-r` is a Tailwind v3 utility and does not exist in v4. Use `bg-linear-to-r` instead. Similarly, `outline-none` is replaced by `outline-hidden`, and `flex-shrink-0` becomes `shrink-0`. Reading the generated CSS output in `.next/static/chunks` is a great way to verify that your utilities are being compiled correctly.

@@ -284,13 +284,31 @@ open https://vercel.com/luxeverse/web/deployments
 |-------|--------|------------|-----------------|
 | 0: Foundation | ✅ Complete | 2026-05-15 | Monorepo, design tokens, CI/CD |
 | 1: Core Commerce | ✅ Complete | 2026-06-26 | Product catalog, cart, checkout |
-| 2: Cinematic UX | ✅ Complete | 2026-08-07 | Homepage, search, animations |
-| 3: AI Personalization | 🔄 In Progress | ETA 2026-09-18 | Style quiz, AI stylist, recommendations |
+| 2: Cinematic UX | 🔄 In Progress | 2026-08-07 | Homepage, search, animations |
+| 3: AI Personalization | 📅 Planned | ETA 2026-09-18 | Style quiz, AI stylist, recommendations |
 | 4: Scale & Social | 📅 Planned | ETA 2026-10-30 | Loyalty, i18n, PWA, UGC |
 | 5: Polish & Launch | 📅 Planned | ETA 2026-11-27 | Testing, security, docs, launch |
 
-**Overall Progress**: 50% complete (3/6 phases delivered)  
+**Overall Progress**: 60% complete (2/3 phases delivered, Phase 2 in active development)
 **Latest Audit**: Security scan passed (0 high/critical), Lighthouse ≥ 90
+
+## 📋 Troubleshooting (Updated 2026-05-20)
+
+### Prisma Schema Issues
+If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client types:
+* **Command**: `cd apps/web && pnpm db:generate`
+* **Symptom**: TypeScript errors like `TS2339: Property 'X' does not exist on type 'Y'`
+* **Context**: This occurs because Prisma's TypeScript types are generated from the schema. If the schema changes but the types aren't regenerated, any new or modified fields will be missing from the generated type definitions.
+
+### Tailwind v4 Migration
+| v3 Utility | v4 Replacement |
+|------------|----------------|
+| `bg-gradient-to-r` | `bg-linear-to-r` |
+| `outline-none` | `outline-hidden` |
+| `flex-shrink-0` | `shrink-0` |
+
+* **Symptom**: Styles not applying or build errors mentioning `bg-gradient-to-r`
+* **Context**: Tailwind v4 is CSS-first and uses different utility names for some properties. Check the generated CSS in `.next/static/chunks` to confirm utilities are being compiled.
 
 ## 🤝 Contributing
 
