@@ -119,3 +119,17 @@ Files Changed
 Next Steps
 All Phase 2 Search wiring is now functional. The search overlay, suggestions, and results page all communicate with the backend via tRPC. Ready to commit or proceed to the next sub-feature (e.g., Wishlist integration, Editorial CMS, or 3D/Motion polish).
 
+I completed the comprehensive updates to the key documents. The documentation is now in sync with the codebase state as of May 20, 2026.
+Here is a summary of the completed work:
+1. ACCOMPLISHMENTS.md — Rewritten from a 4-line stub to a full project log with three sections:
+- Phase 2 Remediation: Catalogs fixes for Prisma schema synchronization (password field, discount/shippingAddress fields), totalPrice in Cart, and <Link> in HeroSection.
+- Search tRPC Wiring: Documents the creation of search.ts router and the wiring of SearchInput, SearchOverlay, and FacetFilter.
+- Verification: Records successful typecheck, build, and lint results.
+2. CLAUDE.md — Added a new "Lessons Learned (2026-05-20)" section covering:
+- Prisma Schema Synchronization: The necessity of running prisma generate after schema changes and how to diagnose TS2339 errors.
+- Tailwind v4 Gotchas: Highlights utility name changes, specifically from bg-gradient-to-r to bg-linear-to-r.
+3. README.md — Updated:
+- Project Status: Changed Phase 2 status to "In Progress" (60% overall completion).
+- Troubleshooting: Added practical guides for Prisma schema sync issues and Tailwind v4 migration.
+Verification: All changes pass pnpm typecheck, pnpm build, and pnpm lint.
+
