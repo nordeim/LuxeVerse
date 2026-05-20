@@ -1,12 +1,13 @@
+"use client";
+
 import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 import { FacetFilter } from "@/components/search/FacetFilter";
-import { createProductService } from "@/server/services/product.service";
+import { trpc } from "@/trpc";
 
-export const dynamic = "force-dynamic";
-
-// Mock facets. In production: generated dynamically from aggregation pipeline
+// Mock facets until tRPC facets endpoint is wired
 const FACETS = [
   { name: "color", label: "Color", options: [
     { value: "black", label: "Obsidian", count: 42 },
@@ -21,29 +22,26 @@ const FACETS = [
   ]},
 ];
 
-import type { ProductListItem } from "@/types";
+function SearchResultsContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") ?? "";
 
-const MOCK_PRODUCTS: ProductListItem[] = [
-  { id: "1", slug: "obsidian-trench", name: "Obsidian Trench", price: 1200, compareAtPrice: null, primaryImage: "/products/1.jpg", status: "ACTIVE" },
-  { id: "2", slug: "champagne-silk-blouse", name: "Champagne Silk Blouse", price: 450, compareAtPrice: null, primaryImage: "/products/2.jpg", status: "ACTIVE" },
-  { id: "3", slug: "metallic-loafer", name: "Metallic Loafer", price: 680, compareAtPrice: null, primaryImage: "/products/3.jpg", status: "ACTIVE" },
-];
+  const { data: products, isLoading } = trpc.search.query.useQuery(
+    { q: query, limit: 24 },
+    { enabled: query.length > 0, staleTime: 60_000 }
+  );
 
-async function SearchResults() {
-  let products;
-  try {
-    const service = createProductService();
-    products = await service.list({ limit: 12 });
-  } catch {
-    // Fallback for static builds without database
-    products = MOCK_PRODUCTS;
+  if (isLoading) {
+    return <ProductGridSkeleton />;
   }
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 text-center">
         <h3 className="text-xl font-display text-obsidian-900">No results found</h3>
-        <p className="text-sm text-obsidian-600 max-w-md">We couldn&apos;t find anything matching your search. Try adjusting your filters or explore our curated collections.</p>
+        <p className="text-sm text-obsidian-600 max-w-md">
+          We couldn&apos;t find anything matching your search. Try adjusting your filters or explore our curated collections.
+        </p>
       </div>
     );
   }
@@ -62,9 +60,10 @@ async function SearchResults() {
         <div className="mb-6 flex items-center justify-between">
           <p className="text-sm text-obsidian-600">{products.length} results</p>
           <select className="rounded-md border border-obsidian-200 bg-obsidian-50 px-3 py-1.5 text-sm text-obsidian-700 focus:ring-2 focus:ring-neon-cyan">
-            <option value="newest">Newest</option>
+            <option value="relevance">Relevance</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest</option>
           </select>
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -82,7 +81,7 @@ export default function SearchPage() {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="sr-only">Search results</h1>
       <Suspense fallback={<ProductGridSkeleton />}>
-        <SearchResults />
+        <SearchResultsContent />
       </Suspense>
     </main>
   );

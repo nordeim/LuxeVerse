@@ -3,6 +3,7 @@
 import { useState, useEffect, useId, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
+import { trpc } from "@/trpc";
 import { VisualSearchButton } from "./VisualSearchButton";
 
 export interface SearchInputProps {
@@ -20,20 +21,26 @@ export function SearchInput({ value, onChange, onClear, onClose }: SearchInputPr
   const listId = useId();
   const router = useRouter();
 
+  // tRPC search suggestions query
+  const { data: searchSuggestions } = trpc.search.suggestions.useQuery(
+    { q: debouncedQuery, limit: 5 },
+    { enabled: debouncedQuery.length > 2, staleTime: 60_000 }
+  );
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
+  // Wire tRPC suggestions
   useEffect(() => {
-    if (debouncedQuery.length > 2) {
-      // TODO: Wire to tRPC search suggestions
-      setSuggestions([`${debouncedQuery} Coat`, `${debouncedQuery} Silk`, `${debouncedQuery} Accessories`]);
+    if (debouncedQuery.length > 2 && searchSuggestions) {
+      setSuggestions(searchSuggestions.map((s) => s.name));
       setIsExpanded(true);
-    } else {
+    } else if (debouncedQuery.length <= 2) {
       setSuggestions([]);
       setIsExpanded(false);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, searchSuggestions]);
 
   const handleSubmit = useCallback((e: React.FormEvent): void => {
     e.preventDefault();

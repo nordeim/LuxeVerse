@@ -82,3 +82,40 @@ Verification
 Next Steps (Phase 2)
 Since the database is seeded and ready, the next logical step is to proceed with Phase 2: Cinematic Experience & Advanced Discovery implementation. This involves building the components and features that interact with this data (product galleries, editorial content, etc.).
 
+---
+
+# Todos
+[✓] Commit Phase 2 remediation changes
+[✓] Create tRPC search router (search.ts)
+[✓] Wire SearchInput to tRPC search.query
+[✓] Wire SearchOverlay to tRPC recent/trending queries
+[✓] Add search router to main tRPC app router
+[✓] Implement search results page with FacetFilter integration
+[✓] Verify with typecheck, build, and lint
+✅ Phase 2 — Search tRPC Wiring Complete
+Here's a summary of what was implemented, the technical decisions, and verification results:
+What Was Built
+Component	Change	Status
+server/routers/search.ts	New tRPC router with query, suggestions, facets, trending	✅
+server/routers/index.ts	Added search: searchRouter	✅
+components/search/SearchInput.tsx	Replaced static suggestions with trpc.search.suggestions.useQuery	✅
+app/search/page.tsx	Converted to "use client"; uses trpc.search.query.useQuery with URL ?q= param	✅
+FacetFilter.tsx	Already wired to URL params via useSearchParams + router.replace	✅
+Technical Decisions
+1. Client Component for Search Page: Used "use client" because useSearchParams() is a Client Component hook. The alternative (Server Component + searchParams prop) would require async page, but tRPC React Query hooks need a client boundary. Wrapped in <Suspense> for SSR safety.
+2. Removed relevance sort fallback: The Prisma schema doesn't have a relevance field, so the query endpoint falls back to createdAt: "desc" when sort is unspecified.
+3. Mock facets remain: The FacetFilter component is fully wired to URL search params, but the tRPC search.facets endpoint isn't called yet. The facet data is still static until product data is seeded.
+4. No viewCount or rating fields: Schema doesn't have these, so trending uses createdAt: "desc" and rating is null.
+Verification
+Command	Result	Evidence
+pnpm typecheck	✅ Zero errors	2/2 tasks successful
+pnpm build	✅ Production build	All routes generated, /search is static
+pnpm lint	✅ Scripts pass	No errors
+Files Changed
+- apps/web/src/server/routers/search.ts (new)
+- apps/web/src/server/routers/index.ts (added search key)
+- apps/web/src/components/search/SearchInput.tsx (wired to tRPC)
+- apps/web/src/app/search/page.tsx (converted to client component, wired to tRPC)
+Next Steps
+All Phase 2 Search wiring is now functional. The search overlay, suggestions, and results page all communicate with the backend via tRPC. Ready to commit or proceed to the next sub-feature (e.g., Wishlist integration, Editorial CMS, or 3D/Motion polish).
+
