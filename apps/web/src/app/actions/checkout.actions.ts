@@ -62,9 +62,12 @@ export async function createCheckoutAction(
         subtotal: subtotal / 100,
         tax: tax / 100,
         shipping: shipping / 100,
+        discount: 0,
         total: total / 100,
         currency: "USD",
         paymentIntentId: intent.id,
+        shippingAddress: { create: {} },
+        billingAddress: { create: {} },
       },
     });
 

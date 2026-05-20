@@ -18,6 +18,7 @@ model User {
   phone         String?
   phoneVerified DateTime?
   name          String?
+  password      String?  // bcrypt hashed
   firstName     String?
   lastName      String?
   avatar        String?

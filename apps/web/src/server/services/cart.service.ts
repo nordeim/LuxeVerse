@@ -67,7 +67,14 @@ export function createCartService(): CartService {
 
       if (!cart) {
         cart = await prisma.cart.create({
-          data: userId ? { userId } : { sessionId },
+          data: {
+            ...(userId ? { userId } : { sessionId }),
+            subtotal: 0,
+            tax: 0,
+            shipping: 0,
+            discount: 0,
+            total: 0,
+          },
           include: {
             items: {
               include: {
@@ -108,6 +115,7 @@ export function createCartService(): CartService {
           data: { quantity: existing.quantity + quantity },
         });
       } else {
+        const totalPrice = Number(product.price) * quantity;
         await prisma.cartItem.create({
           data: {
             cartId,
@@ -115,6 +123,7 @@ export function createCartService(): CartService {
             variantId,
             quantity,
             unitPrice: product.price,
+            totalPrice,
           },
         });
       }

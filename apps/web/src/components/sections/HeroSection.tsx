@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { MagneticButton } from "@/components/shared/MagneticButton";
 
@@ -66,14 +67,14 @@ export function HeroSection() {
           className="mt-10 flex gap-4"
         >
           <MagneticButton strength={0.15} radius={100}>
-            <a href="/shop" className="inline-flex h-12 items-center justify-center rounded-lg bg-metallic-champagne px-8 text-sm font-medium text-obsidian-950 transition-colors hover:bg-metallic-gold">
+            <Link href="/shop" className="inline-flex h-12 items-center justify-center rounded-lg bg-metallic-champagne px-8 text-sm font-medium text-obsidian-950 transition-colors hover:bg-metallic-gold">
               Explore Collection
-            </a>
+            </Link>
           </MagneticButton>
           <MagneticButton strength={0.15} radius={100}>
-            <a href="/editorial" className="inline-flex h-12 items-center justify-center rounded-lg border border-obsidian-100/30 px-8 text-sm font-medium text-obsidian-100 transition-colors hover:bg-obsidian-100/10">
+            <Link href="/editorial" className="inline-flex h-12 items-center justify-center rounded-lg border border-obsidian-100/30 px-8 text-sm font-medium text-obsidian-100 transition-colors hover:bg-obsidian-100/10">
               Read Editorial
-            </a>
+            </Link>
           </MagneticButton>
         </motion.div>
       </div>

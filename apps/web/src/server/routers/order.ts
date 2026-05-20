@@ -49,9 +49,12 @@ export const orderRouter = router({
           subtotal: subtotal / 100,
           tax: tax / 100,
           shipping: shipping / 100,
+          discount: 0,
           total: total / 100,
           currency: "USD",
           paymentIntentId: paymentIntent.id,
+          shippingAddress: { create: {} },
+          billingAddress: { create: {} },
           items: {
             create: cart.items.map((item) => ({
               productId: item.productId,
@@ -59,6 +62,9 @@ export const orderRouter = router({
               quantity: item.quantity,
               unitPrice: item.unitPrice / 100,
               totalPrice: item.totalPrice / 100,
+              discount: 0,
+              tax: (item.totalPrice * 0.08) / 100,
+              product: { connect: { id: item.productId } },
             })),
           },
         },
