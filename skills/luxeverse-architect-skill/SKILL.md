@@ -884,6 +884,84 @@ pnpm add -D @types/three
 ```
 **Why**: `@react-three/fiber` and `@react-three/drei` use Three.js types internally. Without `@types/three`, TypeScript will fail with `Cannot find module 'three' or its corresponding type declarations`.
 
+### Mistake #24: Assuming `prisma generate` is Automatic After Schema Changes
+**Fix**: Always run `prisma generate` (or `pnpm db:generate`) immediately after modifying `prisma/schema.prisma`.
+**Why**: Prisma Client types are code-generated from the schema. If the schema changes but the types aren't regenerated, TypeScript will fail with `TS2339: Property 'X' does not exist on type 'Y'`. The Prisma Client package in `node_modules` is stale.
+**Symptoms**:
+```
+error TS2339: Property 'password' does not exist on type '{ ... }'.
+error TS2322: Property 'totalPrice' is missing in type '{ ... }'.
+```
+**Prevention**:
+```bash
+# Add this precommit hook or alias
+alias pgg="cd apps/web && pnpm db:generate && cd ../.."
+```
+
+### Mistake #25: Forgetting to Update `prisma.model.create()` Calls After Schema Changes
+**Fix**: When adding a new required field to a Prisma model, every `prisma.model.create()` in the codebase must be updated to include that field. Run `tsc --noEmit` to find all occurrences.
+**Why**: Prisma makes new required fields non-optional at the TypeScript level. A model with a new `totalPrice Decimal @db.Decimal(10, 2)` field will fail at `prisma.cartItem.create({ data: { ... } })` unless `totalPrice` is provided.
+**Example**:
+```ts
+// After adding 'totalPrice' to CartItem model:
+await prisma.cartItem.create({
+  data: {
+    cartId, productId, variantId, quantity, unitPrice,
+    // ❌ Missing 'totalPrice' - TS2322
+  }
+});
+
+// ✅ Correct:
+await prisma.cartItem.create({
+  data: {
+    cartId, productId, variantId, quantity, unitPrice,
+    totalPrice: Number(unitPrice) * quantity,
+  }
+});
+```
+**Prevention**: Add a CI step that runs `pnpm typecheck` before any migration or build step. This catches type mismatches between code and schema before they reach production.
+
+### Mistake #26: Treating `trending` or `rating` as Standard Prisma Fields Without Schema Verification
+**Fix**: Before using Prisma aggregations like `viewCount`, `rating`, or `trending`, verify the field exists in `schema.prisma`.
+**Why**: These are often business-logic fields that sound like schema fields but may not be implemented yet. If `viewCount` is not in the schema, `prisma.product.findMany({ orderBy: { viewCount: "desc" } })` will throw a runtime error: "Unknown field `viewCount`".
+**Prevention**: When implementing a feature that relies on schema fields, always check the schema first. Don't assume a common-sounding field like `rating` or `viewCount` exists just because the product domain implies it.
+
+### Mistake #27: Using Raw `<a>` Tags for Internal Navigation
+**Fix**: Always use Next.js `<Link>` for internal app navigation.
+```tsx
+// ❌ WRONG - Triggers full page reload
+<a href="/shop">Shop</a>
+
+// ✅ CORRECT - Client-side navigation with prefetch
+import Link from "next/link";
+<Link href="/shop">Shop</Link>
+```
+**Why**: Raw `<a>` tags bypass the Next.js router, causing a full page reload. This destroys client-side state (Zustand stores, React Query cache, scroll position) and negates the SPA benefits. Use `<Link>` for all internal navigation and `<a>` only for external URLs.
+
+### Mistake #28: Assuming a Component Exists Just Because It's Documented
+**Fix**: Always verify component existence with `ls` or `glob` before claiming a component is "missing."
+**Why**: Documentation like `phase-2_gap_analysis.md` may claim 34 files are missing when in fact most of them exist. The gap between docs and code is real. Verify before planning remediation.
+**Verification Command**:
+```bash
+glob "src/components/**/*.tsx"
+glob "src/hooks/*.ts"
+glob "src/stores/*.ts"
+```
+
+### Mistake #29: Using `z-[400]` or Arbitrary `z-index` Values in Tailwind v4
+**Fix**: Use Tailwind v4's `z-<number>` tokens. If `z-[400]` is needed, add `--z-400: 400` to `@theme inline`.
+**Why**: Arbitrary values in brackets are harder to manage and may be accidentally overridden. Using tokens ensures a single source of truth for z-index values.
+**Example**:
+```css
+@theme inline {
+  --z-overlay: 400;
+  --z-modal: 500;
+}
+```
+```tsx
+<div className="z-overlay">...</div>
+```
+
 ---
 
 ## 6. Component Architecture (RSC-First, Client Islands)
@@ -1564,6 +1642,106 @@ Tasks: 2 successful, 2 total   # build
 | `params` type | `Promise<{ slug: string }>` | Plain object; add explicit interface |
 | `next --help` | Shows `lint` | Missing `lint` subcommand |
 
+### 14.9 Prisma Schema/Type Synchronization (New)
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `TS2339: Property 'X' does not exist on type 'Y'` | Prisma types stale after schema change | Run `pnpm db:generate` after every schema change |
+| `TS2322: Property 'totalPrice' missing in type '{ ... }'` | New required field added to model, not to code | Add field to every `prisma.model.create()` call |
+| `Unknown field \`viewCount\`` | Field not in schema; assumed from domain logic | Check `schema.prisma` before using field |
+
+**Prevention**:
+```bash
+# Add to pre-commit hook
+pnpm db:generate && pnpm typecheck
+```
+
+### 14.10 Search tRPC Implementation (Phase 2)
+
+**Router**: `src/server/routers/search.ts`
+- `search.query({ q, limit, category, minPrice, maxPrice, sort })` — Full-text product search
+- `search.suggestions({ q, limit })` — Quick autocomplete results
+- `search.facets({ q })` — Faceted search metadata (categories, brands, price range)
+- `search.trending()` — Popular search terms (mock until analytics)
+
+**Client Wiring**:
+| Component | tRPC Hook | Notes |
+|-----------|-----------|-------|
+| `SearchInput.tsx` | `trpc.search.suggestions.useQuery` | Debounced by 300ms |
+| `SearchOverlay.tsx` | `trpc.search.trending.useQuery` | Mock data until analytics |
+| `app/search/page.tsx` | `trpc.search.query.useQuery` | Reads `?q=` from URL params |
+| `FacetFilter.tsx` | URL params only | Fully wired to `router.replace` with `startTransition` |
+
+**Key Gotchas**:
+1. **Client Component required**: `app/search/page.tsx` must be `"use client"` because it uses `useSearchParams()`. Wrap in `<Suspense>` for SSR safety.
+2. **Empty `q` parameter**: Disable query with `enabled: query.length > 0` to prevent tRPC from firing on initial mount.
+3. **Prisma `relevance` sort**: Not a real field. Fallback to `createdAt: "desc"` if `sort` is not provided.
+
+### 14.11 Tailwind v4 Upgrade Patterns (Field-Tested)
+
+| v3 Utility | v4 Utility | Files Found & Fixed | Risk Level |
+|------------|-----------|---------------------|------------|
+| `bg-gradient-to-r` | `bg-linear-to-r` | `HeroSection.tsx` | 🔴 High (breaks build) |
+| `bg-gradient-to-b` | `bg-linear-to-b` | `HeroSection.tsx` | 🔴 High |
+| `bg-gradient-to-t` | `bg-linear-to-t` | `CategoryShowcase.tsx`, `FeaturedCollections.tsx` | 🔴 High |
+| `flex-shrink-0` | `shrink-0` | `ProductEmbed.tsx`, `NewArrivals.tsx` | 🟡 Medium ( silent) |
+| `outline-none` | `outline-hidden` | *(none found)* | 🟢 Low (prevention) |
+
+**CSS Detection** (run before every commit):
+```bash
+grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ packages/ apps/
+```
+
 ---
 
 > **Final Directive**: Every element must justify its existence. Reject generic AI tropes. Prioritize intentionality over trends. Accessibility is non-negotiable. Performance is luxury. Deliver nothing less than production-grade, meticulously verified, and architecturally sound.
+
+---
+
+## 15. Anti-Pattern Prevention Matrix (All Phases)
+
+| Anti-Pattern | Symptom | Prevention |
+|-------------|---------|------------|
+| Stale Prisma types | `TS2339` after schema change | `prisma generate` hook after every schema edit |
+| Missing `create()` fields | `TS2322` on `prisma.model.create()` | Run `tsc --noEmit` before committing |
+| `<a>` for internal nav | Full page reloads | Enforce `next/link` via ESLint rule |
+| `window.location.href` | Lost state | Use `useRouter().push()` |
+| `useOptimistic` for booleans | Type mismatch, overcomplexity | `useState` for simple toggles; `useOptimistic` for server-confirmed only |
+| `enum` or `namespace` | `erasableSyntaxOnly` error | String unions only |
+| `.getState()` in JSX | No reactivity, stale data | Selectors: `useStore(s => s.items)` |
+| Persisted UI state | Leaks to localStorage, crashes on rehydrate | `partialize: (s) => ({ items: s.items })` |
+| `async` on non-fetching components | Misleading, TypeScript confusion | Remove `async` when no `await` |
+| Missing `useId()` | Duplicate IDs, broken ARIA | Always use `useId()` for label/input pairs |
+| `bg-gradient-to-*` | Build error in Tailwind v4 | Use `bg-linear-to-*` |
+| `outline-none` | Missing focus indicators | Use `outline-hidden` |
+| `flex-shrink-0` | Silent utility failure | Use `shrink-0` |
+
+---
+
+## 16. Verification Commands Cheat Sheet
+
+```bash
+# Full verification pipeline
+pnpm typecheck && pnpm lint && pnpm test && pnpm build
+
+# Prisma type sync check
+cd apps/web && pnpm db:generate && pnpm typecheck
+
+# Tailwind v3 utility scan
+grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ packages/ apps/
+
+# Raw hex color scan
+grep -rEn 'text-\[#[0-9A-Fa-f]{3,6}\]|bg-\[#[0-9A-Fa-f]{3,6}\]' src/ packages/ apps/
+
+# `<a>` tag internal nav scan
+grep -rn '<a href="/' src/ packages/ apps/ --include="*.tsx"
+
+# `window.location` usage scan
+grep -rn 'window.location' src/ packages/ apps/ --include="*.tsx"
+
+# `any` type scan
+grep -rn ': any' src/ packages/ apps/ --include="*.ts" --include="*.tsx"
+
+# `enum` / `namespace` scan
+grep -rn 'enum ' src/ packages/ apps/ --include="*.ts" --include="*.tsx"
+```
