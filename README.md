@@ -285,13 +285,13 @@ open https://vercel.com/luxeverse/web/deployments
 | 0: Foundation | ✅ Complete | 2026-05-15 | Monorepo, design tokens, CSS-first TW v4 |
 | 1: Core Commerce | ✅ Complete | 2026-05-20 | Product catalog, cart, checkout, Stripe, Auth |
 | 2: Cinematic UX | ✅ Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
-| 3: AI Personalization | 📅 Planned | ETA 2026-06-15 | Style quiz, AI stylist, recommendations |
+| 3: AI Personalization | ✅ Complete | 2026-05-22 | AI service layer, style quiz, streaming chat, outfit generation, size recommendations |
 | 4: Scale & Social | 📅 Planned | ETA 2026-07-30 | Loyalty, i18n, PWA, UGC |
 | 5: Hardening & Launch | 📅 Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
 
-**Overall Progress**: ~55% (Phases 0–2 delivered, Phases 3–5 pending)
+**Overall Progress**: ~65% (Phases 0–3 delivered, Phases 4–5 pending)
 
-## 📋 Troubleshooting (Updated 2026-05-20)
+## 📋 Troubleshooting (Updated 2026-05-22)
 
 ### Prisma Schema Issues
 If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client types:
@@ -323,6 +323,16 @@ If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client 
 * **Symptom**: Search query crashes with "Unknown field `relevance`"
 * **Fix**: Prisma schema has NO `relevance` field. Fallback to `{ createdAt: "desc" }` (or `{ views: "desc" }` as a business-logic proxy for popularity).
 * **File**: `src/server/routers/search.ts`
+
+### `as any` in Tests and Components
+* **Symptom**: `as any` undermines TypeScript strict mode
+* **Fix**: Replace with explicit types (`Record<string, never>` for unknown objects, `as const` for literal unions)
+* **Files**: `src/server/routers/ai.test.ts`, `src/components/recommendations/PersonalizedGrid.tsx`
+
+### Testing Library `getByText` with Multi-Element Matches
+* **Symptom**: `Found multiple elements with the text: X` in component tests
+* **Fix**: Use `getAllByText` or `container.querySelector` for elements rendered multiple times; use `toHaveTextContent` on `container` for text spanning multiple nodes
+* **Files**: All component test files
 
 ## 🤝 Contributing
 
@@ -378,8 +388,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-21 (Post-Remediation)  
+> **Last Updated**: 2026-05-22 (Post-Phase 3 Remediation)  
 > **Next Review**: 2026-06-01  
 > **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3  
-> **Status**: Phases 0-2 complete, Phase 3 planned  
+> **Status**: Phases 0-3 complete, Phase 4-5 pending  
 > **Contact**: engineering@luxeverse.com

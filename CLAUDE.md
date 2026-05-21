@@ -18,14 +18,14 @@ LuxeVerse is a luxury e-commerce platform built on the **Anti-Generic Mandate**.
 
 ---
 
-## Project State (2026-05-21)
+## Project State (2026-05-22)
 
 | Phase | Status | Completion | Key Deliverables |
 |-------|--------|------------|-----------------|
 | 0: Foundation | ✅ Complete | 2026-05-15 | Monorepo, design tokens, CI pass |
 | 1: Core Commerce | ✅ Complete | 2026-05-20 | Product catalog, cart, checkout, Stripe, Auth |
 | 2: Cinematic UX | ✅ Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
-| 3: AI Personalization | 📅 Planned | ETA 2026-06-15 | Style quiz, AI stylist, recommendations |
+| 3: AI Personalization | ✅ Complete | 2026-05-22 | AI service layer, style quiz, streaming chat, outfit generation, size recommendations |
 | 4: Scale & Social | 📅 Planned | ETA 2026-07-30 | Loyalty, i18n, PWA, UGC |
 | 5: Hardening & Launch | 📅 Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
 
@@ -52,7 +52,7 @@ Follow this six-phase workflow for ALL implementation tasks:
 
 ---
 
-## Critical Gotchas (Added 2026-05-21)
+## Critical Gotchas (Updated 2026-05-22)
 
 ### Next.js 16 `params` is a Plain Object
 * **Never**: `const { slug } = await params` (Next.js 15 pattern)
@@ -76,6 +76,16 @@ Follow this six-phase workflow for ALL implementation tasks:
 ### Zod v4 API (Not v3!)
 * **Always**: `result.error.issues[0].message`
 * **Never**: `result.error.errors[0].message` (Zod v3 API, removed in v4)
+
+### Testing Library Text Matching Pitfalls
+* **Symptom**: `getByText` fails with "Found multiple elements" when DOM contains duplicate text nodes (e.g., multiple cards in a list)
+* **Fix**: Use `getAllByText` for multiple matches; use `container.querySelector` for precise targeting; use `toHaveTextContent` for text spanning multiple elements
+* **Files**: All component test files
+
+### TypeScript `as any` Strict Mode Violations
+* **Gotcha**: `as any` anywhere subverts strict mode. Use `Record<string, never>` for unknown objects, `as const` for literal unions, and explicit typed interfaces
+* **Example**: `const ctx = {} as any` → `const ctx: Record<string, never> = {}`
+* **Files**: `ai.test.ts`, `PersonalizedGrid.tsx` (fixed)
 
 ---
 
@@ -210,12 +220,14 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ---
 
-## Testing Strategy (Updated 2026-05-21)
+## Testing Strategy (Updated 2026-05-22)
 
 | Type | Stack | Status |
 |------|-------|--------|
-| Unit | Vitest + Testing Library | ✅ Active (11 tests passing) |
+| Unit | Vitest + Testing Library | ✅ Active (34 tests passing) |
 | Router | Vitest + tRPC + Prisma mock | ✅ Active (search.test.ts, 9 tests) |
+| AI Service | Vitest + OpenAI mock | ✅ Active (ai.service.test.ts, 6 tests) |
+| Components | Vitest + Testing Library | ✅ Active (OutfitCard.test.tsx, 5 tests) |
 | E2E | Playwright | 📅 Planned (Phase 5) |
 | A11y | axe-core | 📅 Planned (Phase 5) |
 
@@ -223,6 +235,7 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 - `requestAnimationFrame` mock via `vi.stubGlobal`
 - `crypto.randomUUID` mock for deterministic IDs
 - Fake timers with `shouldAdvanceTime: true`
+- `@testing-library/jest-dom/vitest` imported for `toHaveTextContent`, `toBeDisabled`, etc.
 
 ---
 
@@ -254,7 +267,7 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ---
 
-## Lessons Learned (2026-05-21)
+## Lessons Learned (Updated 2026-05-22)
 
 ### Prisma Schema & Code Synchronization
 - `prisma generate` is NOT automatic. Run it after EVERY schema change.
@@ -275,6 +288,18 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 - Error path: `result.error.issues[0].message` (not `.errors[0].message`)
 - This is a breaking change from v3. All forms must use the v4 API.
 
+### TDD with Component Tests
+- **Mock data before implementation**: Write failing tests with mock data and THEN implement the component
+- **Test state leakage**: Always reset Zustand store state in `beforeEach` unless `autoReset` is configured
+- **Text matching**: `screen.getByText` performs exact match. Use `getAllByText` for duplicates, or `toHaveTextContent` for partial matches across elements
+- **Interaction testing**: Use `userEvent` when possible, `fireEvent` only for edge cases. Always `await` user interactions.
+
+### Strict Mode TypeScript
+- **`as any` is banned**: Replace with `Record<string, never>`, `as const`, or explicit typed interfaces
+- **`Record<string, never>`**: Use for empty testing objects where `any` would normally be used
+- **Import types**: Always `import type` for type-only imports to comply with `verbatimModuleSyntax`
+- **No unused locals**: Remove or use ALL local variables; prefix with `_` only if explicitly needed and `noUnusedLocals: true` is set
+
 ---
 
 ## Performance Budgets
@@ -291,4 +316,4 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ## Last Updated
 
-**2026-05-21** — Post-remediation: search.ts bug fix, public/ directory, loading.tsx, ProductEmbed wiring, search router tests, R3F Suspense pattern documented.
+**2026-05-22** — Post-Phase 3 Remediation: ai.service.ts with OpenAI integration + mock fallback, style-quiz page with 5-question quiz + tests, OutfitCard test suite, code quality fixes (removed `as any` x12, `z.enum()` → `z.union(literal)`), TypeScript strict zero errors, 34 tests passing.
