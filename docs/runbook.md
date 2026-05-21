@@ -1,52 +1,35 @@
 # LuxeVerse Runbook
 
-## Environment Setup
-
+## Quick Start
 ```bash
-# Install dependencies
+cd apps/web
 pnpm install
-
-# Start development
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Run tests
-pnpm test
-
-# Type check
-pnpm typecheck
-
-# Lint
-pnpm lint
-
-# Format
-pnpm format
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
+pnpm dev        # http://localhost:3000
 ```
 
-## Common Errors
+## Common Commands
+| Command | Purpose |
+|---|---|
+| `pnpm typecheck` | TypeScript strict check (`tsc --noEmit`) |
+| `pnpm lint` | Shell scripts (deprecated TW + raw hex) |
+| `pnpm test` | Vitest unit tests |
+| `pnpm build` | Production build |
+| `pnpm db:generate` | Regenerate Prisma client after schema changes |
+| `pnpm db:migrate` | Apply Prisma migrations |
+| `pnpm db:seed` | Seed luxury product data |
 
-### `tsc --noEmit` fails with `any` or `enum`
+## Troubleshooting
+| Issue | Fix |
+|---|---|
+| `TS2339` after schema change | Run `pnpm db:generate` |
+| `Cannot find module '@luxeverse/*'` | Rebuild packages: `pnpm build` |
+| Lint fails on `.next/` | Ensure `.next/` is in `.gitignore` |
+| Tests fail with `requestAnimationFrame` | Check `src/test/setup.ts` mocking |
 
-- Search for `any` and replace with proper types or `unknown`
-- Replace `enum` with string union types
-
-### Tailwind v4 class not found
-
-- Ensure token is defined in `globals.css` `@theme inline`
-- No `tailwind.config.js` should exist
-
-### jsdom test fails with `crypto.randomUUID`
-
-- Polyfill is in `apps/web/src/test/setup.ts`
-- Use `vi.stubGlobal` if additional globals are needed
-
-## CI/CD Flow
-
-1. `pnpm install --frozen-lockfile`
-2. `pnpm turbo typecheck`
-3. `pnpm turbo lint`
-4. `pnpm turbo test`
-5. `pnpm turbo build`
-6. Lighthouse CI budget check
+## Deployment
+1. Ensure `DATABASE_URL` env var is set.
+2. Run `pnpm db:migrate` before starting app.
+3. `pnpm build` then start with `next start`.

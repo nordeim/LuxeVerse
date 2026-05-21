@@ -5,10 +5,11 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/lib/utils.test.ts (2 tests) 7ms
+ ✓ src/lib/utils.test.ts (2 tests) 8ms
+ ✓ src/server/routers/search.test.ts (9 tests) 29ms
 
- Test Files  1 passed (1)
-      Tests  2 passed (2)
-   Start at  06:49:53
-   Duration  1.08s (transform 52ms, setup 33ms, collect 10ms, tests 7ms, environment 638ms, prepare 119ms)
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  07:52:54
+   Duration  1.28s (transform 144ms, setup 66ms, collect 223ms, tests 37ms, environment 1.22s, prepare 235ms)
 

@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Html, Environment } from "@react-three/drei";
-import type * as THREE from "three";
 import { cn } from "@luxeverse/utils";
 
 export interface Annotation {
@@ -18,17 +17,12 @@ export interface ProductViewer3DProps {
   className?: string;
 }
 
+// Model component defers heavy GLB work to Suspense fallback
 function Model({ url, annotations }: { url: string; annotations?: Annotation[] }) {
   const { scene } = useGLTF(url);
-  const ref = useRef<THREE.Group>(null);
-
-  useFrame((state, delta) => {
-    if (ref.current) ref.current.rotation.y += delta * 0.1;
-    void state;
-  });
 
   return (
-    <group ref={ref}>
+    <group>
       <primitive object={scene} />
       {annotations?.map((a, i) => (
         <Html key={i} position={a.position} center distanceFactor={10}>

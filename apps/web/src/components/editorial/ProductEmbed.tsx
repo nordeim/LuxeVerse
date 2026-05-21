@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@luxeverse/ui";
 import Image from "next/image";
+import { useCartStore } from "@/stores/cart";
 
 export interface ProductEmbedProps {
   product: {
@@ -15,9 +16,20 @@ export interface ProductEmbedProps {
 
 export function ProductEmbed({ product }: ProductEmbedProps) {
   const [isAdded, setIsAdded] = useState(false);
+  const addItem = useCartStore((s) => s.addItem);
 
   const handleQuickAdd = (): void => {
-    // TODO: Wire to cart mutation: await trpc.cart.addItem.mutate({ productId: product.productId, quantity: 1 });
+    addItem({
+      id: product.productId,
+      productId: product.productId,
+      productName: product.name,
+      variantId: null,
+      variantName: null,
+      quantity: 1,
+      unitPrice: product.price,
+      totalPrice: product.price,
+      imageUrl: product.image,
+    });
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };

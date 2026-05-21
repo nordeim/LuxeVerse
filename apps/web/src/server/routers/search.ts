@@ -11,7 +11,7 @@ export const searchRouter = router({
         category: z.string().optional(),
         minPrice: z.number().nonnegative().optional(),
         maxPrice: z.number().nonnegative().optional(),
-        sort: z.enum(["relevance", "price-asc", "price-desc", "newest"]).optional(),
+        sort: z.enum(["relevant", "price-asc", "price-desc", "newest"]).optional(),
       })
     )
     .query(async ({ input }) => {
@@ -42,7 +42,7 @@ export const searchRouter = router({
             ? { price: "desc" }
             : sort === "newest"
             ? { createdAt: "desc" }
-            : { relevance: "desc" },
+            : { createdAt: "desc" },
         include: {
           images: { where: { isPrimary: true }, select: { url: true }, take: 1 },
           category: { select: { name: true, slug: true } },

@@ -63,6 +63,10 @@ awesome meticulous job so far. please keep up the good work. now, please meticul
 
 ---
 
+awesome meticulous job so far. please keep up the good work. now, please meticulously re-evaluate and re-validate your findings on current gaps, issues, bugs against the actual codebase to confirm the findings and identify the root causes and the optimal fixes, then meticulously plan to create a detailed remediation plan with ToDo list to apply the optimal fixes. review and validate the remediation plan before proceeding to execute it meticulously. use TDD approach to make code changes as appropriate.
+
+---
+
 awesome meticulous job so far. please keep up the good work. now, please meticulously review @phase-2_gap_analysis.md against the codebase to confirm the findings and identify the root causes and the optimal fixes, then meticulously plan to create a detailed remediation plan with ToDo list to apply the optimal fixes.
 
 ---
