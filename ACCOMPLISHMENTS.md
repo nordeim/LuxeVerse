@@ -1,5 +1,56 @@
 # LuxeVerse — Project Accomplishments Log
 
+## Phase 3 Remediation — AI & Personalization (2026-05-22)
+
+### 1. TDD-Cycle Implementation
+
+| TDD Cycle | Files | Tests | Status |
+|-----------|-------|-------|--------|
+| 1 | `ai.service.ts`, `ai.service.test.ts` | 6 tests | ✅ Complete |
+| 2 | `style-quiz/page.tsx`, `style-quiz.test.tsx` | 3 tests | ✅ Complete |
+| 3 | `OutfitCard.test.tsx` | 5 tests | ✅ Complete |
+| 4 | Code quality fixes | — | ✅ Complete |
+
+### 2. AI Service Layer (MEP §3.1)
+
+| File | Purpose | Key Features |
+|------|---------|-------------|
+| `src/server/ai.service.ts` | AI orchestration | OpenAI integration (when key present), deterministic mock fallback, prompt templates |
+| `src/server/ai.service.test.ts` | Service tests | Mock LLM, real OpenAI, streaming, error handling (6 tests) |
+
+### 3. Style Quiz Page (MEP §3.2)
+
+| File | Purpose | Key Features |
+|------|---------|-------------|
+| `src/app/style-quiz/page.tsx` | Multi-step quiz | 5 questions (persona, occasion, colors, fit, budget), progress bar, completion screen |
+| `src/app/style-quiz/style-quiz.test.tsx` | Page tests | Render, options, disabled back button (3 tests) |
+
+### 4. Component Tests (MEP §3.3–3.6)
+
+| File | Tests | Coverage |
+|------|-------|----------|
+| `src/components/ai-stylist/OutfitCard.test.tsx` | 5 tests | Empty state, outfit details, items, click handler, confidence bar |
+
+### 5. Code Quality Fixes
+
+| Fix | Files | Impact |
+|-----|-------|--------|
+| `z.enum()` → `z.union([z.literal(...)])` | `ai.ts` | Complies with `erasableSyntaxOnly` |
+| Removed `as any` (10 instances) | `ai.test.ts` | Type safe, strict mode |
+| Removed `as any` (2 instances) | `PersonalizedGrid.tsx` | Type safe |
+| Removed unused `setStep` | `style-quiz/page.tsx` | `noUnusedLocals` compliant |
+| Added `@testing-library/jest-dom/vitest` | `test/setup.ts` | Enables `toHaveTextContent`, `toBeDisabled` |
+
+### 6. Verification
+
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All passed |
+| `pnpm test` | ✅ 34 passed |
+
+---
+
 ## Phase 2 Remediation & Search Enhancement (2026-05-21)
 
 ### 1. Critical Bug Fixes (P0)

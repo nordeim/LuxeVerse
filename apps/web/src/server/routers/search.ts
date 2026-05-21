@@ -11,7 +11,7 @@ export const searchRouter = router({
         category: z.string().optional(),
         minPrice: z.number().nonnegative().optional(),
         maxPrice: z.number().nonnegative().optional(),
-        sort: z.enum(["relevant", "price-asc", "price-desc", "newest"]).optional(),
+        sort: z.union([z.literal("relevant"), z.literal("price-asc"), z.literal("price-desc"), z.literal("newest")]).optional(),
       })
     )
     .query(async ({ input }) => {
