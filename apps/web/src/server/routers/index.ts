@@ -1,13 +1,15 @@
 import { router } from "../trpc";
-import { productRouter } from "./product";
+import { aiRouter } from "./ai";
 import { cartRouter } from "./cart";
 import { orderRouter } from "./order";
+import { productRouter } from "./product";
 import { searchRouter } from "./search";
 
 export const appRouter = router({
-  product: productRouter,
+  ai: aiRouter,
   cart: cartRouter,
   order: orderRouter,
+  product: productRouter,
   search: searchRouter,
 });
 
