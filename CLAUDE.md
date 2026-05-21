@@ -316,4 +316,9 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ## Last Updated
 
-**2026-05-22** — Post-Phase 3 Remediation: ai.service.ts with OpenAI integration + mock fallback, style-quiz page with 5-question quiz + tests, OutfitCard test suite, code quality fixes (removed `as any` x12, `z.enum()` → `z.union(literal)`), TypeScript strict zero errors, 34 tests passing.
+**2026-05-22** — Post-Phase 3 Remediation: ai.service.ts with OpenAI integration + mock fallback, style-quiz page with 5-question quiz + tests, OutfitCard test suite, code quality fixes (removed `as any` x12, `z.enum()` → `z.union(literal)`), TypeScript strict zero errors, 48 tests passing.
+
+### Reviews Router (Added 2026-05-22)
+- New tRPC router: `src/server/routers/review.ts` with full CRUD, voting, statistics, moderation, flagging (14 tests)
+- Registered in `src/server/routers/index.ts`
+- Legacy site testing summary: `docs/legacy-site-testing-summary.md`

@@ -51,6 +51,49 @@
 
 ---
 
+## Reviews Router & Social Commerce (2026-05-22)
+
+### 1. Reviews tRPC Router (MEP §4.1)
+
+| Feature | Files | Status |
+|---------|-------|--------|
+| **Review CRUD** | `src/server/routers/review.ts` | ✅ Complete |
+| **Voting** (helpful/unhelpful) | `src/server/routers/review.ts` | ✅ Complete |
+| **Statistics** (distribution, averages) | `src/server/routers/review.ts` | ✅ Complete |
+| **Moderation** (approve/reject/flag) | `src/server/routers/review.ts` | ✅ Complete |
+| **Router registration** | `src/server/routers/index.ts` | ✅ Complete |
+
+### 2. Reviews Router Tests
+
+| Endpoint | Tests | Coverage |
+|----------|-------|----------|
+| `list` | 3 tests | Default sort, verified filter, mostHelpful sort |
+| `byId` | 2 tests | Found, not found |
+| `create` | 2 tests | Verified purchase, unverified purchase |
+| `update` | 1 test | Author can update |
+| `delete` | 1 test | Author can delete |
+| `vote` | 1 test | Increment helpful count |
+| `statistics` | 1 test | Aggregate + distribution |
+| `moderate + flag` | 3 tests | Admin approve, non-admin reject, flag |
+| **Total** | **14 tests** | All passing ✅ |
+
+### 3. Code Quality
+
+| Fix | Files | Impact |
+|-----|-------|--------|
+| Recursive type parameter | `review.test.ts` | `Partial<ReturnType<typeof makeReview>>` → `Record<string, unknown>` |
+| `z.enum()` → `z.union([z.literal(...)])` | `review.ts` | Complies with `erasableSyntaxOnly` |
+
+### 4. Verification
+
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All passed |
+| `pnpm test` | ✅ 48 passed |
+
+---
+
 ## Phase 2 Remediation & Search Enhancement (2026-05-21)
 
 ### 1. Critical Bug Fixes (P0)

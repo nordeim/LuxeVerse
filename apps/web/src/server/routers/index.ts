@@ -3,6 +3,7 @@ import { aiRouter } from "./ai";
 import { cartRouter } from "./cart";
 import { orderRouter } from "./order";
 import { productRouter } from "./product";
+import { reviewRouter } from "./review";
 import { searchRouter } from "./search";
 
 export const appRouter = router({
@@ -10,6 +11,7 @@ export const appRouter = router({
   cart: cartRouter,
   order: orderRouter,
   product: productRouter,
+  review: reviewRouter,
   search: searchRouter,
 });
 
