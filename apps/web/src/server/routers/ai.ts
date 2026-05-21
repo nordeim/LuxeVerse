@@ -1,58 +1,14 @@
-// tRPC router for the AI service, wrapping OpenAI API calls.
-// Enforces structured JSON output via Zod + OpenAI json_schema mode.
-// All prompts include product catalog context to improve accuracy.
+// tRPC router for the AI service.
+// Delegates to ai.service.ts for actual AI logic.
+// Thin layer: validation + delegation.
 
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
-import type { OutfitRequest, OutfitResponse, SizeAdviceRequest, ChatRequest, ChatChunk } from "../../lib/ai.types";
+import { createAIService } from "../ai.service";
+import type { OutfitRequest, SizeAdviceRequest, ChatRequest } from "../../lib/ai.types";
 
-// Mock OpenAI client (replace when OPENAI_API_KEY is set)
-const MOCK_ENABLED = !process.env.OPENAI_API_KEY;
-
-/**
- * Simple mock for development / CI when no API key present.
- * Returns deterministic fixture data so UI always has a predictable shape.
- */
-function createMockOutfit(input: OutfitRequest): OutfitResponse {
-  return {
-    items: [
-      {
-        productId: "mock-prod-1",
-        name: "Silk Trench",
-        role: "hero",
-        reason: `Perfect for ${input.occasion} in ${input.season}.`,
-      },
-      {
-        productId: "mock-prod-2",
-        name: "Cashmere Scarf",
-        role: "supporting",
-        reason: `Adds warmth without bulk for ${input.persona} style.`,
-      },
-    ],
-    totalPrice: 1200,
-    confidence: 0.85,
-    name: `"${input.persona}" ${input.season} Look`,
-    mood: "Effortlessly chic",
-  };
-}
-
-function createMockSizeAdvice(input: SizeAdviceRequest): import("../../lib/ai.types").SizeRecommendation {
-  return {
-    size: "M",
-    confidence: 0.82,
-    reasoning: `Based on ${input.height} cm / ${input.weight} kg, ${input.bodyType} build, brand ${input.brand}.`,
-    alternative: "size up for a relaxed fit",
-  };
-}
-
-async function* createMockChatStream(input: ChatRequest): AsyncGenerator<ChatChunk, void, unknown> {
-  // Yield chunks simulating streaming response
-  const responseText = `Hi, I'd love to help with ${input.productCatalog.length} items in catalog. Let me style something for you!`;
-  for (let i = 0; i < responseText.length; i += 10) {
-    yield { delta: responseText.slice(i, i + 10), done: false };
-  }
-  yield { delta: "", done: true };
-}
+// Service instance — uses OPENAI_API_KEY when available, mock otherwise
+const aiService = createAIService(process.env.OPENAI_API_KEY);
 
 export const aiRouter = router({
   /**
@@ -71,14 +27,7 @@ export const aiRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      if (MOCK_ENABLED) {
-        return createMockOutfit(input as OutfitRequest);
-      }
-      // Real OpenAI call can be added here when API key is set.
-      // Schema:
-      //   response_format: { type: "json_schema", json_schema: { name: "OutfitResponse", ... } }
-      //   messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: prompt }]
-      return createMockOutfit(input as OutfitRequest);
+      return aiService.generateOutfit(input as OutfitRequest);
     }),
 
   /**
@@ -91,21 +40,18 @@ export const aiRouter = router({
         userId: z.string().min(1),
         height: z.number().positive(),
         weight: z.number().positive(),
-        bodyType: z.enum(["slim", "athletic", "full", "petite"]),
+        bodyType: z.union([z.literal("slim"), z.literal("athletic"), z.literal("full"), z.literal("petite")]),
         brand: z.string().min(1),
-        itemCategory: z.enum(["tops", "bottoms", "shoes"]),
+        itemCategory: z.union([z.literal("tops"), z.literal("bottoms"), z.literal("shoes")]),
       })
     )
     .mutation(async ({ input }) => {
-      if (MOCK_ENABLED) {
-        return createMockSizeAdvice(input as SizeAdviceRequest);
-      }
-      return createMockSizeAdvice(input as SizeAdviceRequest);
+      return aiService.getSizeAdvice(input as SizeAdviceRequest);
     }),
 
   /**
-   * Streaming chat: returns text chunks for SSE consumption.
-   * Frontend reads chunks and appends to message state.
+   * Streaming chat: returns an async iterator over text chunks.
+   * Frontend subscribes via SSE endpoint or processes the returned generator.
    */
   streamStyleChat: publicProcedure
     .input(
@@ -114,7 +60,7 @@ export const aiRouter = router({
         messages: z.array(
           z.object({
             id: z.string().min(1),
-            role: z.enum(["user", "assistant", "system"]),
+            role: z.union([z.literal("user"), z.literal("assistant"), z.literal("system")]),
             content: z.string(),
             createdAt: z.number(),
             products: z
@@ -140,19 +86,8 @@ export const aiRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // For tRPC streaming, we return an async iterator.
-      // In real use, the client subscribes over an SSE endpoint or WebSocket.
       return {
-        stream: (async function* () {
-          if (MOCK_ENABLED) {
-            yield* createMockChatStream(input as ChatRequest);
-          } else {
-            yield* createMockChatStream(input as ChatRequest);
-          }
-        })(),
+        stream: aiService.streamStyleChat(input as ChatRequest),
       };
     }),
 });
-
-// Note: The mock functions are exported for testing only.
-export { createMockOutfit, createMockSizeAdvice, createMockChatStream };

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { aiRouter } from "./ai";
 
 const createCaller = () => {
-  return aiRouter.createCaller({} as any);
+  return aiRouter.createCaller({ prisma: {} as never, user: null, sessionId: "test-session" });
 };
 
 const getMockProductCatalog = () => {
@@ -24,7 +24,7 @@ describe("aiRouter", () => {
         favoriteColors: ["obsidian", "champagne"],
         budget: 2000,
         category: "tailoring",
-      } as any);
+      });
 
       expect(result).toBeDefined();
       expect(result.items.length).toBeGreaterThan(0);
@@ -46,8 +46,8 @@ describe("aiRouter", () => {
       };
 
       const caller = createCaller();
-      const outfit1 = await caller.generateOutfit(input as any);
-      const outfit2 = await caller.generateOutfit(input as any);
+      const outfit1 = await caller.generateOutfit(input);
+      const outfit2 = await caller.generateOutfit(input);
 
       expect(outfit1.items).toEqual(outfit2.items);
       expect(outfit1.name).toEqual(outfit2.name);
@@ -64,7 +64,7 @@ describe("aiRouter", () => {
         bodyType: "athletic",
         brand: "Saint Laurent",
         itemCategory: "bottoms",
-      } as any);
+      });
 
       expect(recommendation.size).toBeTruthy();
       expect(recommendation.confidence).toBeLessThan(1);
@@ -81,7 +81,7 @@ describe("aiRouter", () => {
         bodyType: "slim",
         brand: "Valentino",
         itemCategory: "tops",
-      } as any);
+      });
 
       expect(recommendation.confidence).toBeLessThan(1);
     });
@@ -103,7 +103,7 @@ describe("aiRouter", () => {
           },
         ],
         productCatalog: catalog,
-      } as any);
+      });
 
       // Defer type assertion: ai.ts streamStyleChat returns { stream: AsyncGenerator<...> }
       expect(result).toBeDefined();

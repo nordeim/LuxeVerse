@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import { vi, beforeEach, afterEach } from "vitest";
 
 beforeEach(() => {

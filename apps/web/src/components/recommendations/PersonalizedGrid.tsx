@@ -29,7 +29,7 @@ export function PersonalizedGrid({ userId, className }: PersonalizedGridProps) {
         favoriteColors: ["obsidian", "champagne"],
         budget: 2000,
         category: "tailoring",
-      } as any,
+      },
       {
         onSuccess: (data) => {
           setSelectedOutfit(data);
@@ -44,10 +44,10 @@ export function PersonalizedGrid({ userId, className }: PersonalizedGridProps) {
         userId: userId ?? "user-1",
         height: 175,
         weight: 68,
-        bodyType: "athletic",
+        bodyType: "athletic" as const,
         brand: "Saint Laurent",
-        itemCategory: "bottoms",
-      } as any,
+        itemCategory: "bottoms" as const,
+      },
       {
         onSuccess: (data) => {
           setSelectedSize(data);
