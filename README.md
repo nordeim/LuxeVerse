@@ -282,15 +282,14 @@ open https://vercel.com/luxeverse/web/deployments
 
 | Phase | Status | Completion | Key Deliverables |
 |-------|--------|------------|-----------------|
-| 0: Foundation | ✅ Complete | 2026-05-15 | Monorepo, design tokens, CI/CD |
-| 1: Core Commerce | ✅ Complete | 2026-06-26 | Product catalog, cart, checkout |
-| 2: Cinematic UX | 🔄 In Progress | 2026-08-07 | Homepage, search, animations |
-| 3: AI Personalization | 📅 Planned | ETA 2026-09-18 | Style quiz, AI stylist, recommendations |
-| 4: Scale & Social | 📅 Planned | ETA 2026-10-30 | Loyalty, i18n, PWA, UGC |
-| 5: Polish & Launch | 📅 Planned | ETA 2026-11-27 | Testing, security, docs, launch |
+| 0: Foundation | ✅ Complete | 2026-05-15 | Monorepo, design tokens, CSS-first TW v4 |
+| 1: Core Commerce | ✅ Complete | 2026-05-20 | Product catalog, cart, checkout, Stripe, Auth |
+| 2: Cinematic UX | ✅ Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
+| 3: AI Personalization | 📅 Planned | ETA 2026-06-15 | Style quiz, AI stylist, recommendations |
+| 4: Scale & Social | 📅 Planned | ETA 2026-07-30 | Loyalty, i18n, PWA, UGC |
+| 5: Hardening & Launch | 📅 Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
 
-**Overall Progress**: 60% complete (2/3 phases delivered, Phase 2 in active development)
-**Latest Audit**: Security scan passed (0 high/critical), Lighthouse ≥ 90
+**Overall Progress**: ~55% (Phases 0–2 delivered, Phases 3–5 pending)
 
 ## 📋 Troubleshooting (Updated 2026-05-20)
 
@@ -309,6 +308,21 @@ If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client 
 
 * **Symptom**: Styles not applying or build errors mentioning `bg-gradient-to-r`
 * **Context**: Tailwind v4 is CSS-first and uses different utility names for some properties. Check the generated CSS in `.next/static/chunks` to confirm utilities are being compiled.
+
+### Next.js 16 `params` Gotcha
+* **Symptom**: `await params` causes hydration mismatch or undefined at runtime
+* **Fix**: `params` is a plain object in Next.js 16. Use direct destructuring: `const { slug } = params`
+* **Never do**: `const { slug } = await params` (this is a Next.js 15 pattern)
+
+### R3F Components and `lazy()`
+* **Symptom**: TypeScript errors when destructuring `const { Canvas } = lazy(() => import('@react-three/fiber'))`
+* **Fix**: R3F components export named components. `React.lazy()` requires `{ default }` export. Wrap R3F with `<Suspense>` instead — the `<Suspense>` boundary defers heavy lib load without needing `lazy()`.
+* **Correct**: Direct import + `<Suspense fallback={<Skeleton />}>`. Never `lazy()` R3F exports.
+
+### Search `orderBy` Runtime Error
+* **Symptom**: Search query crashes with "Unknown field `relevance`"
+* **Fix**: Prisma schema has NO `relevance` field. Fallback to `{ createdAt: "desc" }` (or `{ views: "desc" }` as a business-logic proxy for popularity).
+* **File**: `src/server/routers/search.ts`
 
 ## 🤝 Contributing
 
@@ -364,6 +378,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-15  
+> **Last Updated**: 2026-05-21 (Post-Remediation)  
 > **Next Review**: 2026-06-01  
+> **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3  
+> **Status**: Phases 0-2 complete, Phase 3 planned  
 > **Contact**: engineering@luxeverse.com

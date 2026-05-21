@@ -67,6 +67,10 @@ awesome meticulous job so far. please keep up the good work. now, please meticul
 
 ---
 
+please meticulously review Phase 3 in @MASTER_EXECUTION_PLAN.md and validate it against the codebase to ensure alignment, then meticulously plan to create a detailed implementation plan with a ToDo list for Phase 3. review and validate the Phase 3 implementation plan again before proceeding to execute it meticulously. use TDD approach for making code changes.
+
+---
+
 awesome meticulous job so far. please keep up the good work. now, please meticulously review @phase-2_gap_analysis.md against the codebase to confirm the findings and identify the root causes and the optimal fixes, then meticulously plan to create a detailed remediation plan with ToDo list to apply the optimal fixes.
 
 ---

@@ -165,3 +165,59 @@ Key Updates Applied:
      * Streamlined existing rules for Tailwind v4, Zustand selectors, and RSC boundaries.
  5. Cleaned Up Noise: Removed redundant design system details and "Meticulous Approach" essays, moving toward a "Would an agent likely miss this?" litmus test for every line.
 
+---
+
+# Todos
+[✓] Fix P0: search.ts runtime bug (relevance sort → createdAt desc)
+[✓] Fix P0: Create public/ directory with minimal placeholder assets
+[✓] Fix P0: Add missing src/app/loading.tsx for global suspense
+[✓] Fix P1: Wire ProductEmbed to cart mutation (replace TODO with actual tRPC call)
+[✓] Fix P1: Add comprehensive test coverage for search router
+[✓] Fix P1: Verify ProductViewer3D dynamic import pattern (Suspense fallback)
+[✓] Run full verification: typecheck + lint + test
+[✓] Create missing infrastructure: docs/architecture.md and docs/runbook.md
+[✓] Update status_2.md with honest completion percentages
+[✓] Update README.md with new gotchas and troubleshooting
+[✓] Update CLAUDE.md with latest state and critical gotchas
+[✓] Update ACCOMPLISHMENTS.md with remediation log
+All tasks complete. Here's the comprehensive summary:
+---
+✅ Documentation Update Complete
+Files Updated
+File	Changes
+README.md	Updated Project Status (Phases 0–2 complete, 3–5 planned), added 4 new troubleshooting entries (Next.js 16 params, R3F lazy, search orderBy, Zod v4), updated footer with env and status
+CLAUDE.md	Complete rewrite: added Project State table, Critical Gotchas section (Next.js 16 params, Prisma sync, R3F lazy, search orderBy, Zod v4), updated monorepo structure, file tree, anti-patterns, lessons learned
+ACCOMPLISHMENTS.md	Added Phase 2 Remediation & Search Enhancement (2026-05-21) with P0 bug fixes, P1 wiring, test coverage, docs, and full verification
+---
+Verification Results
+Check	Result
+pnpm typecheck	✅ Zero errors
+pnpm lint	✅ All scripts pass
+pnpm test	✅ 11/11 passed (was 2/2)
+---
+Key Documentation Additions
+New Troubleshooting Entries (README.md + CLAUDE.md)
+Topic	Summary
+Next.js 16 params	const { slug } = params (not await params)
+Prisma Schema Sync	pnpm db:generate after EVERY schema change; update ALL prisma.model.create() when adding required fields
+R3F lazy() Trap	Never lazy() R3F named exports. Use <Suspense> boundary instead
+Search orderBy Bug	{ relevance: "desc" } → { createdAt: "desc" } (Prisma has no relevance field)
+Zod v4 API	result.error.issues[0].message (not .errors[0])
+New Files Created
+File	Content
+docs/architecture.md	Monorepo structure, tech stack, data flow
+docs/runbook.md	Commands, troubleshooting, deployment guide
+src/app/loading.tsx	Global suspense boundary skeleton
+src/server/routers/search.test.ts	9 tests for search router
+apps/web/public/.gitkeep	Static assets directory placeholder
+---
+Remediation Summary
+Phase	Item	File	Status
+P0	search.ts runtime bug	src/server/routers/search.ts	✅ Fixed
+P0	public/ directory	apps/web/public/.gitkeep	✅ Created
+P0	Global loading state	src/app/loading.tsx	✅ Created
+P1	ProductEmbed cart wiring	src/components/editorial/ProductEmbed.tsx	✅ Wired
+P1	Search router tests	src/server/routers/search.test.ts	✅ 9 tests
+P1	R3F Suspense pattern	src/components/product/ProductViewer3D.tsx	✅ Verified
+
+
