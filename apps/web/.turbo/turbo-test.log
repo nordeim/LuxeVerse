@@ -1,24 +1,196 @@
 
+
 > @luxeverse/web@0.1.0 test /home/project/LuxeVerse/apps/web
 > vitest run
 
+[?25l
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/home/project/LuxeVerse/apps/web[39m
 
- RUN  v3.2.4 /home/project/LuxeVerse/apps/web
+[?2026h
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m0 passed[39m[22m[90m (0)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m952ms
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m [queued][22m
 
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 118ms
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 183ms
- ✓ src/server/ai.service.test.ts (6 tests) 1037ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1019ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 149ms
- ✓ src/server/routers/review.test.ts (14 tests) 58ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 28ms
- ✓ src/server/routers/search.test.ts (9 tests) 30ms
- ✓ src/server/routers/ai.test.ts (5 tests) 164ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 12ms
- ✓ src/lib/utils.test.ts (2 tests) 7ms
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m0 passed[39m[22m[90m (0)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m1.05s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m 0/3[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m [queued][22m
 
- Test Files  10 passed (10)
-      Tests  60 passed (60)
-   Start at  19:10:58
-   Duration  5.09s (transform 448ms, setup 2.26s, collect 1.19s, tests 1.79s, environment 5.68s, prepare 1.18s)
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m0 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m1.56s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m 1/3[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 0/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m [queued][22m
 
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m1 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m1.66s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m 2/3[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 4/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m 0/5[22m
+
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m6 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m1.77s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/app/style-quiz/style-quiz.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 227[2mms[22m[39m
+ [32m✓[39m src/server/routers/ai.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m 3/3[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 4/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m 5/5[22m
+
+[2m Test Files [22m[1m[32m2 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m12 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m1.97s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/app/style-quiz/style-quiz.test.tsx[2m 3/3[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 5/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/ai.test.ts[2m 5/5[22m
+
+[2m Test Files [22m[1m[32m2 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m13 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m2.57s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/server/ai.service.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1045[2mms[22m[39m
+   [33m[2m✓[22m[39m createAIService[2m > [22mhandles OpenAI errors gracefully with fallback [33m 1022[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/components/ai-stylist/OutfitCard.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 6/6[22m
+
+[2m Test Files [22m[1m[32m3 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m2.78s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/components/ai-stylist/OutfitCard.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 6/6[22m
+
+[2m Test Files [22m[1m[32m3 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m2.98s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/components/ai-stylist/OutfitCard.test.tsx[2m 1/5[22m
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 6/6[22m
+
+[2m Test Files [22m[1m[32m3 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m15 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m3.08s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/components/ai-stylist/OutfitCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 149[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/components/ai-stylist/OutfitCard.test.tsx[2m 5/5[22m
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m 1/6[22m
+[1m[33m ❯ [39m[22msrc/server/ai.service.test.ts[2m 6/6[22m
+
+[2m Test Files [22m[1m[32m4 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m20 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m3.28s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/components/size/SizeRecommendation.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 144[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m 6/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/review.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m5 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m25 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m3.68s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/components/size/SizeRecommendation.test.tsx[2m 6/6[22m
+[1m[33m ❯ [39m[22msrc/server/routers/review.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m5 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m25 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m3.88s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+
+[1m[33m ❯ [39m[22msrc/server/routers/review.test.ts[2m 0/14[22m
+
+[2m Test Files [22m[1m[32m5 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m25 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m4.29s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/server/routers/review.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 56[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/server/routers/savedOutfit.test.ts[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/routers/search.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m6 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m4.50s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/server/routers/savedOutfit.test.ts[2m [queued][22m
+[1m[33m ❯ [39m[22msrc/server/routers/search.test.ts[2m 0/9[22m
+
+[2m Test Files [22m[1m[32m6 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m39 passed[39m[22m[90m (48)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m4.80s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/server/routers/search.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/server/routers/savedOutfit.test.ts[2m 0/6[22m
+
+[2m Test Files [22m[1m[32m7 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m48 passed[39m[22m[90m (54)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m4.91s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/server/routers/savedOutfit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/stores/style-quiz.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m8 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m54 passed[39m[22m[90m (54)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m5.51s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/stores/style-quiz.test.ts[2m 0/4[22m
+
+[2m Test Files [22m[1m[32m8 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m54 passed[39m[22m[90m (58)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m5.71s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/stores/style-quiz.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+
+[1m[33m ❯ [39m[22msrc/lib/utils.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m9 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m58 passed[39m[22m[90m (58)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m5.91s
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/lib/utils.test.ts[2m 0/2[22m
+
+[2m Test Files [22m[1m[32m9 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m[1m[32m58 passed[39m[22m[90m (60)[39m
+[2m   Start at [22m22:47:28
+[2m   Duration [22m6.01s
+[?2026l[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/lib/utils.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m [1m[32m60 passed[39m[22m[90m (60)[39m
+[2m   Start at [22m 22:47:28
+[2m   Duration [22m 6.15s[2m (transform 595ms, setup 2.90s, collect 1.44s, tests 1.87s, environment 6.68s, prepare 1.38s)[22m
+
+[?25h

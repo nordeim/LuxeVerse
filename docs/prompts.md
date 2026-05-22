@@ -80,6 +80,10 @@ Meticulously review the environment, read the existing SKILL.md, and update it w
 
 ---
 
+please meticulously review @Project_Requirements_Document.md , @MASTER_EXECUTION_PLAN.md , @phase-3.md and @status_4.md , then validate them against the actual codebase to determine/confirm the current project status. 
+
+---
+
 awesome meticulous job so far. please keep up the good work. now, please meticulously review @phase-2_gap_analysis.md against the codebase to confirm the findings and identify the root causes and the optimal fixes, then meticulously plan to create a detailed remediation plan with ToDo list to apply the optimal fixes.
 
 ---

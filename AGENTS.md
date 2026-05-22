@@ -1,56 +1,34 @@
 # LuxeVerse — Agent Instructions
 
-Quick-start guardrails for OpenCode sessions. Full conventions: `CLAUDE.md`.
-
 ## Identity & Purpose
-Luxury e-commerce. Anti-generic. Cinematic storytelling meets intelligent commerce. Every interaction must feel premium and intentional.
-
-## Current Project Status
-- **Status**: Phase 2 (Cinematic Experience) Verified; Entering Phase 3 (AI & Personalization).
-- **Milestones**: Database seeded, Core Commerce (Cart/Checkout/Stripe) functional, Search (tRPC) wired, 3D Product Viewer active, Editorial system functional.
-
-## Tech Stack
-| Layer | Tech | Note |
-|-------|------|------|
-| Framework | Next.js 16.2.6 (App Router) | RSC-first, PPR ready. |
-| Language | TypeScript 6.0.3 | `strict`, `erasableSyntaxOnly` (No enums). |
-| Styling | Tailwind CSS 4.3.0 | CSS-first only. Zero config files. |
-| DB | Prisma 6.19.3 + PostgreSQL 17 | Zero enums. String + Union patterns. |
-| API | tRPC 11 + Zod 4.4 | End-to-end type safety. |
-| Auth | NextAuth 4.24.14 | v4 stable. Uses JWT + Role-based access. |
-| State | Zustand 5.0 | Selector discipline required. |
-| Monorepo | pnpm + Turborepo | Parallel task orchestration. |
+LuxeVerse is a cinematic luxury e-commerce platform built on the **Anti-Generic Mandate**. Reject template-driven design, purple gradients, and system font fallbacks. Every pixel must feel intentional.
 
 ## Essential Commands
 ```bash
-# Verify entire repo (Run before any completion claim)
+# Verify entire repo (MANDATORY before completion claim)
 pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
-# Web App Only (from apps/web/)
-pnpm dev          # Next.js dev (Turbopack)
+# Web App (apps/web/)
+pnpm dev          # Turbopack dev server
 pnpm typecheck    # tsc --noEmit
-pnpm lint         # Custom shell scripts (next lint is removed)
+pnpm lint         # Custom scripts (next lint is REMOVED)
 pnpm test         # Vitest run
-
-# DB Management (from apps/web/)
-pnpm db:generate  # prisma generate (Run after schema changes!)
-pnpm db:migrate   # prisma migrate dev
-pnpm db:seed      # Seed luxury products
+pnpm db:generate  # Run after ANY schema.prisma change
 ```
 
 ## Monorepo Boundaries
-- `apps/web`: Next.js 16 application. All business logic and routes.
-- `packages/ui`: Reusable UI primitives. Imports: `import { Button } from "@luxeverse/ui"`.
-- `packages/utils`: Shared utilities (`cn`, formatters). Imports: `import { cn } from "@luxeverse/utils"`.
+- `apps/web`: Next.js 16. All routes and business logic.
+- `packages/ui`: Reusable primitives. `import { Button } from "@luxeverse/ui"`.
+- `packages/utils`: Shared helpers. `import { cn } from "@luxeverse/utils"`.
 
 ## The 10 Mistake Magnets (Verified Fixes)
 
 ### 1. Next.js 16 CLI: `next lint` is REMOVED
-`pnpm lint` in `apps/web` runs custom shell scripts (`validate-deprecated-twind.sh`, `validate-colors.sh`). Do not attempt to run `next lint` or `npx next lint`.
+`pnpm lint` in `apps/web` runs custom shell scripts. Do not attempt `npx next lint`.
 
 ### 2. `params` & `searchParams` are Plain Objects
-In Next.js 16, `params` and `searchParams` in `page.tsx` are **NOT** Promises. 
-❌ `const { slug } = await params` (Silent bug or hydration error)
+In Next.js 16, they are **NOT** Promises. 
+❌ `const { slug } = await params`
 ✅ `const { slug } = params` (Direct destructuring)
 
 ### 3. React 19: `JSX.Element` is BANNED
@@ -58,10 +36,10 @@ The global `JSX` namespace is removed.
 ❌ `function Component(): JSX.Element`
 ✅ `function Component()` (Inferred) or `import { ReactElement } from "react"`
 
-### 4. Tailwind v4: strictly CSS-First
-❌ No `tailwind.config.js` or `tailwind.config.ts`.
-✅ Configure only in `globals.css` via `@theme inline { ... }`.
-✅ Utilities: `bg-linear-to-r` (v4) NOT `bg-gradient-to-r` (v3).
+### 4. Tailwind v4: Strictly CSS-First
+❌ No `tailwind.config.js`.
+✅ Configure in `globals.css` via `@theme inline { ... }`.
+✅ Use `bg-linear-to-r` (v4), NOT `bg-gradient-to-r` (v3).
 
 ### 5. TypeScript: `erasableSyntaxOnly`
 ❌ `enum Status { ... }` or `namespace MySpace`.
@@ -79,23 +57,30 @@ The global `JSX` namespace is removed.
 
 ### 8. Prisma Schema Sync
 Run `pnpm db:generate` immediately after any change to `schema.prisma`. 
-TS errors like `TS2339` (missing property) are usually solved by regenerating the client.
+TS errors like `TS2339` (missing property) are usually solved by regenerating.
 
 ### 9. Forms & Buttons
 ✅ Use `useActionState` + Zod v4 (`result.error.issues[0].message`) for all form mutations.
-✅ Buttons default to `type="button"` unless they are form submission triggers.
+✅ Buttons default to `type="button"` unless submission triggers.
 
 ### 10. No Emojis, No Raw Hex
 ❌ 🛍️ ✕ 🎉 in JSX → ✅ Lucide icons only.
 ❌ `bg-[#1a1a2e]` → ✅ `bg-obsidian-900` (Use design tokens).
 
-## Consequence Matrix
-- `any` or `enum` in code? CI fails (`tsc --noEmit`).
-- `tailwind.config.js` exists? Build fails.
-- `await params` in Page? Hydration mismatch or undefined values at runtime.
-- Raw `<a>` for internal nav? Full page reload (State lost). Use `<Link>`.
+## Critical Gotchas
 
-## High-Signal Context
-- **Testing**: `vitest` + `jsdom`. All store mutations in tests must be wrapped in `act()`.
+- **R3F Components**: Cannot be `lazy()` destructured. Direct import + `<Suspense>` only.
+- **Zod v4 API**: Use `result.error.issues`, NOT `.errors`.
+- **Testing**: `screen.getByText` is exact match. Use `getAllByText` or `toHaveTextContent` for partials/duplicates.
 - **Accessibility**: WCAG AAA target. `useFocusTrap` is mandatory for all overlays.
-- **Motion**: `framer-motion`. Respect `useReducedMotion()`. Motion must serve narrative.
+- **Motion**: `framer-motion`. Respect `useReducedMotion()`.
+
+## Core Stacks
+- **Framework**: Next.js 16.2.6 (App Router, RSC-first)
+- **Language**: TypeScript 6.0.3 (Strict, no enums)
+- **Styling**: Tailwind 4.3.0 (CSS-first)
+- **DB**: Prisma 6.19.3 (PostgreSQL, zero enums)
+- **API**: tRPC 11.17.0
+- **Auth**: NextAuth 4.24.14
+- **State**: Zustand 5.0.13
+- **Test**: Vitest 3.2.4 (jsdom)
