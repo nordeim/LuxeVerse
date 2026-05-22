@@ -84,13 +84,33 @@
 | Recursive type parameter | `review.test.ts` | `Partial<ReturnType<typeof makeReview>>` → `Record<string, unknown>` |
 | `z.enum()` → `z.union([z.literal(...)])` | `review.ts` | Complies with `erasableSyntaxOnly` |
 
-### 4. Verification
+### 4. AI Service Hardening (2026-05-22)
+
+| Fix | Files | Impact |
+|-----|-------|--------|
+| Typed OpenAI client (zero `as any`) | `ai.service.ts` | `OpenAIClient` interface + `getOpenAIChat()` helper |
+| Retry/backoff | `ai.service.ts` | `withRetry()` — 3 attempts, exponential backoff 1s–8s |
+| Zod runtime validation | `ai.service.ts` | `outfitResponseSchema`, `sizeRecommendationSchema` parse AI JSON |
+| localStorage draft | `style-quiz/page.tsx` | `beforeunload` + restore on mount, cleared on reset |
+| Streaming wired to real AI | `api/ai/stream/route.ts` | Delegates to `ai.service.ts` `streamStyleChat()` via SSE |
+
+### 5. Verification
 
 | Command | Result |
 |---------|--------|
 | `pnpm typecheck` | ✅ Zero errors |
 | `pnpm lint` | ✅ All passed |
 | `pnpm test` | ✅ 48 passed |
+
+### 6. Remaining Phase 3 Gaps
+
+| Gap | Priority | ETA |
+|-----|----------|-----|
+| `SavedOutfit` tRPC router (create/delete/list) | Medium | 2026-05-23 |
+| Playwright E2E directory + sample spec | Medium | 2026-05-23 |
+| `lighthouserc.json` performance budget | Medium | 2026-05-23 |
+| Hybrid filtering / fairness in `PersonalizedGrid.tsx` | Low | Phase 4 |
+| Cross-brand size mapping | Low | Phase 4 |
 
 ---
 

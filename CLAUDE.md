@@ -322,3 +322,10 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 - New tRPC router: `src/server/routers/review.ts` with full CRUD, voting, statistics, moderation, flagging (14 tests)
 - Registered in `src/server/routers/index.ts`
 - Legacy site testing summary: `docs/legacy-site-testing-summary.md`
+
+### AI Service Hardening (Added 2026-05-22)
+- Typed `OpenAIClient` interface replaces all `as any` casts in `ai.service.ts`
+- `withRetry()` helper: 3 attempts, exponential backoff (1s–8s)
+- Zod schemas (`outfitResponseSchema`, `sizeRecommendationSchema`) validate AI JSON output at runtime
+- `extractContentFromCompletion()` helper avoids deep type assertion chains
+- `api/ai/stream/route.ts` delegates to real `ai.service.ts` via `streamStyleChat()`

@@ -91,3 +91,31 @@ Verification results:
 - pnpm test — 48 tests passed (was 34, +14 new)
 Critical fix applied: Partial<ReturnType<typeof makeReview>> was a self-referencing type that broke tsc --noEmit under strict: true. Replaced with Record<string, unknown> to comply with erasableSyntaxOnly.
 
+---
+
+# Todos
+[✓] Fix 3 `as any` casts in `ai.service.ts` via typed OpenAI client
+[✓] Add retry/backoff + Zod runtime validation to `ai.service.ts`
+[✓] Implement localStorage draft persistence for style quiz
+[✓] Wire `api/ai/stream/route.ts` to real `ai.service.ts`
+[ ] Add `SavedOutfit` tRPC router
+[ ] Create `e2e/` Playwright directory with sample spec
+[ ] Add `lighthouserc.json` performance budget config
+[✓] Run full verification: typecheck, lint, test, build
+[✓] Update ACCOMPLISHMENTS.md and CLAUDE.md with gaps & fixes
+All verification passes. Here's a concise summary of what was completed:
+Completed (this session):
+- Reviews tRPC router: Full CRUD, voting, statistics, moderation, flagging (review.ts + 14 tests)
+- AI service hardening: Removed all as any casts, typed OpenAIClient interface, withRetry() (3 attempts, exponential backoff), Zod runtime validation for AI JSON, extractContentFromCompletion() helper
+- localStorage draft: style-quiz/page.tsx now persists/restores draft on beforeunload, clears on reset
+- Streaming wired: api/ai/stream/route.ts delegates to real ai.service.ts via streamStyleChat()
+- Legacy site testing summary: docs/legacy-site-testing-summary.md written
+- Docs updated: ACCOMPLISHMENTS.md and CLAUDE.md updated with new sections
+Verification: pnpm typecheck ✅ 0 errors | pnpm lint ✅ | pnpm test ✅ 48 passed
+Remaining gaps (documented in ACCOMPLISHMENTS.md):
+- SavedOutfit tRPC router (medium priority)
+- Playwright E2E directory + sample spec (medium priority)
+- lighthouserc.json performance budget (medium priority)
+- Hybrid filtering / fairness in PersonalizedGrid.tsx (low priority, Phase 4)
+- Cross-brand size mapping (low priority, Phase 4)
+

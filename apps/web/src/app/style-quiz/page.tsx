@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { cn } from "@luxeverse/utils";
 import { useStyleQuizStore } from "../../stores/style-quiz";
 import { useStyleProfileStore } from "../../stores/style-profile";
+
+function clearQuizDraft(): void {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("style-quiz-draft");
+  }
+}
 
 // ============================================================================
 // Quiz Data (extracted to JSON for easy editing)
@@ -103,7 +109,60 @@ export default function StyleQuizPage() {
   const handleReset = useCallback(() => {
     reset();
     setIsComplete(false);
+    clearQuizDraft();
   }, [reset]);
+
+  // ------------------------------------------------------------------
+  // localStorage draft persistence
+  // ------------------------------------------------------------------
+  useEffect(() => {
+    // Save draft whenever answers change
+    if (answers.length > 0) {
+      const draft = {
+        currentStep,
+        answers,
+        isComplete,
+      };
+      localStorage.setItem("style-quiz-draft", JSON.stringify(draft));
+    }
+  }, [currentStep, answers, isComplete]);
+
+  useEffect(() => {
+    // Restore draft on mount if present and user hasn't completed
+    const saved = localStorage.getItem("style-quiz-draft");
+    if (saved && answers.length === 0) {
+      try {
+        const draft = JSON.parse(saved) as {
+          currentStep: number;
+          answers: typeof answers;
+          isComplete: boolean;
+        };
+        if (draft.answers.length > 0 && !isComplete) {
+          // We only restore if the Zustand store is empty
+          // (avoids overwriting server-persisted state)
+          // In a real app we'd check timestamps
+          draft.answers.forEach((a) => {
+            answerQuestion(a.questionId, a.selectedOption);
+          });
+          setIsComplete(draft.isComplete);
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Allow manual saving before unload
+  useEffect(() => {
+    function handleBeforeUnload() {
+      if (answers.length > 0 && !isComplete) {
+        const draft = { currentStep, answers, isComplete };
+        localStorage.setItem("style-quiz-draft", JSON.stringify(draft));
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [currentStep, answers, isComplete]);
 
   // Sync profile when complete
   if (isComplete && answers.length > 0) {
