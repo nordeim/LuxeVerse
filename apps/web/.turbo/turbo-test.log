@@ -5,19 +5,20 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 118ms
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 235ms
- ✓ src/server/ai.service.test.ts (6 tests) 1051ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1020ms
- ✓ src/server/routers/review.test.ts (14 tests) 57ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 33ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 118ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 183ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1037ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1019ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 149ms
+ ✓ src/server/routers/review.test.ts (14 tests) 58ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 28ms
  ✓ src/server/routers/search.test.ts (9 tests) 30ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 15ms
- ✓ src/server/routers/ai.test.ts (5 tests) 17ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 164ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 12ms
  ✓ src/lib/utils.test.ts (2 tests) 7ms
 
- Test Files  9 passed (9)
-      Tests  54 passed (54)
-   Start at  11:40:16
-   Duration  4.85s (transform 432ms, setup 849ms, collect 1.60s, tests 1.56s, environment 5.91s, prepare 1.14s)
+ Test Files  10 passed (10)
+      Tests  60 passed (60)
+   Start at  19:10:58
+   Duration  5.09s (transform 448ms, setup 2.26s, collect 1.19s, tests 1.79s, environment 5.68s, prepare 1.18s)
 

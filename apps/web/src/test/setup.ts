@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { vi, beforeEach, afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -15,6 +16,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
   vi.unstubAllGlobals();
   vi.useRealTimers();
 });

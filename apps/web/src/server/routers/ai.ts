@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 import { createAIService } from "../ai.service";
+import { createProductService } from "../services/product.service";
 import type { OutfitRequest, SizeAdviceRequest, ChatRequest } from "../../lib/ai.types";
 
 // Service instance — uses OPENAI_API_KEY when available, mock otherwise
@@ -13,6 +14,7 @@ const aiService = createAIService(process.env.OPENAI_API_KEY);
 export const aiRouter = router({
   /**
    * Generate a curated outfit based on style quiz answers.
+   * Wires to real product catalog via ProductService.
    */
   generateOutfit: publicProcedure
     .input(
@@ -27,7 +29,20 @@ export const aiRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      return aiService.generateOutfit(input as OutfitRequest);
+      // Fetch real product catalog for AI context
+      const productService = createProductService();
+      const products = await productService.list({
+        category: input.category ?? undefined,
+        limit: 50,
+      });
+
+      // Enrich the request with real product IDs for the AI to use
+      const enrichedInput: OutfitRequest = {
+        ...input,
+        productIds: products.map((p) => p.id),
+      };
+
+      return aiService.generateOutfit(enrichedInput);
     }),
 
   /**

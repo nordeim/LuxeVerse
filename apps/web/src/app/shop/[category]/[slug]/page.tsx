@@ -2,10 +2,9 @@ import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
 import { createProductService } from "@/server/services/product.service";
 import { ProductGallery } from "@/components/product/ProductGallery";
-import { VariantSelector } from "@/components/product/VariantSelector";
+import { ProductActions } from "@/components/product/ProductActions";
 import { PriceDisplay } from "@/components/product/PriceDisplay";
 import { StickyAddToBar } from "@/components/product/StickyAddToBar";
-import { Button } from "@luxeverse/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -67,33 +66,13 @@ export default async function ProductPage({ params }: PDPProps): Promise<ReactEl
               />
             </div>
 
-            {colorOptions.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-obsidian-700">Color</span>
-                <VariantSelector
-                  type="color"
-                  options={colorOptions}
-                  selectedId={null}
-                  onSelect={() => {}}
-                />
-              </div>
-            )}
-
-            {sizeOptions.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-obsidian-700">Size</span>
-                <VariantSelector
-                  type="size"
-                  options={sizeOptions}
-                  selectedId={null}
-                  onSelect={() => {}}
-                />
-              </div>
-            )}
-
-            <Button variant="luxury" size="lg" className="w-full">
-              Add to Bag
-            </Button>
+            <ProductActions
+              productId={product.id}
+              productName={product.name}
+              colorOptions={colorOptions}
+              sizeOptions={sizeOptions}
+              imageUrl={primaryImage?.url ?? null}
+            />
 
             <div className="text-sm text-obsidian-700 leading-relaxed">
               {product.description}

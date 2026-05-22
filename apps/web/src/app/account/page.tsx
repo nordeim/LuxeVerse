@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AIStylistDashboard } from "@/components/account/AIStylistDashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function AccountPage() {
+  // In a real app, this would come from auth session
+  const userId = "user-1";
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -20,8 +25,8 @@ export default function AccountPage() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* Quick Stats */}
-        <div className="lg:col-span-8 grid gap-6 sm:grid-cols-3">
+        {/* Quick Stats Row */}
+        <div className="lg:col-span-12 grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-obsidian-200 bg-obsidian-50 p-5 shadow-sm">
             <span className="text-xs font-mono uppercase text-obsidian-500">Active Orders</span>
             <p className="mt-2 text-2xl font-display font-medium text-obsidian-900">2</p>
@@ -45,6 +50,13 @@ export default function AccountPage() {
           <Link href="/style-quiz" className="mt-4 inline-flex items-center justify-center rounded-lg bg-metallic-champagne px-4 py-2 text-sm font-medium text-obsidian-950 transition-colors hover:bg-metallic-gold">
             Take the Quiz →
           </Link>
+        </div>
+
+        {/* AI Stylist Dashboard (Client Component) */}
+        <div className="lg:col-span-8">
+          <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-obsidian-100" aria-busy="true" />}>
+            <AIStylistDashboard userId={userId} />
+          </Suspense>
         </div>
 
         {/* Recent Orders Skeleton */}

@@ -2,10 +2,10 @@
 
 ## Comprehensive Architectural & Execution Framework for Cinematic, Production-Grade, Anti-Generic Web Platforms
 
-**Version**: 3.2.0
+**Version**: 3.3.0
 **Date**: 2026-05-20
-**Scope**: Phase 0–2 verified (Foundation, Core Commerce, Cinematic Experience)
-**New Since v3.1.0**: Next.js 16 `next lint` CLI removal, Tailwind v4 complete utility migration map, monorepo lint task fix (shell scripts), Next.js 16 config cleanup (`experimental.ppr` removal, `eslint` key removal), verification checklist, tooling version matrix
+**Scope**: Phases 0–3 verified (Foundation, Core Commerce, Cinematic Experience, AI Integration)
+**New Since v3.2.0**: AI component integration (OutfitCard, SizeRecommendation, StyleChat) into real pages (Account, PDP), `generateOutfit` wired to real product catalog via ProductService, test cleanup for Vitest + jsdom, monorepo lint script fix (exclude build artifacts), RSC-first "Client Island Dashboard" pattern for multi-widget interactive regions
 **Source**: Distilled from full Phase 0–1 execution on LuxeVerse v3.0, plus cross-skill synthesis from claude-md, super-frontend-design, react19-ts6-vite8-tailwindv4-mvp, nextjs16-tailwind4, frontend-ui-engineering, clean-code, framework-templates
 **Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`
 **When to Use**: Any project requiring Next.js 16, React 19, TypeScript 6, Tailwind v4, Prisma, tRPC, Zustand, NextAuth v5, or any subset thereof. The phased approach, RSC/Client split, and design system are universally applicable.
@@ -1435,6 +1435,202 @@ if (typeof window !== "undefined") { ... }
 
 ---
 
+## 16. Phase 3 Remediation Learnings (2026-05-22)
+
+**Version**: 3.3.0  
+**Status**: Phase 3 AI integration & component wiring verified; all gates green
+
+This section captures the architectural and implementation details, troubleshooting tips, and anti-patterns discovered while integrating AI components (OutfitCard, SizeRecommendation, StyleChat) into real pages (Account, PDP) and wiring `generateOutfit` to the real product catalog.
+
+### 16.1 AI Component Integration Architecture
+
+#### The "Client Island Dashboard" Pattern
+When integrating multiple interactive AI components (`OutfitCard`, `StyleChat`, `SizeRecommendation`) into a server-rendered page, **extract the entire interactive region into a single Client Component**.
+
+```tsx
+// app/account/page.tsx — RSC (remains a Server Component!)
+import { AIStylistDashboard } from "@/components/account/AIStylistDashboard";
+
+export default function AccountPage() {
+  return (
+    <main className="...">
+      {/* ... other server-rendered sections ... */}
+      <AIStylistDashboard userId={userId} />
+    </main>
+  );
+}
+```
+
+```tsx
+// components/account/AIStylistDashboard.tsx — Single "use client" island
+"use client";
+export function AIStylistDashboard({ userId }: AIStylistDashboardProps) {
+  const [activeTab, setActiveTab] = useState<Tab>("outfits");
+  // All AI component state lives here
+  return ( ... );
+}
+```
+
+**Why this matters**:
+- RSC pages cannot use `useState`, `useEffect`, or event handlers.
+- A single `"use client"` wrapper component **preserves SSR for the rest of the page**.
+- Multiple isolated `"use client"` islands cause hydration boundary overhead.
+
+### 16.2 Product Actions Client Component Pattern
+
+The **Product Detail Page (PDP)** requires interactive elements (variant selectors, size recommendation, add to cart). These must live in a Client Component.
+
+```tsx
+// app/shop/[category]/[slug]/page.tsx (RSC — no state, no hooks)
+import { ProductActions } from "@/components/product/ProductActions";
+
+export default async function ProductPage({ params }: PDPProps) {
+  const product = await createProductService().getBySlug(params.slug);
+  // ... fetch variants, images ...
+  return (
+    <ProductActions
+      productId={product.id}
+      productName={product.name}
+      colorOptions={colorOptions}
+      sizeOptions={sizeOptions}
+      imageUrl={primaryImage?.url ?? null}
+    />
+  );
+}
+```
+
+```tsx
+// components/product/ProductActions.tsx — Single client component for ALL interactive elements
+"use client";
+export function ProductActions({ colorOptions, sizeOptions, ... }: ProductActionsProps) {
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [sizeRecommendation, setSizeRecommendation] = useState<SizeRecommendationType | null>(null);
+  const addToCart = useCartStore((s) => s.addItem);
+  // ... variant selection, size advice, add to cart logic
+}
+```
+
+**Key insight**: Combine ALL interactive elements (variant selectors, size recommendation, add to bag) into **one** Client Component. Do not create separate client components for each — it multiplies hydration boundaries and complicates shared state (e.g., deriving the selected variant from both color and size).
+
+### 16.3 Wiring `generateOutfit` to Real Product Catalog
+
+The `generateOutfit` tRPC procedure previously used only mock data. To wire it to the real catalog, the **router enriches the request with real product IDs before passing it to the AI service**.
+
+```tsx
+// server/routers/ai.ts
+.generateOutfit: publicProcedure
+  .input(z.object({ ... }))
+  .mutation(async ({ input }) => {
+    const productService = createProductService();
+    const products = await productService.list({
+      category: input.category ?? undefined,
+      limit: 50,
+    });
+
+    const enrichedInput: OutfitRequest = {
+      ...input,
+      productIds: products.map((p) => p.id),
+    };
+
+    return aiService.generateOutfit(enrichedInput);
+  }),
+```
+
+**Why this works**:
+- The `ai.service.ts` expects `productIds` in `OutfitRequest` — a field already defined in the type.
+- The AI prompt includes `productIds`, so the LLM knows which real products exist in the inventory.
+- The service still falls back to mock data if no `OPENAI_API_KEY` is provided.
+- **No changes to `ai.service.ts` were needed** — the router is the composition layer.
+
+### 16.4 Testing Learnings: Vitest, jsdom, and DOM Cleanup
+
+#### The "document is not defined" Error
+When running component tests with `@testing-library/react` and `vitest`, the `render` function may fail with:
+```
+ReferenceError: document is not defined
+```
+
+**Root Cause**: `vitest` v4.x (installed at the monorepo root) was being used, which did not load the `jsdom` environment from `vitest.config.ts`. The `apps/web` package has `vitest` v3.2.4 configured with `environment: "jsdom"`.
+
+**Fix**: Always run tests from the workspace package, not the monorepo root.
+```bash
+# ❌ WRONG: Uses monorepo root vitest (v4.x), ignores local config
+cd /monorepo-root && npx vitest run
+
+# ✅ CORRECT: Uses apps/web vitest (v3.2.4), loads vitest.config.ts
+cd apps/web && npx vitest run
+```
+
+#### DOM Cleanup Between Tests
+`@testing-library/react` does **not** auto-cleanup between tests in Vitest. Without explicit cleanup, queries from a previous test will match elements from the current test.
+
+```tsx
+// src/test/setup.ts
+import { cleanup } from "@testing-library/react";
+
+afterEach(() => {
+  cleanup(); // ⬅️ REQUIRED in Vitest + testing-library/react
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
+});
+```
+
+**Symptom**: `screen.getByText("...")` returns an element from a previous test, or `Found multiple elements with the text: ...`.
+
+### 16.5 Monorepo Version Mismatch Pitfall
+
+When multiple versions of a tool exist in a monorepo (e.g., `vitest` v3.2.4 in `apps/web` and v4.1.7 in the monorepo root), running the command from the wrong directory causes silent behavior differences.
+
+**Prevention**: Use `turbo` to run commands from the correct workspace.
+```json
+// package.json (root)
+{
+  "scripts": {
+    "test": "turbo test"  // Runs pnpm test in each workspace
+  }
+}
+```
+```json
+// apps/web/package.json
+{
+  "scripts": {
+    "test": "vitest run"  // Uses the local vitest version
+  }
+}
+```
+
+### 16.6 Lint Script Improvement: Exclude Build Artifacts
+
+The `validate-deprecated-twind.sh` script was flagging `.next/` build artifacts (e.g., `.next/dev/static/chunks/*.css` containing `.flex-shrink-0`). These are generated files, not source code.
+
+```bash
+# scripts/validate-deprecated-twind.sh
+# ✅ CORRECT: Exclude build directories
+grep -rEn --exclude-dir=.next --exclude-dir=node_modules --exclude-dir=dist 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ packages/ apps/
+```
+
+### 16.7 Size Recommendation Component Test Coverage
+
+`SizeRecommendation` has two distinct UI states:
+1. **Empty state**: CTA button (`recommendation={null}`)
+2. **Recommendation state**: Card with confidence bar (`recommendation={...}`)
+
+Tests must cover both states, the click callback, and the optional `alternative` text.
+
+```tsx
+// SizeRecommendation.test.tsx
+// Tests: empty state CTA, onGetAdvice click, recommendation card,
+//        confidence bar width, alternative text presence/absence
+```
+
+**Key testing rules applied**:
+- Use `vi.fn()` for mock callbacks from `vitest` (not `jest.fn()`).
+- Query by text, not by role, when the role is ambiguous (e.g., multiple `<button>` elements).
+- Test for the **absence** of elements (e.g., no alternative text when not provided) using `expect(...).not.toBeInTheDocument()`.
+
+---
+
 ## 14. Phase 2 Verification & Critical Learnings (2026-05-20)
 
 **Version**: 3.2.0  
@@ -1698,7 +1894,7 @@ grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ package
 
 ---
 
-## 15. Anti-Pattern Prevention Matrix (All Phases)
+## 17. Anti-Pattern Prevention Matrix (All Phases)
 
 | Anti-Pattern | Symptom | Prevention |
 |-------------|---------|------------|
@@ -1718,7 +1914,7 @@ grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ package
 
 ---
 
-## 16. Verification Commands Cheat Sheet
+## 18. Verification Commands Cheat Sheet
 
 ```bash
 # Full verification pipeline

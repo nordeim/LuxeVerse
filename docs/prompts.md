@@ -75,6 +75,11 @@ yes, please meticulously plan to complete the Phase 3 implementation as recommen
 
 ---
 
+awesome meticulously job. now, please meticulously review/validate and update `/home/project/LuxeVerse/skills/luxeverse-architect-skill/SKILL.md` with your latest insights knowledge/knowhow on the architectural and implementation details, learnings, troubleshooting tips, how to watch out for and prevent potential issues, pitfalls and bugs, patterns and amti-patterns particularly related to changes caused and required by new library and module release upgrades. goal is to codify your experiences, knowledge and insights gained in reviewing and implementing Phase 2 and 3 remediations to the codebase.
+Meticulously review the environment, read the existing SKILL.md, and update it with the architectural and implementation insights, troubleshooting tips, and anti-patterns gained from the Phase 2 and 3 work. Let me read the existing skill first, then scan the codebase for un-captured knowledge.
+
+---
+
 awesome meticulous job so far. please keep up the good work. now, please meticulously review @phase-2_gap_analysis.md against the codebase to confirm the findings and identify the root causes and the optimal fixes, then meticulously plan to create a detailed remediation plan with ToDo list to apply the optimal fixes.
 
 ---

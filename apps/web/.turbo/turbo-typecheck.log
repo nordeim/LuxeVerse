@@ -2,3 +2,6 @@
 > @luxeverse/web@0.1.0 typecheck /home/project/LuxeVerse/apps/web
 > tsc --noEmit
 
+src/components/account/AIStylistDashboard.tsx(8,1): error TS6133: 'OutfitResponse' is declared but its value is never read.
+src/components/account/AIStylistDashboard.tsx(56,21): error TS2304: Cannot find name 'currentOutfit'.
+ ELIFECYCLE  Command failed with exit code 2.
