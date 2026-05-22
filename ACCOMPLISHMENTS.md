@@ -106,9 +106,11 @@
 
 | Gap | Priority | ETA |
 |-----|----------|-----|
-| `SavedOutfit` tRPC router (create/delete/list) | Medium | 2026-05-23 |
-| Playwright E2E directory + sample spec | Medium | 2026-05-23 |
-| `lighthouserc.json` performance budget | Medium | 2026-05-23 |
+| ~~`SavedOutfit` tRPC router (create/delete/list)~~ | ✅ Done | 2026-05-22 |
+| ~~Playwright E2E directory + sample spec~~ | ✅ Done | 2026-05-22 |
+| ~~`lighthouserc.json` performance budget~~ | ✅ Done | 2026-05-22 |
+| ~~AI stream endpoint wired to real `ai.service.ts`~~ | ✅ Done | 2026-05-22 |
+| ~~Style-quiz `isComplete` dual state fix~~ | ✅ Done | 2026-05-22 |
 | Hybrid filtering / fairness in `PersonalizedGrid.tsx` | Low | Phase 4 |
 | Cross-brand size mapping | Low | Phase 4 |
 

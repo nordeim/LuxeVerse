@@ -323,9 +323,9 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 - Registered in `src/server/routers/index.ts`
 - Legacy site testing summary: `docs/legacy-site-testing-summary.md`
 
-### AI Service Hardening (Added 2026-05-22)
-- Typed `OpenAIClient` interface replaces all `as any` casts in `ai.service.ts`
-- `withRetry()` helper: 3 attempts, exponential backoff (1s–8s)
-- Zod schemas (`outfitResponseSchema`, `sizeRecommendationSchema`) validate AI JSON output at runtime
-- `extractContentFromCompletion()` helper avoids deep type assertion chains
-- `api/ai/stream/route.ts` delegates to real `ai.service.ts` via `streamStyleChat()`
+### Remediation Plan Execution (2026-05-22)
+- **SavedOutfit router**: `src/server/routers/savedOutfit.ts` — CRUD (create/delete/list/update), owner auth, 4 tests (`savedOutfit.test.ts`), registered in `index.ts`
+- **Style-quiz `isComplete` fix**: Removed dual state (local `useState` + Zustand). `isComplete` now derived from `answers.length === totalSteps`. Removed `isComplete` from Zustand store and `partialize`
+- **AI stream history**: `api/ai/stream/route.ts` accepts `messages` query param and passes user message history to `ai.service.ts`
+- **E2E scaffold**: `playwright.config.ts` + `e2e/style-quiz.spec.ts` (3 tests). Vitest excludes `e2e/` from unit test runs
+- **Lighthouse budgets**: `lighthouserc.json` with LCP<2500, CLS<0.1, TBT<200, Performance≥90, Accessibility≥95

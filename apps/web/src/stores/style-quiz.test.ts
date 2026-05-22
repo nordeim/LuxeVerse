@@ -6,7 +6,6 @@ describe("useStyleQuizStore", () => {
     useStyleQuizStore.setState({
       answers: [],
       currentStep: 0,
-      isComplete: false,
     });
     const state = useStyleQuizStore.getState();
     expect(state.answers).toHaveLength(0);

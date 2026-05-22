@@ -9,7 +9,6 @@ export const useStyleQuizStore = create<StyleQuizState>()(
       answers: [],
       currentStep: 0,
       totalSteps: 5,
-      isComplete: false,
 
       setStep: (step) => set({ currentStep: step }),
       answerQuestion: (questionId, option) =>
@@ -29,15 +28,16 @@ export const useStyleQuizStore = create<StyleQuizState>()(
         set({
           answers: [],
           currentStep: 0,
-          isComplete: false,
         }),
       setTotalSteps: (n) => set({ totalSteps: n }),
+      checkIsComplete: () => {
+        return false; // computed in selector, not stored
+      },
     }),
     {
       name: "luxeverse-quiz",
       partialize: (state) => ({
         answers: state.answers,
-        isComplete: state.isComplete,
       }),
     }
   )

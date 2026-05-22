@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { cn } from "@luxeverse/utils";
 import { useStyleQuizStore } from "../../stores/style-quiz";
 import { useStyleProfileStore } from "../../stores/style-profile";
@@ -82,33 +82,25 @@ export default function StyleQuizPage() {
   const { currentStep, answers, answerQuestion, back, reset } =
     useStyleQuizStore();
   const profile = useStyleProfileStore();
-  const [isComplete, setIsComplete] = useState(false);
 
   const totalSteps = QUIZ_QUESTIONS.length;
   const currentQuestion = QUIZ_QUESTIONS[currentStep] ?? null;
+  const isComplete = answers.length === totalSteps;
 
   const handleAnswer = useCallback(
     (value: string) => {
       if (!currentQuestion) return;
       answerQuestion(currentQuestion.id, value);
-
-      if (currentStep >= totalSteps - 1) {
-        setIsComplete(true);
-      }
     },
-    [currentQuestion, currentStep, totalSteps, answerQuestion]
+    [currentQuestion, answerQuestion]
   );
 
   const handleBack = useCallback(() => {
-    if (isComplete) {
-      setIsComplete(false);
-    }
     back();
-  }, [isComplete, back]);
+  }, [back]);
 
   const handleReset = useCallback(() => {
     reset();
-    setIsComplete(false);
     clearQuizDraft();
   }, [reset]);
 
@@ -118,14 +110,10 @@ export default function StyleQuizPage() {
   useEffect(() => {
     // Save draft whenever answers change
     if (answers.length > 0) {
-      const draft = {
-        currentStep,
-        answers,
-        isComplete,
-      };
+      const draft = { currentStep, answers };
       localStorage.setItem("style-quiz-draft", JSON.stringify(draft));
     }
-  }, [currentStep, answers, isComplete]);
+  }, [currentStep, answers]);
 
   useEffect(() => {
     // Restore draft on mount if present and user hasn't completed
@@ -135,16 +123,14 @@ export default function StyleQuizPage() {
         const draft = JSON.parse(saved) as {
           currentStep: number;
           answers: typeof answers;
-          isComplete: boolean;
         };
-        if (draft.answers.length > 0 && !isComplete) {
+        if (draft.answers.length > 0) {
           // We only restore if the Zustand store is empty
           // (avoids overwriting server-persisted state)
           // In a real app we'd check timestamps
           draft.answers.forEach((a) => {
             answerQuestion(a.questionId, a.selectedOption);
           });
-          setIsComplete(draft.isComplete);
         }
       } catch {
         // ignore parse errors
@@ -156,7 +142,7 @@ export default function StyleQuizPage() {
   useEffect(() => {
     function handleBeforeUnload() {
       if (answers.length > 0 && !isComplete) {
-        const draft = { currentStep, answers, isComplete };
+        const draft = { currentStep, answers };
         localStorage.setItem("style-quiz-draft", JSON.stringify(draft));
       }
     }

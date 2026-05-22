@@ -9,7 +9,6 @@ describe("StyleQuizPage", () => {
       answers: [],
       currentStep: 0,
       totalSteps: 5,
-      isComplete: false,
     });
   });
 
