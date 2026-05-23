@@ -231,7 +231,10 @@ describe("Loyalty Service", () => {
         tier: "SILVER",
       });
 
-      mockPrisma.$transaction.mockRejectedValueOnce(new Error("DB connection lost"));
+      // Simulate a rejected transaction by throwing an error inside the callback
+      const spy = vi.spyOn(mockPrisma, "$transaction").mockImplementationOnce(() => {
+        return Promise.reject(new Error("DB connection lost"));
+      });
 
       await expect(service.addPoints(userId, "order-1", 100)).rejects.toThrow(
         "DB connection lost"
@@ -239,6 +242,7 @@ describe("Loyalty Service", () => {
 
       expect(mockTxClient.user.update).not.toHaveBeenCalled();
       expect(mockTxClient.pointHistory.create).not.toHaveBeenCalled();
+      spy.mockRestore();
     });
   });
 });

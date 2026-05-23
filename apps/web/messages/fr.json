@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "home": {
+      "title": "LuxeVerse | Commerce de Luxe Cinématique",
+      "description": "Redefinir le commerce de luxe à travers des expériences cinématiques et une personnalisation intelligente."
+    }
+  },
+  "Nav": {
+    "shop": "Boutique",
+    "collections": "Collections",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "Loyalty": {
+    "status": "Statut de fidélité",
+    "points": "Points de fidélité",
+    "lifetimePoints": "Points à vie",
+    "tier": "Niveau actuel",
+    "redeem": "Échanger des points",
+    "history": "Historique des points",
+    "progress": "Progression vers {nextTier}",
+    "benefits": "Avantages du niveau"
+  },
+  "Cart": {
+    "title": "Panier d'achat",
+    "empty": "Votre panier est vide",
+    "checkout": "Passer à la caisse",
+    "total": "Total"
+  }
+}

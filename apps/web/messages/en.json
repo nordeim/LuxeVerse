@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "home": {
+      "title": "LuxeVerse | Cinematic Luxury Commerce",
+      "description": "Redefining luxury commerce through cinematic experiences and intelligent personalization."
+    }
+  },
+  "Nav": {
+    "shop": "Shop",
+    "collections": "Collections",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "Loyalty": {
+    "status": "Loyalty Status",
+    "points": "Loyalty Points",
+    "lifetimePoints": "Lifetime Points",
+    "tier": "Current Tier",
+    "redeem": "Redeem Points",
+    "history": "Points History",
+    "progress": "Progress to {nextTier}",
+    "benefits": "Tier Benefits"
+  },
+  "Cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "checkout": "Checkout",
+    "total": "Total"
+  }
+}
