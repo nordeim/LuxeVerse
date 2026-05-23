@@ -291,7 +291,19 @@ open https://vercel.com/luxeverse/web/deployments
 
 **Overall Progress**: ~65% (Phases 0–3 delivered, Phases 4–5 pending)
 
-## 📋 Troubleshooting (Updated 2026-05-22)
+## ✅ Critical Remediation Round 1 (Completed 2026-05-23)
+
+| Fix | Description | Status |
+|-----|-------------|--------|
+| **CRIT-001** | `global-error.tsx` — Root error boundary | ✅ + tests |
+| **CRIT-002** | UI Primitives (`Button`, `Input`, `Dialog`, `Drawer`) — Radix-based | ✅ + tests |
+| **CRIT-003** | `next.config.ts` — CSP & security headers | ✅ |
+| **CRIT-004** | `useCart` — Wired to tRPC mutations | ✅ |
+| **CRIT-005** | `useWishlist` — Wired to tRPC mutations | ✅ |
+| **CRIT-006** | Lighthouse CI — Config present | 🟡 |
+| **CRIT-007** | E2E expansion — Scheduled | 📅 Phase 5 |
+
+## 📋 Troubleshooting (Updated 2026-05-23)
 
 ### Prisma Schema Issues
 If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client types:

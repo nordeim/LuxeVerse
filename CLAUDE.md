@@ -316,16 +316,25 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ## Last Updated
 
-**2026-05-22** — Post-Phase 3 Remediation: ai.service.ts with OpenAI integration + mock fallback, style-quiz page with 5-question quiz + tests, OutfitCard test suite, code quality fixes (removed `as any` x12, `z.enum()` → `z.union(literal)`), TypeScript strict zero errors, 48 tests passing.
+**2026-05-22** — Post-Phase 3 Remediation: ai.service.ts with OpenAI integration + mock fallback, style-quiz page with 5-question quiz + tests, OutfitCard test suite, code quality fixes (removed `as any` x12, `z.enum()` -> `z.union(literal)`), TypeScript strict zero errors, 48 tests passing.
 
 ### Reviews Router (Added 2026-05-22)
 - New tRPC router: `src/server/routers/review.ts` with full CRUD, voting, statistics, moderation, flagging (14 tests)
 - Registered in `src/server/routers/index.ts`
 - Legacy site testing summary: `docs/legacy-site-testing-summary.md`
 
-### Remediation Plan Execution (2026-05-22)
+### Remediation Plan Execution (Completed 2026-05-23)
 - **SavedOutfit router**: `src/server/routers/savedOutfit.ts` — CRUD (create/delete/list/update), owner auth, 4 tests (`savedOutfit.test.ts`), registered in `index.ts`
 - **Style-quiz `isComplete` fix**: Removed dual state (local `useState` + Zustand). `isComplete` now derived from `answers.length === totalSteps`. Removed `isComplete` from Zustand store and `partialize`
 - **AI stream history**: `api/ai/stream/route.ts` accepts `messages` query param and passes user message history to `ai.service.ts`
 - **E2E scaffold**: `playwright.config.ts` + `e2e/style-quiz.spec.ts` (3 tests). Vitest excludes `e2e/` from unit test runs
 - **Lighthouse budgets**: `lighthouserc.json` with LCP<2500, CLS<0.1, TBT<200, Performance≥90, Accessibility≥95
+
+### Critical Remediation Round 1 (Completed 2026-05-23)
+- **CRIT-001**: `global-error.tsx` with retry button + tests
+- **CRIT-002**: UI Primitives (`Button`, `Input`, `Dialog`, `Drawer`) with Radix + tests
+- **CRIT-003**: `next.config.ts` enriched with CSP, security headers
+- **CRIT-004**: `useCart` wired to tRPC mutations with fallback
+- **CRIT-005**: `useWishlist` wired to tRPC mutations with fallback
+- **CRIT-006**: Lighthouse CI config in `.github/workflows/ci.yml` (integration job pending)
+- **CRIT-007**: Expand E2E (scheduled for Phase 5)

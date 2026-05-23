@@ -190,3 +190,19 @@ Addressed TypeScript and Prisma schema synchronization issues from recent schema
 
 *See `docs/phase-1-completion.md` for full details.*
 
+---
+
+## Critical Remediation Round 1 (Completed 2026-05-23)
+
+Re-validated codebase against MEP. ~40 findings; 7 critical fixes applied TDD.
+
+| Fix | File | Description | Tests |
+|-----|------|-------------|-------|
+| **CRIT-001** | `src/app/global-error.tsx` | Next.js root error boundary: retry, error ID, dev stack trace | 3 tests |
+| **CRIT-002** | `src/components/ui/*.tsx` | UI primitives (`Button`, `Input`, `Dialog`, `Drawer`) with Radix, CVA, Tailwind | 13 tests |
+| **CRIT-003** | `next.config.ts` | Security headers: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy | - |
+| **CRIT-004** | `src/hooks/useCart.ts` | Wired to tRPC `cart.addItem/updateItem/removeItem` with try/catch fallback | - |
+| **CRIT-005** | `src/hooks/useWishlist.ts` | Wired to tRPC `wishlist.addItem/removeItem` with try/catch fallback | - |
+| **CRIT-006** | `.github/workflows/ci.yml` | Lighthouse CI config present; job pending Phase 5 | - |
+| **CRIT-007** | - | E2E expansion planned for Phase 5 | - |
+
