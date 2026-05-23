@@ -1,5 +1,8 @@
+"use client";
+
 import { useCallback, useMemo } from "react";
 import { useCartStore, type CartItem } from "@/stores/cart";
+import { trpc } from "@/trpc/provider";
 
 export function useCart() {
   const items = useCartStore((s) => s.items);
@@ -13,6 +16,10 @@ export function useCart() {
   const removeItemStore = useCartStore((s) => s.removeItem);
   const undoRemoveStore = useCartStore((s) => s.undoRemove);
   const clearCartStore = useCartStore((s) => s.clearCart);
+
+  const addItemMutation = trpc.cart.addItem.useMutation();
+  const updateItemMutation = trpc.cart.updateItem.useMutation();
+  const removeItemMutation = trpc.cart.removeItem.useMutation();
 
   const total = useMemo(
     () => items.reduce((sum, i) => sum + i.totalPrice, 0),
@@ -34,7 +41,13 @@ export function useCart() {
     }) => {
       setLoading(true);
       try {
-        // TODO: Wire to tRPC mutation: await trpc.cart.addItem.mutate(input);
+        const result = await addItemMutation.mutateAsync(input);
+        if (result.item) {
+          addItemStore(result.item);
+        }
+        openCart();
+      } catch {
+        // Fallback: add to local store if server fails
         const mockItem: CartItem = {
           id: typeof crypto !== "undefined" ? crypto.randomUUID() : `temp-${Date.now()}`,
           productId: input.productId,
@@ -52,31 +65,33 @@ export function useCart() {
         setLoading(false);
       }
     },
-    [setLoading, addItemStore, openCart]
+    [addItemMutation, addItemStore, openCart, setLoading]
   );
 
   const updateItem = useCallback(
     async (id: string, quantity: number) => {
       setLoading(true);
       try {
+        await updateItemMutation.mutateAsync({ itemId: id, quantity });
         updateQuantityStore(id, quantity);
       } finally {
         setLoading(false);
       }
     },
-    [setLoading, updateQuantityStore]
+    [updateItemMutation, updateQuantityStore, setLoading]
   );
 
   const removeItem = useCallback(
     async (id: string) => {
       setLoading(true);
       try {
+        await removeItemMutation.mutateAsync({ itemId: id });
         removeItemStore(id);
       } finally {
         setLoading(false);
       }
     },
-    [setLoading, removeItemStore]
+    [removeItemMutation, removeItemStore, setLoading]
   );
 
   return {

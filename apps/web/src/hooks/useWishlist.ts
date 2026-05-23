@@ -1,5 +1,8 @@
+"use client";
+
 import { useCallback, useMemo } from "react";
 import { useWishlistStore, type WishlistItem } from "@/stores/wishlist";
+import { trpc } from "@/trpc/provider";
 
 export function useWishlist(productId?: string, variantId?: string | null) {
   // Selector discipline: never .getState() in JSX
@@ -9,6 +12,9 @@ export function useWishlist(productId?: string, variantId?: string | null) {
   const addItemStore = useWishlistStore((s) => s.addItem);
   const removeItemStore = useWishlistStore((s) => s.removeItem);
   const toggleItemStore = useWishlistStore((s) => s.toggleItem);
+
+  const addItemMutation = trpc.wishlist.addItem.useMutation();
+  const removeItemMutation = trpc.wishlist.removeItem.useMutation();
 
   const isInWishlist = useMemo(() => {
     if (!productId) return false;
@@ -20,32 +26,45 @@ export function useWishlist(productId?: string, variantId?: string | null) {
   const addItem = useCallback(async (item: WishlistItem) => {
     setLoading(true);
     try {
-      // TODO: Wire to tRPC mutation: await trpc.wishlist.addItem.mutate(item);
+      await addItemMutation.mutateAsync(item);
+      addItemStore(item);
+    } catch {
+      // Fallback: add to local store if server fails
       addItemStore(item);
     } finally {
       setLoading(false);
     }
-  }, [setLoading, addItemStore]);
+  }, [addItemMutation, addItemStore, setLoading]);
 
   const removeItem = useCallback(async (pid: string, vid?: string | null) => {
     setLoading(true);
     try {
-      // TODO: Wire to tRPC mutation: await trpc.wishlist.removeItem.mutate({ productId: pid, variantId: vid });
+      await removeItemMutation.mutateAsync({ productId: pid, variantId: vid ?? null });
+      removeItemStore(pid, vid);
+    } catch {
       removeItemStore(pid, vid);
     } finally {
       setLoading(false);
     }
-  }, [setLoading, removeItemStore]);
+  }, [removeItemMutation, removeItemStore, setLoading]);
 
   const toggleItem = useCallback(async (item: WishlistItem) => {
     setLoading(true);
     try {
-      // TODO: Wire to tRPC toggle mutation
+      if (isInWishlist) {
+        await removeItemMutation.mutateAsync({ productId: item.productId, variantId: item.variantId ?? null });
+        removeItemStore(item.productId, item.variantId);
+      } else {
+        await addItemMutation.mutateAsync(item);
+        addItemStore(item);
+      }
+    } catch {
+      // Fallback: toggle local store
       toggleItemStore(item);
     } finally {
       setLoading(false);
     }
-  }, [setLoading, toggleItemStore]);
+  }, [addItemMutation, removeItemMutation, addItemStore, removeItemStore, toggleItemStore, setLoading, isInWishlist]);
 
   return { items, isInWishlist, isLoading, addItem, removeItem, toggleItem };
 }
