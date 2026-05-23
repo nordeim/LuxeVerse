@@ -400,3 +400,55 @@ Order	Sub-Phase	Priority	Blockers	Key Dependency
 Recommended Execution Order: 4.1 → 4.5 → 4.6 → 4.2 → 4.3 → 4.4
 This sequential order ensures that the Account Hub (4.6) can display real loyalty and sustainability data, and that UGC (4.4) is built on top of a stable user system. 
 
+---
+
+I have completed the implementation of the loyalty service and successfully passed all 12 tests, covering all core features: points calculation, adding points, redeeming points, tier upgrades, transaction reversal, and atomicity. 
+I am now ready to provide a comprehensive status update. I have finished the following:
+- Service implementation and tRPC router registration
+- Frontend components (LoyaltyDashboard, PointsHistory, RedeemPointsButton)
+- UI components (Card, Progress, Button, Input)
+- Quality Gates: TypeScript zero errors in new files, tests passing, coverage handled
+I am now prepared to report completion and move on to the next sub-phase (4.2: i18n) or mark Phase 4.1 as complete.</think>All 12 tests pass. Let me now provide a status update and prepare to move to the next sub-phase.
+Phase 4.1: Loyalty & Rewards Engine — COMPLETE
+What Was Implemented
+Component	Status	Details
+src/server/loyalty.service.ts	✅	Full loyalty service with createLoyaltyService() factory. Implements: calculatePoints, addPoints, redeemPoints, getHistory, adjustPoints, reverseTransaction. Atomic via $transaction. Tier thresholds: BRONZE 0, SILVER 1000, GOLD 5000, PLATINUM 10000.
+src/server/routers/loyalty.ts	✅	tRPC router with getHistory, getBalance, redeemPoints procedures.
+src/server/routers/index.ts	✅	Loyalty router registered in main app router.
+src/components/loyalty/LoyaltyDashboard.tsx	✅	Displays tier, loyalty/lifetime points, progress bar to next tier, tier benefits grid.
+src/components/loyalty/PointsHistory.tsx	✅	Lists point history with type badges (EARNED/REDEEMED/ADJUSTED), dates, amounts.
+src/components/loyalty/RedeemPointsButton.tsx	✅	Redemption form with validation, Zustand-like mutation handling.
+src/components/ui/Card.tsx	✅	Reusable Card, CardHeader, CardContent primitives.
+src/components/ui/Progress.tsx	✅	Progress bar with percentage display.
+src/components/ui/Button.tsx	✅	Button with variants (default, outline, ghost) and sizes.
+src/components/ui/Input.tsx	✅	Form input with consistent styling.
+prisma/schema.prisma	✅	Added PointHistory model, reverse relations in User and Order.
+Tests	✅	12/12 passing.
+Test Coverage
+Test	Description	Status
+BRONZE points calculation	10% of 100 = 10	✅
+GOLD points calculation	25% of 100 = 25	✅
+Non-positive totals	Returns 0	✅
+Add points	Increases loyalty/lifetime, creates PointHistory	✅
+Invalid user	Throws "User not found"	✅
+Tier upgrade (BRONZE→SILVER)	999→1009 crosses threshold	✅
+Tier upgrade (SILVER→GOLD)	4999→5009 crosses threshold	✅
+Redeem points	Decreases points, creates REDEEMED record	✅
+Insufficient points	Throws error	✅
+Reverse transaction	Reverses points for cancelled order	✅
+Non-existent order	Throws "Order not found"	✅
+Atomic rollback	Rolls back on mid-transaction failure	✅
+Quality Gates
+Gate	Status
+Tests pass (12/12)	✅
+TypeScript (new files)	✅ Zero errors
+Prisma schema sync	✅ pnpm db:generate run
+---
+Next: Phase 4.2 — Multi-language Support (i18n)
+Should I proceed with Phase 4.2? This involves:
+1. Installing next-intl
+2. Creating src/i18n/config.ts and messages/ directory
+3. Updating src/app/layout.tsx to support dynamic lang
+4. Adding locale routing middleware
+5. Implementing RTL support via CSS logical properties
+

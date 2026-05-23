@@ -60,6 +60,7 @@ model User {
   searchQueries       SearchQuery[]
   appointments        Appointment[]
   contentInteractions ContentInteraction[]
+  pointHistory        PointHistory[]
   stylist             Stylist?             @relation(fields: [stylistId], references: [id])
   stylistId           String?              @unique
 }
@@ -537,6 +538,7 @@ model Order {
 
   items   OrderItem[]
   returns Return[]
+  pointHistory PointHistory[]
 }
 
 model OrderItem {
@@ -779,4 +781,17 @@ model Editorial {
   locale      String    @default("en")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model PointHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  orderId     String?
+  order       Order?   @relation(fields: [orderId], references: [id])
+  amount      Int
+  type        String   // EARNED | REDEEMED | ADJUSTED
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
