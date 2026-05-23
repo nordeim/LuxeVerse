@@ -222,6 +222,40 @@ ANALYZE → PLAN → VALIDATE → IMPLEMENT → VERIFY → DELIVER
 **`verbatimModuleSyntax: true` — Forces `import type` for type-only imports.**
 
 ### 3.2 Tailwind CSS v4 — CSS-First ONLY
+> **CLI Note**: Tailwind v4 moved CLI to `@tailwindcss/cli`
+> Install separately: `pnpm add -D @tailwindcss/cli`
+
+Sample `package.json` :
+```json
+{
+  "name": "test-params",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^20.19.41",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.9.3"
+  }
+}
+```
+
 ```css
 /* apps/web/src/app/globals.css */
 @import "tailwindcss";
