@@ -4,14 +4,13 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { AccountOverview } from "@/components/account/AccountOverview";
-import { defaultLocale } from "@/i18n/routing";
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      redirect(`/${defaultLocale}/login?callbackUrl=/account`);
+      redirect(`/login?callbackUrl=/account`);
     }
   }, [status]);
 

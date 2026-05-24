@@ -5,38 +5,36 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/server/loyalty.service.test.ts (12 tests) 55ms
- ✓ next.config.test.ts (2 tests) 10ms
- ✓ src/server/ai.service.test.ts (6 tests) 1059ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1031ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 196ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 211ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1038ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1016ms
 stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/drawer.test.tsx (2 tests) 380ms
-   ✓ Drawer > opens and closes drawer  326ms
-stderr | src/app/global-error.test.tsx > GlobalError > renders error message and retry button
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 266ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 1011ms
+   ✓ aiRouter > generateOutfit > returns an outfit with confidence < 1.0  987ms
+stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/components/ui/dialog.test.tsx (1 test) 215ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 133ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 215ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 207ms
+stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
 [GlobalError] Unhandled error: Error: Test error
-    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/global-error.test.tsx:13:23
-    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
-    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
-    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
-    at new Promise (<anonymous>)
-    at runWithTimeout (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10)
-    at runTest (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12)
-[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
-    at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
-    at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8) {
-  digest: [32m'error-123'[39m
-}
-
-stderr | src/app/global-error.test.tsx > GlobalError > calls reset when 'Try again' is clicked
-[GlobalError] Unhandled error: Error: Test error
-    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/global-error.test.tsx:30:23
+    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/global-error.test.tsx:7:32
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
@@ -47,72 +45,18 @@ stderr | src/app/global-error.test.tsx > GlobalError > calls reset when 'Try aga
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
-stderr | src/app/global-error.test.tsx > GlobalError > shows stack trace in development mode
-[GlobalError] Unhandled error: Error: Dev error
-    at Test (file.tsx:1)
+ ✓ src/app/global-error.test.tsx (1 test) 89ms
+ ✓ src/server/routers/review.test.ts (14 tests) 70ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 43ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 30ms
+ ✓ src/server/routers/search.test.ts (9 tests) 36ms
+ ✓ src/i18n/config.test.ts (5 tests) 12ms
+ ✓ src/lib/utils.test.ts (2 tests) 8ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 14ms
+ ✓ next.config.test.ts (2 tests) 9ms
 
- ✓ src/app/global-error.test.tsx (3 tests) 252ms
-stderr | src/components/ui/dialog.test.tsx > Dialog > has correct aria roles
-Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+ Test Files  18 passed (18)
+      Tests  91 passed (91)
+   Start at  15:05:47
+   Duration  11.64s (transform 781ms, setup 5.04s, collect 3.34s, tests 3.80s, environment 12.68s, prepare 2.48s)
 
- ✓ src/components/ui/dialog.test.tsx (2 tests) 497ms
-   ✓ Dialog > opens and closes dialog  426ms
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 276ms
- ✓ src/server/routers/ai.test.ts (5 tests) 249ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 212ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 190ms
- ✓ src/server/routers/review.test.ts (14 tests) 98ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 40ms
- ✓ src/server/routers/search.test.ts (9 tests) 41ms
- ✓ src/lib/utils.test.ts (2 tests) 9ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 15ms
-
-⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  src/components/ui/button.test.tsx [ src/components/ui/button.test.tsx ]
-Error: Failed to resolve import "./button" from "src/components/ui/button.test.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/project/LuxeVerse/apps/web/src/components/ui/button.test.tsx:3:23
-  2  |  import { describe, it, expect, vi } from "vitest";
-  3  |  import { render, screen, fireEvent } from "@testing-library/react";
-  4  |  import { Button } from "./button";
-     |                          ^
-  5  |  describe("Button", () => {
-  6  |    it("renders children", () => {
- ❯ TransformPluginContext._formatLog ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:29019:43
- ❯ TransformPluginContext.error ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:29016:14
- ❯ normalizeUrl ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27139:18
- ❯ ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27197:32
- ❯ TransformPluginContext.transform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27165:4
- ❯ EnvironmentPluginContainer.transform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:28817:14
- ❯ loadAndTransform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:22686:26
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
-
- FAIL  src/components/ui/input.test.tsx [ src/components/ui/input.test.tsx ]
-Error: Failed to resolve import "./input" from "src/components/ui/input.test.tsx". Does the file exist?
-  Plugin: vite:import-analysis
-  File: /home/project/LuxeVerse/apps/web/src/components/ui/input.test.tsx:3:22
-  2  |  import { describe, it, expect } from "vitest";
-  3  |  import { render, screen } from "@testing-library/react";
-  4  |  import { Input } from "./input";
-     |                         ^
-  5  |  describe("Input", () => {
-  6  |    it("renders input with label", () => {
- ❯ TransformPluginContext._formatLog ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:29019:43
- ❯ TransformPluginContext.error ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:29016:14
- ❯ normalizeUrl ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27139:18
- ❯ ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27197:32
- ❯ TransformPluginContext.transform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:27165:4
- ❯ EnvironmentPluginContainer.transform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:28817:14
-
- ❯ loadAndTransform ../../node_modules/.pnpm/vite@7.3.3_@types+node@22.19.19_jiti@2.7.0_lightningcss@1.32.0_terser@5.48.0/node_modules/vite/dist/node/chunks/config.js:22686:26
- Test Files  2 failed | 15 passed (17)
-      Tests  81 passed (81)
-   Start at  06:57:01
-   Duration  13.23s (transform 1.02s, setup 5.85s, collect 4.30s, tests 3.38s, environment 15.35s, prepare 3.22s)
-
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
-
- ELIFECYCLE  Test failed. See above for more details.

@@ -2,13 +2,12 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { LoyaltyDashboard } from "@/components/loyalty/LoyaltyDashboard";
-import { defaultLocale } from "@/i18n/routing";
 
 export default async function LoyaltyPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    redirect(`/${defaultLocale}/login?callbackUrl=/loyalty`);
+    redirect(`/login?callbackUrl=/loyalty`);
   }
 
   return (

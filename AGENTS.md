@@ -61,16 +61,17 @@ In Next.js 16, `params` behaves differently for **layouts** vs **pages**:
 - **Layouts (`layout.tsx`, `template.tsx`)**: `params` is a `Promise`. You MUST `await` it.
   ```tsx
   export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
-    const { locale } = await params; // ✅ CORRECT
+    const { locale } = await params; // ✅ CORRECT for layouts
   }
   ```
-- **Pages (`page.tsx`)**: `params` is a **plain object**. Use direct destructuring.
+- **Pages (`page.tsx`)**: `params` is a **plain object**. Use direct destructuring. Do NOT use `await`.
   ```tsx
-  export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params; // ✅ CORRECT (Next.js 16 still types as Promise, but it's already resolved)
+  export default function Page({ params }: { params: { slug: string } }) {
+    const { slug } = params; // ✅ CORRECT for pages (no await)
   }
   ```
-- **Note**: The Next.js 16 types still reflect `Promise<...>` in many cases, but the runtime behavior differs. Always check the file type before refactoring.
+- **Note**: The Next.js 16 types still reflect `Promise<...>` in some IDE definitions, but the runtime behavior for pages is a plain object. `await` on a plain object returns the object itself, so it won't crash, but it is semantically incorrect and may cause edge-case issues. Always use direct destructuring for pages.
+- **Migration Rule**: If a file is `page.tsx` (or any page component), remove `async` and `await` from `params`. If it's `layout.tsx`, keep `async` and `await`.
 
 ### 3. React 19: `JSX.Element` is BANNED
 The global `JSX` namespace is removed. 
@@ -110,11 +111,13 @@ TS errors like `TS2339` (missing property) are usually solved by regenerating.
 
 ## Critical Gotchas
 
-- **R3F Components**: Cannot be `lazy()` destructured. Direct import + `<Suspense>` only.
-- **Zod v4 API**: Use `result.error.issues`, NOT `.errors`.
-- **Testing**: `screen.getByText` is exact match. Use `getAllByText` or `toHaveTextContent` for partials/duplicates.
-- **Accessibility**: WCAG AAA target. `useFocusTrap` is mandatory for all overlays.
-- **Motion**: `framer-motion`. Respect `useReducedMotion()`.
+- **PWA Service Worker**: Turbopack is incompatible with custom `sw.ts` (workbox-webpack-plugin). Use auto-generated SW via `next-pwa` (no `swSrc`). Build with `--webpack` flag if custom SW is needed.
+- **i18n `dir`**: Never hardcode `dir="ltr"`. Use `dir={isRTL(locale) ? "rtl" : "ltr"}` via `@/i18n/config`.
+- **LanguageSwitcher**: Must use `useRouter().push()`, never `window.location.href`.
+- **Redirect URLs**: Never hardcode `/${defaultLocale}` in redirects. Use current locale or let middleware handle prefixing.
+- **Next.js 16 `params`真理**: Layouts (Promise, await) vs Pages (plain object, no await). The types still say Promise for pages, but runtime is plain object. Ignore the type lie for pages.
+- **next-pwa + Turbopack**: Custom `sw.ts` causes build failures. Use auto-generated mode (no `swSrc`) or force `--webpack` flag.
+- **superjson for tRPC**: Prisma `Date` fields serialize to ISO strings over tRPC. Register `superjson` on both server (`transformer: superjson`) and client (`httpBatchLink`) to preserve `Date` objects.
 
 ## Building and Running
 
