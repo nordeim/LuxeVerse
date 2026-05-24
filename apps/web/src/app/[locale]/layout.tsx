@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from "next/font/google";
@@ -30,14 +29,14 @@ const jetbrains = JetBrains_Mono({
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export default async function LocaleLayout({
   children,
   params,
-}: LocaleLayoutProps): Promise<ReactElement> {
-  const locale = params.locale;
+}: LocaleLayoutProps) {
+  const { locale } = await params;
 
   // Validate locale
   if (!locales.includes(locale as (typeof locales)[number])) {

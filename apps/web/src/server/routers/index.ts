@@ -7,6 +7,9 @@ import { productRouter } from "./product";
 import { reviewRouter } from "./review";
 import { savedOutfitRouter } from "./savedOutfit";
 import { searchRouter } from "./search";
+import { ugcRouter } from "./ugc";
+import { userRouter } from "./user";
+import { wishlistRouter } from "./wishlist";
 
 export const appRouter = router({
   ai: aiRouter,
@@ -17,6 +20,9 @@ export const appRouter = router({
   review: reviewRouter,
   savedOutfit: savedOutfitRouter,
   search: searchRouter,
+  ugc: ugcRouter,
+  user: userRouter,
+  wishlist: wishlistRouter,
 });
 
 // Export type for client

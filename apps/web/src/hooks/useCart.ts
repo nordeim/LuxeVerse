@@ -42,8 +42,8 @@ export function useCart() {
       setLoading(true);
       try {
         const result = await addItemMutation.mutateAsync(input);
-        if (result.item) {
-          addItemStore(result.item);
+        if (result.items) {
+          addItemStore(result.items[0]);
         }
         openCart();
       } catch {

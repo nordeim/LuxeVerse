@@ -200,6 +200,12 @@ export function createLoyaltyService(prisma: PrismaClient): LoyaltyService {
           throw new Error("No points to reverse for this order");
         }
 
+        // Reset order points to prevent double-reversal
+        await tx.order.update({
+          where: { id: orderId },
+          data: { pointsEarned: 0 },
+        });
+
         const updatedUser = await tx.user.update({
           where: { id: order.userId },
           data: {

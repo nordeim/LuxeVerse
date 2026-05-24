@@ -1,27 +1,37 @@
 
 > @luxeverse/web@0.1.0 build /home/project/LuxeVerse/apps/web
-> next build
+> next build --webpack
 
-▲ Next.js 16.2.6 (Turbopack)
+▲ Next.js 16.2.6 (webpack)
 - Environments: .env
 
 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
   Creating an optimized production build ...
-✓ Compiled successfully in 9.5s
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: /home/project/LuxeVerse/apps/web/public/sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+✓ Compiled successfully in 11.6s
   Running TypeScript ...
-  Finished TypeScript in 9.5s ...
+  Finished TypeScript in 11.8s ...
   Collecting page data using 3 workers ...
-  Generating static pages using 3 workers (0/7) ...
-  Generating static pages using 3 workers (1/7) 
+  Generating static pages using 3 workers (0/10) ...
 ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
-  Generating static pages using 3 workers (3/7) 
-  Generating static pages using 3 workers (5/7) 
-✓ Generating static pages using 3 workers (7/7) in 412ms
+  Generating static pages using 3 workers (2/10) 
+  Generating static pages using 3 workers (4/10) 
+  Generating static pages using 3 workers (7/10) 
+✓ Generating static pages using 3 workers (10/10) in 483ms
   Finalizing page optimization ...
+  Collecting build traces ...
 
 Route (app)
-┌ ƒ /
+┌ ○ /
 ├ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/account
+├ ƒ /[locale]/pwa-test
 ├ ƒ /account
 ├ ƒ /api/ai/stream
 ├ ƒ /api/auth/[...nextauth]
@@ -30,10 +40,12 @@ Route (app)
 ├ ƒ /editorial
 ├ ƒ /editorial/[slug]
 ├ ○ /login
+├ ƒ /loyalty
 ├ ○ /register
 ├ ○ /search
 ├ ƒ /shop
-└ ƒ /shop/[category]/[slug]
+├ ƒ /shop/[category]/[slug]
+└ ○ /style-quiz
 
 
 ƒ Proxy (Middleware)

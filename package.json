@@ -20,5 +20,11 @@
     "prettier": "^3.8.3",
     "turbo": "^2.9.14",
     "typescript": "^6.0.0"
+  },
+  "dependencies": {
+    "workbox-core": "^7.4.1",
+    "workbox-precaching": "^7.4.1",
+    "workbox-routing": "^7.4.1",
+    "workbox-strategies": "^7.4.1"
   }
 }

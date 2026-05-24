@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import type { ReactElement } from "react";
 import { createProductService } from "@/server/services/product.service";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductActions } from "@/components/product/ProductActions";
@@ -9,11 +8,11 @@ import { StickyAddToBar } from "@/components/product/StickyAddToBar";
 export const dynamic = "force-dynamic";
 
 interface PDPProps {
-  params: { category: string; slug: string };
+  params: Promise<{ category: string; slug: string }>;
 }
 
-export default async function ProductPage({ params }: PDPProps): Promise<ReactElement> {
-  const { slug } = params;
+export default async function ProductPage({ params }: PDPProps) {
+  const { slug } = await params;
 
   const service = createProductService();
   const product = await service.getBySlug(slug);

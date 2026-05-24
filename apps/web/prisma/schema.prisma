@@ -61,6 +61,7 @@ model User {
   appointments        Appointment[]
   contentInteractions ContentInteraction[]
   pointHistory        PointHistory[]
+  ugcContent          UGCContent[]
   stylist             Stylist?             @relation(fields: [stylistId], references: [id])
   stylistId           String?              @unique
 }
@@ -792,6 +793,24 @@ model PointHistory {
   amount      Int
   type        String   // EARNED | REDEEMED | ADJUSTED
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================================================
+// USER-GENERATED CONTENT (MEP §4.4)
+// ============================================================================
+
+model UGCContent {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // PHOTO | REVIEW | STYLE_GUIDE
+  url         String
+  caption     String?
+  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  productTags String[] // Product IDs tagged in the content
+  likes       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

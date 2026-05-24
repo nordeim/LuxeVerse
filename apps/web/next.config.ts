@@ -1,4 +1,5 @@
-import type { NextConfig } from "next';
+import type { NextConfig } from "next";
+import withPWA from "@ducanh2912/next-pwa";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -43,4 +44,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  // Auto-generated SW mode (GenerateSW) — more reliable than custom swSrc
+  // with Next.js 16 Turbopack. Cache strategies: assets (CacheFirst),
+  // API (NetworkFirst), images (StaleWhileRevalidate)
+})(nextConfig);

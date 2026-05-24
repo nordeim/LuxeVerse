@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "cd ../../ && bash scripts/validate-deprecated-twind.sh && bash scripts/validate-colors.sh && echo 'All lint checks passed'",
     "test": "vitest run",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@luxeverse/ui": "workspace:*",
     "@luxeverse/utils": "workspace:*",
     "@node-rs/bcrypt": "^1.10.7",

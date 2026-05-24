@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 interface ArticlePageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // Mock data fetch. In production: await prisma.editorial.findUnique({ where: { slug } })
@@ -34,8 +34,8 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function ArticlePage({ params }: ArticlePageProps) {
-  const { slug } = params;
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const { slug } = await params;
   if (slug !== ARTICLE_MOCK.slug) notFound();
 
   return (

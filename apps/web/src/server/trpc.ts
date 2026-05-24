@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
 import type { Context } from "./context";
 
 /**
@@ -6,6 +7,7 @@ import type { Context } from "./context";
  * Provides typed RPC over HTTP with Zod input validation at boundaries.
  */
 const t = initTRPC.context<Context>().create({
+  transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
       ...shape,

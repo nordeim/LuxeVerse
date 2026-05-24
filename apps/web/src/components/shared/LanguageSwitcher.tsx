@@ -1,11 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { locales } from "@/i18n/routing";
 import { useCallback } from "react";
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Extract current locale from pathname (e.g., /en/shop → en)
   const currentLocale = pathname.split("/")[1] ?? "en";
@@ -18,9 +19,9 @@ export function LanguageSwitcher() {
         /^\/${currentLocale}(\/|$)/,
         `/${newLocale}$1`
       );
-      window.location.href = newPathname; // Full reload to apply new locale
+      router.push(newPathname);
     },
-    [currentLocale, pathname]
+    [currentLocale, pathname, router]
   );
 
   return (

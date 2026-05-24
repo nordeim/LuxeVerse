@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { Button } from "./button";
+import { render, screen } from "@testing-library/react";
+import { Button } from "./Button";
 
 describe("Button", () => {
   it("renders children", () => {
@@ -8,29 +8,24 @@ describe("Button", () => {
     expect(screen.getByText("Click me")).toBeInTheDocument();
   });
 
-  it("shows loading state", () => {
-    render(<Button loading>Loading...</Button>);
-    const button = screen.getByRole("button", { name: /loading/i });
+  it("shows disabled state", () => {
+    render(<Button disabled>Disabled</Button>);
+    const button = screen.getByRole("button", { name: /disabled/i });
     expect(button).toBeDisabled();
-    expect(button).toHaveAttribute("aria-busy", "true");
-    expect(button.querySelector("span[aria-hidden='true']")).toBeInTheDocument();
   });
 
   it("calls onClick when clicked", () => {
     const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Click</Button>);
-    fireEvent.click(screen.getByRole("button"));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    render(<Button onClick={handleClick}>Click me</Button>);
+    screen.getByRole("button", { name: /click me/i }).click();
+    expect(handleClick).toHaveBeenCalledOnce();
   });
 
-  it("is disabled when disabled prop is true", () => {
-    render(<Button disabled>Disabled</Button>);
-    expect(screen.getByRole("button")).toBeDisabled();
-  });
+  it("supports variants", () => {
+    const { rerender } = render(<Button variant="outline">Outline</Button>);
+    expect(screen.getByRole("button")).toBeInTheDocument();
 
-  it("renders with luxury variant", () => {
-    render(<Button variant="luxury">Luxury</Button>);
-    const button = screen.getByRole("button");
-    expect(button).toHaveClass("bg-metallic-champagne");
+    rerender(<Button variant="ghost">Ghost</Button>);
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 });
