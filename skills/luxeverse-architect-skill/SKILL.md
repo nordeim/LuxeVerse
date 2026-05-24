@@ -754,7 +754,7 @@ export const config = { matcher: ["/((?!_next|api|static|.*\\.).*)", "/api/:path
 
 ---
 
-## 5. The 15 Critical Agent Mistakes (Field-Tested Fixes)
+## 5. The 18+ Critical Agent Mistakes (Field-Tested Fixes)
 
 ### Mistake #1: `any` in Service Layer
 **Fix**: See §4.2. Use `Prisma.CartGetPayload<IncludeShape>`.
@@ -832,18 +832,116 @@ export default function Page({ params }: Props) {
 ```
 **Why**: Next.js 16 App Router changed `params` from a resolved Promise to a plain object at runtime. `await` on a plain object throws no error but is semantically wrong and can cause subtle hydration mismatches.
 
-### Mistake #17: `JSX.Element` Return Type in React 19
-**Fix**: Remove explicit `: JSX.Element` / `: ReactElement` return types entirely. TypeScript infers them.
+### Mistake #17: Hardcoding `dir="ltr"` in i18n Layouts
+**Fix**: Use `dir={isRTL(locale) ? "rtl" : "ltr"}` always. Never hardcode.
 ```tsx
-// ❌ WRONG (React 19)
-export function HeroSection(): JSX.Element { ... }
+// ❌ WRONG — breaks Arabic, Hebrew, Persian
+<html lang={locale} dir="ltr">
 
-// ✅ CORRECT (inferred return type)
-export function HeroSection() { ... }
+// ✅ CORRECT — uses `isRTL(locale)` from `@/i18n/config`
+<html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
 ```
-**Why**: React 19 removed the global `JSX` namespace. Explicit `JSX.Element` triggers `TS2307: Cannot find namespace 'JSX'`. If you absolutely need an explicit type, use `import type { ReactElement } from "react"`, but inferred is preferred.
+**Why**: i18n without RTL is incomplete. `isRTL` must be centralized in `src/i18n/config.ts` and read everywhere (layout, language switcher, typography). RTL isn't just about text direction: it needs CSS logical properties (`margin-inline`, `padding-inline`, `text-align: start`) in `globals.css`.
+**File**: `src/app/[locale]/layout.tsx`
 
-### Mistake #18: `useOptimistic` for Simple Boolean Toggles
+### Mistake #18: PWA Build with next-pwa + Turbopack
+**Fix**: Use `--webpack` flag. Do NOT use `swSrc` with Turbopack.
+```json
+// package.json build script
+{
+  "scripts": {
+    "build": "next build --webpack"
+  }
+}
+```
+**Why**: `@ducanh2912/next-pwa` uses `workbox-webpack-plugin`, which Turbopack cannot process. The `--webpack` flag forces Next.js to use webpack during the build phase.
+**File**: `package.json`, `next.config.ts`
+
+### Mistake #23: i18n Select without `aria-label`
+**Fix**: Always add a localized `aria-label` to language switchers.
+```tsx
+// ❌ WRONG — screen readers announce 'Select'
+<select value={locale} onChange={handleChange}>
+
+// ✅ CORRECT — uses `useTranslations`
+<select 
+  aria-label={t('languageSwitcher.selectLanguage')}
+  value={locale} 
+  onChange={handleChange}
+>
+```
+**Why**: Hardcoded `aria-label="Select language"` only works in English. Use `next-intl`'s `useTranslations` to translate the label for every locale.
+**File**: `src/components/shared/LanguageSwitcher.tsx`
+
+### Mistake #24: Next.js 16 `params` — Treating Layouts as Pages
+**Fix**: Layouts `params` are still `Promise`, never plain.
+```tsx
+// ❌ WRONG — treating layout `params` as a plain object
+interface LayoutProps {
+  params: { locale: string };
+}
+export default async function Layout({ params }: LayoutProps) {
+  const { locale } = params; // ❌ Still typed as Promise in Next.js 16
+  // ...
+}
+
+// ✅ CORRECT — layout `params` are always a Promise
+interface LayoutProps {
+  params: Promise<{ locale: string }>;
+}
+export default async function Layout({ params }: LayoutProps) {
+  const { locale } = await params; // ✅ CORRECT (layout only!)
+  // ...
+}
+```
+**Why**: Next.js 16 `params` duality (layout vs page) is easy to confuse. Layouts still receive a `Promise` for async nested resolution, while pages use a plain object. This requires different typing and access patterns. Always re-check if your file is a layout (Promise) or page (plain) before refactoring.
+**File**: All `layout.tsx` and `page.tsx` files
+
+### Mistake #25: `reverseTransaction` Without Idempotency
+**Fix**: Reset `order.pointsEarned` before or after reversing user points.
+```tsx
+// ❌ WRONG — no order state reset
+await tx.user.update({ data: { loyaltyPoints: { decrement: pointsToReverse } } });
+
+// ✅ CORRECT — reset order points to prevent double-reversal
+await tx.order.update({
+  where: { id: orderId },
+  data: { pointsEarned: 0 },
+});
+await tx.user.update({ data: { loyaltyPoints: { decrement: pointsToReverse } } });
+```
+**Why**: If `reverseTransaction` is called twice (e.g., double-click, race condition, or retry), it would reverse the points twice unless the order state is reset to zero.
+**File**: `src/server/loyalty.service.ts`
+
+### Mistake #26: Skipping `useReducer` for Complex UI State
+**Fix**: When state updates are complex or involve multi-step logic, use `useReducer`.
+```tsx
+// ❌ WRONG — nested setState hell
+const [count, setCount] = useState(0);
+const increment = () => setCount(c => c + 1);
+const decrement = () => setCount(c => c - 1);
+const reset = () => setCount(0);
+
+// ✅ CORRECT — dispatch actions
+const [state, dispatch] = useReducer(reducer, initialState);
+dispatch({ type: 'increment' });
+```
+**Why**: `useReducer` centralizes state transitions, making them predictable and testable. It's required for complex state machines (multi-step forms, wizards) and simplifies batching.
+**When to use**: When a component has more than 2 related state variables, or transitions depend on previous state.
+
+### Mistake #27: Forgetting `lang` on `<html>`
+**Fix**: Always set `lang` dynamically from the locale prop.
+```tsx
+// ❌ WRONG — hardcoded
+<html lang="en">
+
+// ✅ CORRECT — dynamic
+<html lang={locale}>
+```
+**Why**: The `lang` attribute is crucial for screen readers, spell-checkers, and search engines. It's not just about RTL; it's about semantics.
+**File**: `src/app/[locale]/layout.tsx`
+
+### Mistake #28: `useOptimistic` for Simple Boolean Toggles
 **Fix**: Use `useState` instead. `useOptimistic` is for complex state where you need a separate "optimistic" branch from the server-confirmed branch.
 ```tsx
 // ❌ WRONG — overcomplicated for a simple toggle
@@ -856,7 +954,7 @@ setIsAdded(true);
 ```
 **When to use `useOptimistic`**: Multi-step forms, cart quantity updates, message sending — where the server response will eventually confirm/reject the optimistic state. NOT for simple boolean toggles.
 
-### Mistake #19: Emojis in UI
+### Mistake #24: Emojis in UI
 **Fix**: Replace ALL emojis with Lucide icons (or custom SVGs).
 ```tsx
 // ❌ WRONG (emoji)
@@ -868,7 +966,7 @@ import { Camera } from "lucide-react";
 ```
 **Why**: Emojis render inconsistently across platforms, break accessibility (screen readers may read them as "camera with flash" or not at all), and violate the anti-generic mandate.
 
-### Mistake #20: `async` / `Promise<>` on Components Without Data Fetch
+### Mistake #25: `async` / `Promise<>` on Components Without Data Fetch
 **Fix**: Remove `async` and return type when a component only renders static/mock data.
 ```tsx
 // ❌ WRONG — async without any await inside
@@ -879,7 +977,7 @@ export function FeaturedCollections() { ... }
 ```
 **Why**: Marking a component `async` when it doesn't fetch data is misleading to other developers and can cause subtle TypeScript errors. Only use `async` when you truly `await` a server-side fetch.
 
-### Mistake #21: `window.location.href` for Internal Navigation in Client Islands
+### Mistake #26: `window.location.href` for Internal Navigation in Client Islands
 **Fix**: Use `useRouter().push()` from `next/navigation` for all internal navigation.
 ```tsx
 // ❌ WRONG (full page reload!)
@@ -891,7 +989,7 @@ router.push(`/search?q=${query}`);
 ```
 **Why**: `window.location.href` causes a full page reload, losing all client-side state (Zustand, React Query, scroll position). `useRouter().push()` preserves the SPA experience.
 
-### Mistake #22: `notFound()` Import When Building Static Pages Without DB
+### Mistake #27: `notFound()` Import When Building Static Pages Without DB
 **Fix**: If a page calls Prisma during build time (static generation) and the DB isn't available, the build will crash. Either:
 1. Add `export const dynamic = "force-dynamic"` to skip static generation, OR
 2. Provide mock data fallback in the component.
@@ -911,14 +1009,14 @@ async function SearchResults() {
 }
 ```
 
-### Mistake #23: Missing `@types/three` for R3F Components
+### Mistake #28: Missing `@types/three` for R3F Components
 **Fix**: Install `@types/three` as a dev dependency when using `@react-three/fiber` and `@react-three/drei`.
 ```bash
 pnpm add -D @types/three
 ```
 **Why**: `@react-three/fiber` and `@react-three/drei` use Three.js types internally. Without `@types/three`, TypeScript will fail with `Cannot find module 'three' or its corresponding type declarations`.
 
-### Mistake #24: Assuming `prisma generate` is Automatic After Schema Changes
+### Mistake #29: Assuming `prisma generate` is Automatic After Schema Changes
 **Fix**: Always run `prisma generate` (or `pnpm db:generate`) immediately after modifying `prisma/schema.prisma`.
 **Why**: Prisma Client types are code-generated from the schema. If the schema changes but the types aren't regenerated, TypeScript will fail with `TS2339: Property 'X' does not exist on type 'Y'`. The Prisma Client package in `node_modules` is stale.
 **Symptoms**:
@@ -932,7 +1030,7 @@ error TS2322: Property 'totalPrice' is missing in type '{ ... }'.
 alias pgg="cd apps/web && pnpm db:generate && cd ../.."
 ```
 
-### Mistake #25: Forgetting to Update `prisma.model.create()` Calls After Schema Changes
+### Mistake #30: Forgetting to Update `prisma.model.create()` Calls After Schema Changes
 **Fix**: When adding a new required field to a Prisma model, every `prisma.model.create()` in the codebase must be updated to include that field. Run `tsc --noEmit` to find all occurrences.
 **Why**: Prisma makes new required fields non-optional at the TypeScript level. A model with a new `totalPrice Decimal @db.Decimal(10, 2)` field will fail at `prisma.cartItem.create({ data: { ... } })` unless `totalPrice` is provided.
 **Example**:
@@ -955,12 +1053,12 @@ await prisma.cartItem.create({
 ```
 **Prevention**: Add a CI step that runs `pnpm typecheck` before any migration or build step. This catches type mismatches between code and schema before they reach production.
 
-### Mistake #26: Treating `trending` or `rating` as Standard Prisma Fields Without Schema Verification
+### Mistake #31: Treating `trending` or `rating` as Standard Prisma Fields Without Schema Verification
 **Fix**: Before using Prisma aggregations like `viewCount`, `rating`, or `trending`, verify the field exists in `schema.prisma`.
 **Why**: These are often business-logic fields that sound like schema fields but may not be implemented yet. If `viewCount` is not in the schema, `prisma.product.findMany({ orderBy: { viewCount: "desc" } })` will throw a runtime error: "Unknown field `viewCount`".
 **Prevention**: When implementing a feature that relies on schema fields, always check the schema first. Don't assume a common-sounding field like `rating` or `viewCount` exists just because the product domain implies it.
 
-### Mistake #27: Using Raw `<a>` Tags for Internal Navigation
+### Mistake #32: Using Raw `<a>` Tags for Internal Navigation
 **Fix**: Always use Next.js `<Link>` for internal app navigation.
 ```tsx
 // ❌ WRONG - Triggers full page reload
@@ -972,7 +1070,7 @@ import Link from "next/link";
 ```
 **Why**: Raw `<a>` tags bypass the Next.js router, causing a full page reload. This destroys client-side state (Zustand stores, React Query cache, scroll position) and negates the SPA benefits. Use `<Link>` for all internal navigation and `<a>` only for external URLs.
 
-### Mistake #28: Assuming a Component Exists Just Because It's Documented
+### Mistake #33: Assuming a Component Exists Just Because It's Documented
 **Fix**: Always verify component existence with `ls` or `glob` before claiming a component is "missing."
 **Why**: Documentation like `phase-2_gap_analysis.md` may claim 34 files are missing when in fact most of them exist. The gap between docs and code is real. Verify before planning remediation.
 **Verification Command**:
@@ -982,7 +1080,7 @@ glob "src/hooks/*.ts"
 glob "src/stores/*.ts"
 ```
 
-### Mistake #29: Using `z-[400]` or Arbitrary `z-index` Values in Tailwind v4
+### Mistake #34: Using `z-[400]` or Arbitrary `z-index` Values in Tailwind v4
 **Fix**: Use Tailwind v4's `z-<number>` tokens. If `z-[400]` is needed, add `--z-400: 400` to `@theme inline`.
 **Why**: Arbitrary values in brackets are harder to manage and may be accidentally overridden. Using tokens ensures a single source of truth for z-index values.
 **Example**:
@@ -1785,7 +1883,7 @@ export default nextConfig;
 
 ### 14.6 New Mistakes (#24–#28)
 
-#### Mistake #24: `next lint` Still Used in Next.js 16
+#### Mistake #29: `next lint` Still Used in Next.js 16
 **Fix**: Replace `next lint` with `eslint .` or shell validation scripts.
 ```json
 // ❌ WRONG
@@ -1795,7 +1893,7 @@ export default nextConfig;
 "lint": "cd ../../ && bash scripts/validate-deprecated-twind.sh && bash scripts/validate-colors.sh"
 ```
 
-#### Mistake #25: Forgetting to Run Validation Scripts Before Commit
+#### Mistake #30: Forgetting to Run Validation Scripts Before Commit
 **Fix**: Add to pre-commit hook or CI pipeline.
 ```bash
 # .github/workflows/ci.yml
@@ -1803,7 +1901,7 @@ export default nextConfig;
 - run: bash scripts/validate-colors.sh
 ```
 
-#### Mistake #26: Assuming `params` is a Typed Object
+#### Mistake #31: Assuming `params` is a Typed Object
 **Fix**: In Next.js 16, `params` is a plain object but **NOT** strongly typed by default. Add your own type.
 ```tsx
 // ❌ WRONG — params might not have the type you expect
@@ -1820,13 +1918,13 @@ export default function Page({ params }: PageProps) {
 }
 ```
 
-#### Mistake #27: Missing `@types/three` in Dev Dependencies
+#### Mistake #32: Missing `@types/three` in Dev Dependencies
 **Fix**: Always install `@types/three` when using R3F.
 ```bash
 pnpm add -D @types/three
 ```
 
-#### Mistake #28: Using `flex-shrink-0` Instead of `shrink-0` in Tailwind v4
+#### Mistake #33: Using `flex-shrink-0` Instead of `shrink-0` in Tailwind v4
 **Fix**: `flex-shrink-0` is a v3 utility. In v4, use `shrink-0`.
 ```html
 <!-- ❌ WRONG -->
