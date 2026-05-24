@@ -21,10 +21,13 @@ LuxeVerse redefines luxury shopping by merging **cinematic storytelling**, **AI-
 |-------|---------|-------------|
 | 🎬 | Cinematic UI | Editorial layouts, luxury animation curves, intentional whitespace |
 | 🤖 | AI Stylist | Outfit generation, size recommendations, conversational shopping |
+| 💎 | Loyalty Program | Tiered points (BRONZE→PLATINUM), redeemable rewards, history tracking |
+| 🌍 | i18n PWA | Multi-language (EN/FR/AR), offline-capable installable app |
+| ♻️ | Sustainability | Product eco-scoring, carbon footprint, recycled content tracking |
+| 👥 | Social | User-generated content gallery, product tagging, moderation |
 | 🔐 | Privacy-First | Zero surveillance personalization, encrypted style profiles |
 | ♿ | WCAG AAA | Skip links, focus traps, reduced-motion compliance |
 | ⚡ | Performance | LCP < 2.5s, CLS < 0.1, INP < 200ms via RSC + edge caching |
-| 🌍 | Global Ready | Multi-currency, RTL support, regional fulfillment |
 
 ## 🏗️ Architecture
 
@@ -32,12 +35,14 @@ LuxeVerse redefines luxury shopping by merging **cinematic storytelling**, **AI-
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| Framework | Next.js | 16.1.4+ | App Router, RSC, Turbopack |
+| Framework | Next.js | 16.2.6+ | App Router, RSC, Turbopack |
 | Language | TypeScript | 6.0+ | Strict mode, `erasableSyntaxOnly` |
-| Styling | Tailwind CSS | 4.2+ | CSS-first `@theme inline`, OKLCH tokens |
+| Styling | Tailwind CSS | 4.3+ | CSS-first `@theme inline`, OKLCH tokens |
 | UI Primitives | shadcn/ui + Radix | Latest | Accessible, composable components |
 | State | Zustand | 5.0+ | Client state with `partialize` discipline |
 | API | tRPC + GraphQL | Hybrid | Type-safe internal + flexible public APIs |
+| i18n | next-intl | 4.12+ | Path-based routing (`/en/shop`, `/fr/shop`) |
+| PWA | @ducanh2912/next-pwa | 10.2.9+ | Service worker with Workbox caching |
 | Database | PostgreSQL | 17 | Primary datastore with Prisma 7 ORM |
 | Cache | Redis | 7+ | Session store, rate limiting, pub/sub |
 | Search | Algolia + Typesense | Hybrid | Faceted + semantic + visual search |
@@ -65,13 +70,16 @@ flowchart TB
         I[Order Service]
         J[AI Service]
         K[Search Service]
+        L[Loyalty Service]
+        M[i18n Router]
+        N[UGC Service]
     end
 
     subgraph Data["Data Layer"]
-        L[(PostgreSQL)]
-        M[(Redis)]
-        N[(Algolia)]
-        O[S3/CloudFront]
+        O[(PostgreSQL)]
+        P[(Redis)]
+        Q[(Algolia)]
+        R[S3/CloudFront]
     end
 
     Client --> API
@@ -87,7 +95,10 @@ luxeverse/
 │   ├── 📂 web/                 # Next.js 16 storefront (RSC-first)
 │   │   ├── 📄 src/app/         # App Router pages & layouts
 │   │   ├── 📄 src/components/  # Client/Server components
-│   │   └── 📄 src/stores/      # Zustand stores (data-only persist)
+│   │   ├── 📄 src/stores/      # Zustand stores (data-only persist)
+│   │   ├── 📄 src/i18n/        # next-intl routing & config
+│   │   ├── 📄 src/server/      # tRPC routers + services
+│   │   └── 📄 public/          # PWA manifest, icons, static assets
 │   └── 📂 admin/               # Admin dashboard (Next.js)
 ├── 📂 packages/
 │   ├── 📂 ui/                  # Shared shadcn-based components
@@ -169,6 +180,15 @@ STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```env
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### i18n & PWA
+```env
+# next-intl path-based routing
+NEXT_PUBLIC_DEFAULT_LOCALE=en
+
+# PWA requires no extra env vars
+# Service worker auto-registers via next-pwa
 ```
 
 ### Monitoring
@@ -286,10 +306,10 @@ open https://vercel.com/luxeverse/web/deployments
 | 1: Core Commerce | ✅ Complete | 2026-05-20 | Product catalog, cart, checkout, Stripe, Auth |
 | 2: Cinematic UX | ✅ Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
 | 3: AI Personalization | ✅ Complete | 2026-05-22 | AI service layer, style quiz, streaming chat, outfit generation, size recommendations |
-| 4: Scale & Social | 📅 Planned | ETA 2026-07-30 | Loyalty, i18n, PWA, UGC |
+| 4: Scale, Loyalty & Social | ✅ Complete | 2026-05-24 | Loyalty engine (12 tests), i18n (EN/FR/AR), PWA (webpack mode), UGC, Sustainability, Account Hub |
 | 5: Hardening & Launch | 📅 Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
 
-**Overall Progress**: ~65% (Phases 0–3 delivered, Phases 4–5 pending)
+**Overall Progress**: ~75% (Phases 0–4 delivered, Phase 5 pending)
 
 ## ✅ Critical Remediation Round 1 (Completed 2026-05-23)
 
@@ -303,7 +323,18 @@ open https://vercel.com/luxeverse/web/deployments
 | **CRIT-006** | Lighthouse CI — Config present | 🟡 |
 | **CRIT-007** | E2E expansion — Scheduled | 📅 Phase 5 |
 
-## 📋 Troubleshooting (Updated 2026-05-23)
+## ✅ Phase 4 Remediation (Completed 2026-05-24)
+
+| Fix | Description | Impact |
+|-----|-------------|--------|
+| **PWA-001** | Fixed `next-pwa` + Turbopack incompatibility | `--webpack` flag, auto-generated SW |
+| **i18n-001** | Fixed `params` anti-pattern in `[locale]/layout.tsx` | Removed `await params`, used direct destructuring |
+| **i18n-002** | Replaced `window.location.href` with `router.push()` in `LanguageSwitcher` | SPA state preserved |
+| **LOYALTY-001** | Fixed `reverseTransaction` double point reversal | Added `order.pointsEarned = 0` reset |
+| **TYPE-001** | Integrated `superjson` for tRPC date serialization | Prisma `Date` fields correctly deserialized |
+| **TYPE-002** | Fixed case-sensitive import issues (Linux) | `button.test.tsx` → `Button.tsx`, `input.test.tsx` → `Input.tsx` |
+
+## 📋 Troubleshooting (Updated 2026-05-24)
 
 ### Prisma Schema Issues
 If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client types:
@@ -321,10 +352,26 @@ If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client 
 * **Symptom**: Styles not applying or build errors mentioning `bg-gradient-to-r`
 * **Context**: Tailwind v4 is CSS-first and uses different utility names for some properties. Check the generated CSS in `.next/static/chunks` to confirm utilities are being compiled.
 
-### Next.js 16 `params` Gotcha
-* **Symptom**: `await params` causes hydration mismatch or undefined at runtime
-* **Fix**: `params` is a plain object in Next.js 16. Use direct destructuring: `const { slug } = params`
-* **Never do**: `const { slug } = await params` (this is a Next.js 15 pattern)
+### PWA Build with next-pwa
+* **Symptom**: `This build is using Turbopack, with a webpack config and no turbopack config`
+* **Fix**: Add `--webpack` to the build script: `"build": "next build --webpack"` in `package.json`. Keep `swSrc` undefined (auto-generated SW) for reliability.
+* **Context**: `@ducanh2912/next-pwa` relies on `workbox-webpack-plugin`, which Turbopack cannot process.
+
+### Next.js 16 `params` (Layout vs Page nuance)
+* **Layouts**: `params` is a `Promise` — must `await` it: `const { slug } = await params`
+* **Pages**: `params` is a plain object — use direct destructuring: `const { slug } = params`
+* **Why**: Next.js 16 changed page `params` to plain objects for sync access, but layout `params` remains a Promise due to async resolution across nested segments.
+
+### tRPC Date Serialization with superjson
+* **Symptom**: `Type 'string' is not assignable to type 'Date'` on client when using Prisma types
+* **Fix**: Ensure `superjson` is registered in BOTH server `initTRPC` AND client `httpBatchLink`
+* **File**: `src/server/trpc.ts` + `src/trpc/provider.tsx`
+* **Context**: Without `superjson`, tRPC serializes dates as ISO strings over the wire. Prisma types expect Date objects, causing type mismatches.
+
+### i18n Locale Switching
+* **Symptom**: Full page reload or lost state when switching languages
+* **Fix**: Use `useRouter().push(newPathname)` NOT `window.location.href`
+* **File**: `src/components/shared/LanguageSwitcher.tsx`
 
 ### R3F Components and `lazy()`
 * **Symptom**: TypeScript errors when destructuring `const { Canvas } = lazy(() => import('@react-three/fiber'))`
@@ -392,6 +439,8 @@ Before submitting a PR, verify:
 | Font-family in className breaks parser | Use `@layer utilities` (`.font-display`), never `font-["..."]` |
 | Route changes not reflecting | Run `npx tsr generate` after adding TanStack Router files |
 | CSS tokens unused | Run dead code audit: `grep -r "var(--token)" src/` |
+| `next-pwa` build fails | Add `--webpack` to build script; remove `swSrc` (use auto-generated SW) |
+| Dates are strings on client | Verify `superjson` is configured in BOTH server and client tRPC |
 
 ## 📜 License
 
@@ -400,8 +449,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-22 (Post-Phase 3 Remediation)  
-> **Next Review**: 2026-06-01  
+> **Last Updated**: 2026-05-24 (Post-Phase 4 Remediation)  
+> **Next Review**: 2026-06-15  
 > **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3  
-> **Status**: Phases 0-3 complete, Phase 4-5 pending  
+> **Status**: Phases 0-4 complete, Phase 5 pending  
 > **Contact**: engineering@luxeverse.com

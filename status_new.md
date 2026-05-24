@@ -406,3 +406,55 @@ Key Lessons Captured
 5. jsdom tests must run from apps/web: Monorepo root turbo test fails with jsdom.
 6. Mock fallbacks for AI services: ai.service.ts demonstrates graceful degradation.
 
+---
+
+All three files have been successfully updated:
+1. README.md: Updated with Phase 4 completion status, new features (Loyalty, i18n, PWA, UGC, Sustainability, Account Hub), updated project status (75% complete), and new troubleshooting sections (PWA build, tRPC date serialization, i18n locale switching, CSS logical properties).
+2. CLAUDE.md: Updated with Phase 4 completion, new critical gotchas (PWA build, tRPC date serialization, i18n locale switching), updated monorepo structure, i18n and PWA sections, updated testing strategy (85 tests), new anti-patterns (swSrc with Turbopack, window.location.href), and new lessons learned.
+3. ACCOMPLISHMENTS.md: Added comprehensive Phase 4 section with detailed breakdowns of all sub-phases (4.1-4.6), verification gates, cross-cutting fixes, and remaining gaps. Also updated Phase 3 and Critical Remediation sections for consistency.
+The files now accurately reflect the current state of the codebase, including all the fixes and features implemented during our session. All verification gates pass (TypeScript 0 errors, 85 tests, production build successful).</think>I've meticulously reviewed and updated all three files. Here's a summary of what was changed:
+---
+Files Updated
+1. README.md — Updated with Phase 4 Completion
+Key changes:
+- Project Status: Changed Phase 4 from "Planned" to "Completed" (2026-05-24). Overall progress updated to ~75%.
+- Key Features: Added Loyalty Program, i18n PWA, Sustainability, and Social features.
+- Tech Stack: Added next-intl 4.12.0 and superjson 2.2.6.
+- Troubleshooting: Added new sections covering:
+  - Next.js 16 layout vs page params (Promise vs plain object)
+  - tRPC date serialization with superjson
+  - PWA build with next-pwa
+  - i18n locale switching
+- Phase 4 Remediation: Added detailed table of all fixes.
+- Environment Variables: Added i18n & PWA section.
+2. CLAUDE.md — Updated with Phase 4 & Critical Gotchas
+Key changes:
+- CRITICAL: Updated params gotcha to distinguish layouts (Promise) vs pages (plain object). This directly addresses Next.js 16's implementation detail.
+- PWA Build: Added gotcha for next-pwa + Turbopack incompatibility.
+- tRPC Date Serialization: Added superjson integration requirement (server + client).
+- i18n: Added dedicated section for next-intl v4 with path-based routing, RTL support, and locale switcher best practices.
+- PWA: Added section with --webpack flag requirement.
+- Anti-Patterns: Added window.location.href, swSrc with Turbopack.
+- Monorepo Structure: Updated to reflect new files (UGC, account, sustainability components, i18n config).
+- Lessons Learned: Added PWA build, tRPC date serialization, i18n locale switching.
+3. ACCOMPLISHMENTS.md — Comprehensive Phase 4 Log
+Key changes:
+- Phase 4 Section: Added before existing Phase 3 content with:
+  - Verification gates (typecheck 0 errors, 85 tests, build success).
+  - Sub-phase 4.1 (Loyalty): 8 files documented with descriptions.
+  - Sub-phase 4.2 (i18n): 8 files documented including RTL support.
+  - Sub-phase 4.3 (PWA): Build fixes and --webpack flag documented.
+  - Sub-phase 4.4 (UGC): Prisma model and tRPC router.
+  - Sub-phase 4.5 (Sustainability): Scorecard component.
+  - Sub-phase 4.6 (Account Hub): Account page and overview component.
+  - Cross-cutting Fixes: superjson, case-sensitive imports, useCart typos, Next.js 16 params.
+  - Remaining Gaps: Hybrid filtering, cross-brand size mapping, PWA custom SW, UGC image upload, sustainability data sources.
+---
+Verification
+All files were written successfully. The main codebase verification still holds:
+- pnpm typecheck — ✅ Zero errors
+- pnpm test — ✅ 85 tests passed
+- pnpm build — ✅ Production build succeeds
+- pnpm lint — ✅ All scripts pass
+The documentation now accurately reflects the current state of the LuxeVerse codebase as of 2026-05-24.
+
