@@ -189,6 +189,36 @@ describe("Loyalty Service", () => {
   });
 
   describe("reverseTransaction", () => {
+    it("should reset order.pointsEarned to 0 to prevent double-reversal", async () => {
+      const orderId = "order-456";
+
+      mockTxClient.order.findUnique.mockResolvedValue({
+        id: orderId,
+        userId: "user-123",
+        pointsEarned: 100,
+        status: "CANCELLED",
+      });
+
+      mockTxClient.order.update.mockResolvedValue({
+        id: orderId,
+        pointsEarned: 0,
+      });
+
+      mockTxClient.user.update.mockResolvedValue({
+        id: "user-123",
+        loyaltyPoints: 0,
+        lifetimePoints: 400,
+        tier: "BRONZE",
+      });
+
+      await service.reverseTransaction(orderId);
+
+      expect(mockTxClient.order.update).toHaveBeenCalledWith({
+        where: { id: orderId },
+        data: { pointsEarned: 0 },
+      });
+    });
+
     it("should reverse points for cancelled order", async () => {
       const orderId = "order-456";
 
