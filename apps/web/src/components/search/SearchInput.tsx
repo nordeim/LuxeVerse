@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useId, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { trpc } from "@/trpc";
 import { VisualSearchButton } from "./VisualSearchButton";
@@ -69,10 +70,10 @@ export function SearchInput({ value, onChange, onClear, onClose }: SearchInputPr
           <button
             type="button"
             onClick={onClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-obsidian-400 hover:text-obsidian-700 transition-colors"
+            className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-obsidian-400 hover:text-obsidian-700 transition-colors"
             aria-label="Clear search"
           >
-            ✕
+            <X className="size-4" />
           </button>
         )}
       </div>
