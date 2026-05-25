@@ -96,3 +96,58 @@ Relevant Files
 - ACCOMPLISHMENTS.md: Updated verification status and test count
 - apps/web/src/server/trpc.ts: protectedProcedure relies on ctx.user (now wired correctly)
 
+---
+
+# Todos
+[✓] Task 1: Fix type system (params Promise)
+[✓] Task 2: Fix lint script (deprecated utilities)
+[✓] Task 3: Fix Tailwind v3 classes (bg-gradient, outline-none)
+[✓] Task 4: Remove dual /account routes + rewrite as RSC
+[✓] Task 5: Wire tRPC context session verification
+[✓] Task 6: Fix root layout lang
+[✓] Task 7: Update ACCOMPLISHMENTS.md (test count, typecheck status)
+[✓] Task 8: Handle sw.ts ghost file (documented as future work)
+[✓] Task 9: Update SKILL.md with latest insights
+[✓] Verify full pipeline: typecheck, lint, test, build
+Summary of SKILL.md Update (v3.3.0 → v4.0.0)
+The comprehensive update to the LuxeVerse Architect Skill is now complete. Here's a summary of all changes made:
+Version Update
+- 4.0.0 (from 3.3.0) — reflects the Phase 4 Remediation insights
+Critical Corrections (Runtime vs. Type Duality)
+Mistake #16 (Rewritten):
+- Old: params is a plain object, no await needed. await params is a silent bug.
+- New: Runtime plain object, but .next/types/ generates Promise<T> for page.tsx. Components MUST type as Promise<T> + await to satisfy tsc --noEmit. JavaScript's await on a non-Promise returns the same value transparently. Added a duality table and explicit rules for pages vs. layouts.
+New Sections Added
+Section	Topic	Key Insight
+§14.12	tRPC + NextAuth v4 App Router	Use getToken from next-auth/jwt, NOT getServerSession. getServerSession is Pages Router-only. Includes full implementation with as unknown cast.
+§14.13	Duplicate Route Anti-Pattern	Having /account/page.tsx and /[locale]/account/page.tsx creates duplicate content. Remove non-localized, keep localized as canonical.
+§14.14	Root Layout lang Attribute	Hardcoded lang="en" fails i18n audits. Use lang={defaultLocale}.
+§14.15	Monorepo Search Path Gotchas	grep src/ in monorepo root silently fails. Use packages/ apps/ + --exclude-dir=.turbo.
+§14.16	RSC Account Page with getServerSession	Server-side auth with getServerSession in RSC, redirect if unauthenticated.
+§14.17	[class] vs Exact Match in grep	outline-none[^-] fails at EOL (fails silent). Use \b word boundaries.
+§14.18	NextAuth v4 Env Var Duality	NEXTAUTH_SECRET vs AUTH_SECRET. Standardize on AUTH_SECRET.
+Updated Sections
+Section	Change	Rationale
+Mistake #16	Rewritten with runtime/type duality	Next.js 16 .next/types/ generates Promise<any> for page params
+§14.3 Tailwind v4	outline-none now 🟡 Medium (was 🟢 Low)	Found in 5 files; accessibility requirement (Forced Colors Mode)
+§14.11 Tailwind v4	Same as above	Updated detection regex to \b...\b with word boundaries
+§14.8 Quick Reference	params type updated to reflect duality	Plain object (runtime) / Promise<T> (generated types)
+Phase 1 Lesson #9	Updated from "plain object, no await" to "duality exists"	Accurate after remediation
+§10 Next.js 16 params	Updated to reflect runtime/type duality	Matches new Mistake #16
+§10 searchParams	Clarified searchParams is always plain object	Unlike params, it was never typed as Promise
+Quick Reference Card	Next.js App Router params updated	const p = params → const p = await params
+Anti-Pattern Matrix	Added: outline-none (Forced Colors), hardcoded lang, duplicate routes, getServerSession in tRPC/App Router, NEXTAUTH_SECRET	Prevents known issues
+Verification Commands	Added getServerSession/getToken wrong usage scan	Catches auth misconfigurations early
+Version & Scope
+- Version: 3.3.0 → 4.0.0
+- Date: 2026-05-20 → 2026-05-25
+- Scope: Phases 0-3 → Phases 0-4 (incl. Remediation)
+- New Triggers: Added NextAuth v4 App Router tRPC
+Key Architectural Insights Codified
+1. Next.js 16 params Duality: The most critical correction. .next/types/ generates Promise<any> for page.tsx in dynamic segments. Components MUST type as Promise<T> + await. Runtime is unaffected (plain object).
+2. tRPC + NextAuth v4: getToken from next-auth/jwt is the correct approach for App Router tRPC context. getServerSession is Pages Router-only. The as unknown cast is type-safe at runtime.
+3. Tailwind v4 outline-hidden: outline-none is not just deprecated — it breaks Forced Colors Mode accessibility. outline-hidden is required.
+4. Monorepo Lint Script Robustness: Search paths must be per-workspace (packages/ apps/), and regex must use \b (word boundaries) for exact class name matching to prevent false negatives.
+Verification
+- Full pipeline passes: pnpm typecheck ✅ (2/2 successful)
+

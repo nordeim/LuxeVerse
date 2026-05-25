@@ -2,13 +2,12 @@
 
 ## Comprehensive Architectural & Execution Framework for Cinematic, Production-Grade, Anti-Generic Web Platforms
 
-**Version**: 3.3.0
-**Date**: 2026-05-20
-**Scope**: Phases 0–3 verified (Foundation, Core Commerce, Cinematic Experience, AI Integration)
-**New Since v3.2.0**: AI component integration (OutfitCard, SizeRecommendation, StyleChat) into real pages (Account, PDP), `generateOutfit` wired to real product catalog via ProductService, test cleanup for Vitest + jsdom, monorepo lint script fix (exclude build artifacts), RSC-first "Client Island Dashboard" pattern for multi-widget interactive regions
-**Source**: Distilled from full Phase 0–1 execution on LuxeVerse v3.0, plus cross-skill synthesis from claude-md, super-frontend-design, react19-ts6-vite8-tailwindv4-mvp, nextjs16-tailwind4, frontend-ui-engineering, clean-code, framework-templates
-**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`
-**When to Use**: Any project requiring Next.js 16, React 19, TypeScript 6, Tailwind v4, Prisma, tRPC, Zustand, NextAuth v5, or any subset thereof. The phased approach, RSC/Client split, and design system are universally applicable.
+**Version**: 4.0.0
+**Date**: 2026-05-25
+**Scope**: Phases 0–4 verified (Foundation, Core Commerce, Cinematic Experience, AI Integration, Scale & Social Remediation)
+**New Since v3.3.0**: Next.js 16 `params` type duality (runtime plain object vs. generated `Promise<T>`), Tailwind v4 `outline-none` → `outline-hidden` accessibility enforcement, tRPC + NextAuth v4 `getToken` pattern for App Router, monorepo lint script robustness (`\b` word boundaries, per-workspace search paths), dual route anti-pattern, root layout `lang` i18n best practice.
+**Source**: Distilled from Phase 4 Remediation (2026-05-25) — typecheck failures, lint false-negatives, auth context wiring, Tailwind class migration, route consolidation.
+**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`, `NextAuth v4 App Router tRPC`
 
 ---
 
@@ -1395,20 +1394,27 @@ export default async function Layout({ params }: { params: Promise<{ locale: str
 
 **See**: Mistake #16 for the full runtime/type duality explanation.
 
-### Next.js 16: `searchParams` is NOT a Promise
+### Next.js 16: `searchParams` is a Plain Object (Read-Only)
+
 **Error**: Treating `searchParams` as a Promise in `page.tsx` props.
-**Fix**: `searchParams` is a read-only plain object. Do not `await` it.
+
+**Fix**: `searchParams` is a **read-only plain object**. Do not `await` it. Unlike `params`, the `.next/types/` generator does NOT wrap `searchParams` in `Promise<...>` — it's always a plain object.
+
 ```tsx
-// ❌ WRONG
+// ❌ WRONG — searchParams is NOT a Promise
 export default async function Page({ searchParams }: Props) {
-  const resolved = await searchParams; // ❌ No! searchParams is already resolved
+  const resolved = await searchParams; // ❌ No need — searchParams is already resolved
 }
 
-// ✅ CORRECT
+// ✅ CORRECT — direct use, no async/await needed
 export default function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const query = searchParams.q ?? "";
 }
 ```
+
+**Difference from params**:
+- `params`: Next.js types generate `Promise<any>` — must `await` in async components.
+- `searchParams`: Always a plain object — direct use only.
 
 ### Next.js 16: `experimental.ppr` Merged into `cacheComponents`
 **Error**: `experimental.ppr: "incremental"` causes build failure.
@@ -1521,7 +1527,15 @@ if (typeof window !== "undefined") { ... }
 6. **Always use `<Link>` for internal nav**: `<a href="/shop">` triggers full page reload.
 7. **Always use `useRouter().push()` not `window.location.href`**: Preserves SPA state.
 8. **Service factories not singletons**: `createCartService()` for testability.
-9. **`params` is plain object in Next.js 16**: No `await params`. Direct destructuring.
+9. **`params` runtime vs. type duality in Next.js 16**: Runtime: plain object. Generated Types: `Promise<any>`. Must type as `Promise<T>` + `await` to satisfy `tsc --noEmit`.
+See Phase 3 Remediation (§14.12 + Mistake #16 / Skill update v4.0).
+10. **TypeScript `paths` are compile-time only**: Vite/Next.js config must also define runtime aliases.
+11. **`useCallback` for stable props passed to memoized children**: Prevents re-render cascades.
+12. **`useId()` for all ARIA pairs**: Never hardcode IDs in reusable components.
+13. **`noUnusedLocals` catches dead code early**: Disabled underscore prefix convention — TypeScript ignores `_` prefixes by default in modern versions, but `noUnusedLocals` still catches them. Remove or use the variable.
+14. **`React.ReactElement` / `ReactElement` vs `JSX.Element`**: React 19 removed the global `JSX` namespace. Always `import type { ReactElement } from 'react'` and use `ReactElement`.
+15. **Prisma types after schema change**: Run `pnpm db:generate` to update types before `tsc --noEmit`.
+16. **Workspace packages need explicit build/export**: Returning `PaymentIntentResult` from `createPaymentService` requires the interface to be exported. If `payment.service.ts` adds a new export, update `index.ts` or `package.json` exports map.
 10. **TypeScript `paths` are compile-time only**: Vite/Next.js config must also define runtime aliases.
 11. **`useCallback` for stable props passed to memoized children**: Prevents re-render cascades.
 12. **`useId()` for all ARIA pairs**: Never hardcode IDs in reusable components.
