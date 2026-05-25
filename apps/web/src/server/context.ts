@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -12,16 +13,27 @@ export interface Context {
 }
 
 export async function createContext(req: NextRequest): Promise<Context> {
-  const sessionToken = req.cookies.get("session-token")?.value ?? null;
   const sessionId =
     req.cookies.get("cart-session")?.value ?? crypto.randomUUID();
 
+  // Verify the NextAuth JWT token from cookies (App Router compatible)
   let user: Context["user"] = null;
 
-  if (sessionToken) {
-    // Production: verify JWT / session via NextAuth
-    // user = await verifySession(sessionToken);
-    // For now, leave as null until NextAuth wiring is complete
+  if (process.env.AUTH_SECRET) {
+    // Type cast needed because getToken expects a req with a specific shape
+    // that NextRequest satisfies at runtime.
+    const token = await getToken({
+      req: req as unknown as Parameters<typeof getToken>[0]["req"],
+      secret: process.env.AUTH_SECRET,
+    });
+
+    if (token?.id && typeof token.id === "string") {
+      user = {
+        id: token.id,
+        email: (token.email as string) ?? "",
+        role: (token.role as string) || "CUSTOMER",
+      };
+    }
   }
 
   return { prisma, user, sessionId };

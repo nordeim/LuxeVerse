@@ -23,7 +23,7 @@ export function UGCGallery({ userId }: UGCGalleryProps) {
           <button
             key={item.id}
             onClick={() => setSelected(item)}
-            className="relative aspect-square rounded-lg overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+            className="relative aspect-square rounded-lg overflow-hidden group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neon-cyan"
             aria-label={item.caption ?? "User uploaded content"}
           >
             <Image
@@ -33,7 +33,7 @@ export function UGCGallery({ userId }: UGCGalleryProps) {
               className="object-cover group-hover:scale-105 transition-transform"
               sizes="(max-width: 768px) 50vw, 25vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
               <p className="text-white text-sm truncate">{item.caption}</p>
             </div>
           </button>

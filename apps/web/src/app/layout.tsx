@@ -26,6 +26,8 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
+import { defaultLocale } from "@/i18n/config";
+
 export const metadata: Metadata = {
   title: "LuxeVerse | Cinematic Luxury Commerce",
   description:
@@ -51,10 +53,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }): ReactElement {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${dmSans.variable} ${jetbrains.variable}`}
-    >
+      <html
+        lang={defaultLocale}
+        className={`${cormorant.variable} ${dmSans.variable} ${jetbrains.variable}`}
+      >
       <body className="bg-obsidian-50 text-obsidian-900 antialiased">
         <SkipLink />
         <ErrorBoundary>

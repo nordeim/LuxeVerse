@@ -1,11 +1,7 @@
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 
-interface HomePageProps {
-  params: Promise<{ locale: string }>;
-}
-
-export default function HomePage({ params }: HomePageProps) {
-  const { locale } = params;
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
 
   return (
     <div className="container mx-auto px-4 py-8">

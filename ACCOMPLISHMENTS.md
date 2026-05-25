@@ -8,7 +8,7 @@
 |---------|--------|
 | `pnpm typecheck` | ✅ Zero errors |
 | `pnpm lint` | ✅ All scripts passed |
-| `pnpm test` | ✅ 85 tests passed (17 test files) |
+| `pnpm test` | ✅ 91 tests passed (18 test files) |
 | `pnpm build` | ✅ Production build succeeds |
 
 ### 2. Phase 4.1: Loyalty & Rewards Engine
@@ -302,3 +302,39 @@ Re-validated codebase against MEP. ~40 findings; 7 critical fixes applied TDD.
 | **CRIT-005** | `src/hooks/useWishlist.ts` | Wired to tRPC `wishlist.addItem/removeItem` with try/catch fallback | - |
 | **CRIT-006** | `.github/workflows/ci.yml` | Lighthouse CI config present; job pending Phase 5 | - |
 | **CRIT-007** | - | E2E expansion planned for Phase 5 | - |
+
+---
+
+## Critical Remediation Round 2 — Type Check, Lint & Architecture (2026-05-25)
+
+Re-validated codebase against `suggested_fix_params.md` and `ACCOMPLISHMENTS.md`. Identified and resolved 9 discrepancies.
+
+### Verification Gates (Post-Remediation)
+
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All scripts passed |
+| `pnpm test` | ✅ 91 tests passed (18 test files) |
+| `pnpm build` | ✅ Production build succeeds |
+
+### Remediation Items
+
+| # | Discrepancy | Fix | File(s) |
+|---|-------------|-----|---------|
+| **1** | **Typecheck FAILS**: Next.js 16 generated types expected `Promise<any>` for `params`, but `page.tsx` used plain object. | Rewrote `page.tsx` to use `async function` + `params: Promise<{ locale: string }>` with `await params`. | `src/app/[locale]/page.tsx` |
+| **2** | **Lint validation script false-negatives**: Searched non-existent `src/` from monorepo root. | Updated search paths to `packages/` and `apps/`, added `--exclude-dir=.turbo`. | `scripts/validate-deprecated-twind.sh` |
+| **3** | **Deprecated Tailwind v3 utilities present**: `bg-gradient-to-t` and `outline-none` found. | `bg-gradient-to-t` → `bg-linear-to-t`; `outline-none` → `outline-hidden`; `focus-visible:outline-none` → `focus-visible:outline-hidden`. | `UGCGallery.tsx`, `AccountOverview.tsx`, `Input.tsx`, `Button.tsx`, `LanguageSwitcher.tsx` |
+| **4** | **Dual `/account` routes**: `/account/page.tsx` and `/${locale}/account/page.tsx` both existed. | Removed non-localized `/account/page.tsx`. Rewrote `[locale]/account/page.tsx` as RSC using `getServerSession`. | `src/app/account/page.tsx`, `src/app/[locale]/account/page.tsx` |
+| **5** | **tRPC context had stubbed session verification** | Wired `getToken` from `next-auth/jwt` to resolve session from JWT cookie using `AUTH_SECRET`. | `src/server/context.ts` |
+| **6** | **Root layout hardcoded `lang="en"`** | Updated to use `defaultLocale` from i18n config. | `src/app/layout.tsx` |
+| **7** | **Test count outdated**: Claimed 85, actual 91. | Updated documentation. | `ACCOMPLISHMENTS.md` |
+| **8** | **`sw.ts` ghost file** | Documented as ghost code in this log. | `src/sw.ts` |
+| **9** | **`validate-colors.sh` had similar bug to validate-deprecated-twind.sh** | Updated per-task search paths to `packages/` and `apps/`, added `--exclude-dir=.turbo`. | `scripts/validate-colors.sh` |
+
+### Key Architectural Notes
+
+1. **Next.js 16 `params`**: Next.js 16 `params` for page components are typed as `Promise<T>` by `.next/types/`. At runtime they are plain objects, but `await` on a non-Promise returns the same value. Components MUST declare `params: Promise<{...}>` and use `await` to satisfy type-checker.
+2. **Tailwind v4 Class Migration**: `bg-gradient-to-*` → `bg-linear-to-*`; standalone `outline-none` → `outline-hidden`. The `focus-visible:outline-none` variant also moved to `focus-visible:outline-hidden`.
+3. **Auth in tRPC**: `getToken` from `next-auth/jwt` is the correct approach for App Router tRPC context, because `getServerSession` is not suitable for App Router API routes (uses `NextApiRequest/Response` types).
+4. **RSC for Account Page**: `[locale]/account/page.tsx` is now a Server Component using `getServerSession(authOptions)` and properly localizes via `params`.

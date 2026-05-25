@@ -5,19 +5,6 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/components/ui/button.test.tsx (4 tests) 196ms
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 211ms
- ✓ src/server/ai.service.test.ts (6 tests) 1038ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1016ms
-stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
-Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-
-stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
-Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-
- ✓ src/components/ui/drawer.test.tsx (2 tests) 266ms
- ✓ src/server/routers/ai.test.ts (5 tests) 1011ms
-   ✓ aiRouter > generateOutfit > returns an outfit with confidence < 1.0  987ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -26,10 +13,22 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/dialog.test.tsx (1 test) 215ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 133ms
- ✓ src/components/ui/input.test.tsx (3 tests) 215ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 207ms
+ ✓ src/components/ui/dialog.test.tsx (1 test) 178ms
+stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 237ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1046ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1023ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 227ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 241ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 155ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 154ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 165ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 169ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -45,18 +44,18 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
- ✓ src/app/global-error.test.tsx (1 test) 89ms
- ✓ src/server/routers/review.test.ts (14 tests) 70ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 43ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 30ms
- ✓ src/server/routers/search.test.ts (9 tests) 36ms
+ ✓ src/app/global-error.test.tsx (1 test) 67ms
+ ✓ src/server/routers/review.test.ts (14 tests) 55ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 39ms
+ ✓ src/server/routers/search.test.ts (9 tests) 29ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 31ms
+ ✓ next.config.test.ts (2 tests) 11ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 19ms
  ✓ src/i18n/config.test.ts (5 tests) 12ms
  ✓ src/lib/utils.test.ts (2 tests) 8ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 14ms
- ✓ next.config.test.ts (2 tests) 9ms
 
  Test Files  18 passed (18)
       Tests  91 passed (91)
-   Start at  15:05:47
-   Duration  11.64s (transform 781ms, setup 5.04s, collect 3.34s, tests 3.80s, environment 12.68s, prepare 2.48s)
+   Start at  08:07:32
+   Duration  10.26s (transform 584ms, setup 4.84s, collect 3.23s, tests 2.84s, environment 11.88s, prepare 2.34s)
 
