@@ -290,3 +290,45 @@ Next Steps for Phase 5:
 5. Security hardening (OWASP 2025)
 6. Launch readiness (monitoring, rollback)
 
+---
+
+# Todos
+[✓] Update README.md with new troubleshooting, Tailwind v4 migration, params duality, tRPC auth, monorepo lint scripts
+[✓] Update CLAUDE.md with Next.js 16 params duality, Tailwind outline-none enforcement, tRPC + NextAuth v4, monorepo lint scripts, dual routes, root layout lang
+[✓] Update ACCOMPLISHMENTS.md with Phase 4 Remediation Summary
+[✓] Verify all changes pass typecheck
+All three files have been updated and verified. Here's a summary of what was changed:
+✅ Verification
+- TypeCheck: ✅ Zero errors, 2/2 successful
+- Lint: ✅ All checks passed (Tailwind v3, raw hex)
+Updates Made
+1. README.md
+- Version badge: 3.0.0 → 3.4.0 (reflects SKILL.md v4.0.0 synchronization)
+- Troubleshooting section expanded with new items:
+- Tailwind v4 Migration: Updated with bg-gradient-to-t → bg-linear-to-t, outline-none → outline-hidden (with a11y note), flex-shrink-0 → shrink-0
+- Monorepo Search Path Gotchas: Fixed the grep src/ silently-fails-in-monorepo issue (use packages/ apps/)
+- Next.js 16 params — Full Runtime vs. Type Duality: Documented with table, code examples, and explanations
+- tRPC + NextAuth v4: Use getToken from next-auth/jwt, not getServerSession
+- Root Layout lang: Use defaultLocale for fallback
+- Duplicate i18n Routes: Removed non-localized /account route, consolidated under [locale]/account
+- Last Updated: 2026-05-24 → 2026-05-25 with Phase 4 Remediation + Params Type Duality Fix notes
+- Test count: 85 → 91
+2. CLAUDE.md
+- Project State: Date updated to 2026-05-25, test count 85 → 91 (18 test files)
+- Next.js 16 params: Rewrote from plain "Layout vs Page nuance" to full Runtime vs. Type Duality section with table, code examples, and explanations
+- Last Updated: Comprehensive summary of all remediation work (params, outline-none, tRPC + NextAuth, i18n, lint scripts, account routing, Tailwind regex)
+- SKILL.md v4.0.0 reference: Documented all new sections (§14.12–18)
+3. ACCOMPLISHMENTS.md
+- Next.js 16 params: Updated Cross-Cutting Fixes from "pages use plain object" to "pages use Promise<{...}> + await (satisfies .next/types/ generator)"
+- Remaining Gaps: Added CSS logical properties (RTL) and custom service worker as medium-priority Phase 5 gaps
+Key New Insights Documented
+Insight	Location
+Next.js 16 params Runtime/Type Duality	README, CLAUDE.md, SKILL.md §14.12
+outline-none → outline-hidden (a11y)	README, CLAUDE.md, SKILL.md §14.14
+tRPC + NextAuth v4 getToken	README, CLAUDE.md, SKILL.md §14.13
+Monorepo search paths (packages/ apps/)	README, CLAUDE.md, SKILL.md §14.16
+Tailwind v4 class migration	README, CLAIDE.md, SKILL.md §14.3
+Dual route anti-pattern	README, CLAUDE.md, SKILL.md §14.15
+getServerSession Pages Router only	README, CLAUDE.md, SKILL.md §14.13
+AUTH_SECRET vs NEXTAUTH_SECRET	README, CLAUDE.md, SKILL.md §14.18
+
