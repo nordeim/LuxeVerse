@@ -815,22 +815,38 @@ useEffect(() => { if (state.status === "success") onNext(); }, [state.status, on
 ### Mistake #15: Ignoring `useId()` for ARIA Pairs
 **Fix**: `const id = useId();` then `<label htmlFor={id}>` + `<input id={id} />`. Never hardcode IDs in reusable components.
 
-### Mistake #16: `await params` in Next.js 16 App Router
-**Fix**: `params` is a **plain object** in Next.js 16, NOT a Promise. Direct destructuring only.
+### Mistake #16: `await params` in Next.js 16 App Router — The Runtime vs. Type Duality
+
+**CRITICAL DUALITY (Learned in Remediation 2026-05-25)**:
+
+| Layer | Type | Must Use |
+|-------|------|----------|
+| **Runtime** | Plain object `{}` | `const { slug } = params` (direct destructuring) |
+| **Generated Types** (`.next/types/`) | `Promise<{ ... }>` | `params: Promise<{...}>` + `await` to satisfy tsc |
+
+**Rule for Layouts**: `params` **IS** a `Promise` in `layout.tsx` and `template.tsx`. Always `await` it.
+
+**Rule for Pages**: At **runtime**, `params` is a plain object. BUT `.next/types/` generates `Promise<T>` for `page.tsx` props (especially in Next.js 16.2+ with i18n route groups). You **must** type as `Promise<T>` and `await` it to prevent `TS2345` or `TS2307` errors.
+
 ```tsx
-// ❌ WRONG (Next.js 16)
-export default async function Page({ params }: Props) {
-  const { slug } = await params; // ❌ params is NOT a Promise
+// ✅ CORRECT for pages (Must satisfy .next/types/ Promise<T> generation)
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params; // ✅ Required by generated types
   // ...
 }
 
-// ✅ CORRECT
-export default function Page({ params }: Props) {
-  const { slug } = params; // ✅ Direct destructuring
-  // ...
+// ✅ CORRECT for layouts (Always Promise in Next.js 15+)
+export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params; // ✅ Always correct for layouts
 }
 ```
-**Why**: Next.js 16 App Router changed `params` from a resolved Promise to a plain object at runtime. `await` on a plain object throws no error but is semantically wrong and can cause subtle hydration mismatches.
+
+**Why the duality exists**: Next.js 16's `.next/types/` generator interprets dynamic segments as `Promise<T>` to enable async prop resolution, even though the actual runtime `params` is a plain object. JavaScript's `await` on a non-Promise returns the same value (not a bug), so the runtime behavior is correct. TypeScript just needs the `Promise<T>` type annotation to pass `tsc --noEmit`.
+
+**Prevention**: Always check `.next/types/app/[...]/page.ts` after build failures. If `params` is typed as `Promise<any>`, update your page props to match. Never fight the generated types — they are the source of truth for the type-checker.
 
 ### Mistake #17: Hardcoding `dir="ltr"` in i18n Layouts
 **Fix**: Use `dir={isRTL(locale) ? "rtl" : "ltr"}` always. Never hardcode.
@@ -1349,21 +1365,35 @@ small: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)
 4. **Session**: `getServerSession` is deprecated in favor of `auth()` from `next-auth`.
 5. **Config**: The `authOptions` structure is different. In v5, you define a `config` and pass it to `NextAuth`.
 
-### Next.js 16: `params` is a Plain Object (Not a Promise)
-**Error**: `await params` compiles but produces undefined at runtime,or causes hydration mismatches.
-**Fix**: Directly destructure `params` without `await`.
-```tsx
-// ❌ WRONG
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { slug } = await params;
-}
+### Next.js 16: `params` — Runtime Plain Object, Generated Types Promise<T>
 
-// ✅ CORRECT
-export default function Page({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+**Error**: `await params` compiles but produces undefined at runtime,or causes hydration mismatches.
+
+**Historical View (Pre-Remediation)**: Directly destructure `params` without `await`.
+
+**Current Reality (Next.js 16.2+)**: `.next/types/` generates `Promise<any>` for page `params`, especially in dynamic route segments with i18n. The type-checker (`tsc --noEmit`) requires `await` to satisfy type constraints.
+
+**Fix** (Updated for Type Safety): Type as `Promise<T>` and `await` it. JavaScript's `await` on a non-Promise returns the same value, so runtime is unaffected.
+
+```tsx
+// ✅ CORRECT (satisfies both types and runtime)
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params; // ✅ Required by .next/types/
 }
 ```
-**See**: Mistake #16 for full explanation.
+
+**But for layouts** — `params` IS a real `Promise`. Always `await` it:
+```tsx
+// ✅ CORRECT for layouts (always a real Promise)
+export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params; // ✅ Always correct for layouts
+}
+```
+
+**See**: Mistake #16 for the full runtime/type duality explanation.
 
 ### Next.js 16: `searchParams` is NOT a Promise
 **Error**: Treating `searchParams` as a Promise in `page.tsx` props.
@@ -1463,7 +1493,11 @@ if (typeof window !== "undefined") { ... }
 5. **Lucide icons only**: No emojis. No inline SVGs without `aria-hidden`.
 
 ### Phase 2 (Cinematic Experience & Advanced Discovery)
-17. **`params` / `searchParams` are NOT Promises in Next.js 16**: Direct destructuring only. `await params` is a silent bug that compiles but causes runtime failures.
+17. **`params` / `searchParams` runtime vs. type duality in Next.js 16**:
+    - **Runtime**: `params` is a **plain object**. `await` on a non-Promise returns the same value (no runtime bug).
+    - **Generated Types** (`.next/types/`): Next.js 16 types `params` as `Promise<any>` for `page.tsx` in dynamic segments. TypeScript requires `params: Promise<{...}>` with `await` to satisfy `tsc --noEmit`.
+    - **Rule**: Always type as `Promise<T>` and use `await` in async functions to satisfy type-checker and prevent `TS2345`. The runtime handles it transparently. See Mistake #16 for full explanation.
+18. **`JSX.Element` is BANNED in React 19**: Remove all explicit `: JSX.Element` return types. TypeScript infers them. If you must be explicit, use `ReactElement` (imported).
 18. **`JSX.Element` is BANNED in React 19**: Remove all explicit `: JSX.Element` return types. TypeScript infers them. If you must be explicit, use `ReactElement` (imported).
 19. **`useOptimistic` is NOT for simple boolean toggles**: React 19 `useOptimistic` requires `(state, optimisticValue)` reducer signature. For simple toggles, `useState` is simpler and safer.
 20. **No emojis in UI, ever**: Use Lucide icons exclusively. Emojis break a11y and violate the anti-generic mandate.
@@ -1526,7 +1560,7 @@ if (typeof window !== "undefined") { ... }
 
 ### Next.js App Router (Next.js 16+)
 ```
-❌ async function Page({ params }) { const p = await params }  → ✅ const { slug } = params
+❌ async function Page({ params }) { const p = params }      → ✅ const { slug } = await params (Promise<T> for generated types)
 ❌ <a href="/shop">                     → ✅ <Link href="/shop">
 ❌ window.location.href                → ✅ router.push("/path")
 ❌ searchParams is Promise             → ✅ searchParams is plain object
@@ -1835,12 +1869,14 @@ The following v3 → v4 utility mappings were **verified in production code** du
 | `bg-gradient-to-b` | `bg-linear-to-b` | `HeroSection.tsx` | 🔴 High |
 | `bg-gradient-to-t` | `bg-linear-to-t` | `CategoryShowcase.tsx`, `FeaturedCollections.tsx` | 🔴 High |
 | `flex-shrink-0` | `shrink-0` | `ProductEmbed.tsx`, `NewArrivals.tsx` | 🟡 Medium ( silent) |
-| `outline-none` | `outline-hidden` | *(none found)* | 🟢 Low (prevention) |
+| `outline-none` | `outline-hidden` | `UGCGallery.tsx`, `AccountOverview.tsx`, `LanguageSwitcher.tsx`, `Input.tsx`, `Button.tsx` | 🟡 Medium (a11y) |
 
 **Detection Command** (run before every commit):
 ```bash
-grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ packages/ apps/
+grep -rEn --exclude-dir=.next --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.turbo '\bbg-gradient-to-[a-z]+\b|\bonline-none\b|\bflex-shrink-0\b' packages/ apps/
 ```
+
+**Key Insight from Remediation (2026-05-25)**: The original detection regex `outline-none[^-]` fails when `outline-none` appears at the end of a className string (e.g., `className="... outline-none"`) because `[^-]` requires a non-hyphen character after the match. The robust fix uses `\b` (word boundaries) for exact class name matching. Also, `outline-none` was found in `focus-visible:outline-none` (variant prefix) — these must also be migrated to `outline-hidden` to preserve Forced Colors Mode accessibility.
 
 ### 14.4 Next.js 16 Configuration Cleanup
 
@@ -1967,7 +2003,7 @@ Tasks: 2 successful, 2 total   # build
 | `experimental.ppr` | `"incremental"` | Remove entirely |
 | `next.config.ts` `eslint` key | `ignoreDuringBuilds` | Remove; use `.eslintrc` only |
 | `next lint` CLI | Available | **NOT available**; use `eslint` or scripts |
-| `params` type | `Promise<{ slug: string }>` | Plain object; add explicit interface |
+| `params` type | `Promise<{ slug: string }>` for layouts; plain object (runtime) / `Promise<T>` (generated types) for pages. See Mistake #16 | Page: `params: Promise<{...}>`, `await params`. Layout: always `Promise<T>`, always `await` |
 | `next --help` | Shows `lint` | Missing `lint` subcommand |
 
 ### 14.9 Prisma Schema/Type Synchronization (New)
@@ -2013,12 +2049,227 @@ pnpm db:generate && pnpm typecheck
 | `bg-gradient-to-b` | `bg-linear-to-b` | `HeroSection.tsx` | 🔴 High |
 | `bg-gradient-to-t` | `bg-linear-to-t` | `CategoryShowcase.tsx`, `FeaturedCollections.tsx` | 🔴 High |
 | `flex-shrink-0` | `shrink-0` | `ProductEmbed.tsx`, `NewArrivals.tsx` | 🟡 Medium ( silent) |
-| `outline-none` | `outline-hidden` | *(none found)* | 🟢 Low (prevention) |
+| `outline-none` | `outline-hidden` | `UGCGallery.tsx`, `AccountOverview.tsx`, `LanguageSwitcher.tsx`, `Input.tsx`, `Button.tsx` | 🟡 Medium (a11y) |
 
 **CSS Detection** (run before every commit):
 ```bash
-grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ packages/ apps/
+grep -rEn --exclude-dir=.next --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.turbo '\bbg-gradient-to-[a-z]+\b|\bonline-none\b|\bflex-shrink-0\b' packages/ apps/
 ```
+
+---
+
+### 14.12 tRPC + NextAuth v4 in App Router — `getToken` Not `getServerSession`
+
+**Problem**: `getServerSession(authOptions)` is designed for **Pages Router** (`NextApiRequest`/`NextApiResponse`) and throws type errors in tRPC context within Next.js App Router.
+
+**Root Cause**: `getServerSession` expects a `NextApiRequest` from `next`, but tRPC in App Router receives `NextRequest` from `next/server`. The type mismatch prevents direct usage.
+
+**Solution**: Use `getToken` from `next-auth/jwt` in tRPC context. It reads the `next-auth.session-token` cookie, verifies it with `AUTH_SECRET`, and returns the JWT payload.
+
+```ts
+// src/server/context.ts
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { prisma } from "@/lib/prisma";
+
+export interface Context {
+  prisma: typeof prisma;
+  user: { id: string; email: string; role: string } | null;
+  sessionId: string | null;
+}
+
+export async function createContext(req: NextRequest): Promise<Context> {
+  const sessionId = req.cookies.get("cart-session")?.value ?? crypto.randomUUID();
+
+  let user: Context["user"] = null;
+  if (process.env.AUTH_SECRET) {
+    // Cast needed because getToken expects a compatible req shape
+    const token = await getToken({
+      req: req as unknown as Parameters<typeof getToken>[0]["req"],
+      secret: process.env.AUTH_SECRET,
+    });
+
+    if (token?.id && typeof token.id === "string") {
+      user = {
+        id: token.id,
+        email: (token.email as string) ?? "",
+        role: (token.role as string) || "CUSTOMER",
+      };
+    }
+  }
+  return { prisma, user, sessionId };
+}
+```
+
+**Why this works**:
+- `getToken` is library-agnostic — it reads cookies, verifies JWT, and returns the decoded payload. Works with both App Router and Pages Router.
+- `getServerSession` wraps `getToken` but adds Pages Router-specific request/response handling that breaks in App Router tRPC.
+- The `as unknown` cast acknowledges the req type difference without fighting the library. At runtime, both `NextRequest` and `IncomingMessage` have the necessary cookie headers; the cast is type-system-only.
+
+**Prevention**: If attempting auth in tRPC context results in `Type 'NextRequest' is not assignable to parameter of type 'GetServerSidePropsContext'`, immediately switch to `getToken`.
+
+---
+
+### 14.13 Duplicate Route Anti-Pattern
+
+**Problem**: Having both `/app/account/page.tsx` (root) and `/app/[locale]/account/page.tsx` (localized) creates routing ambiguity. Next.js App Router serves both, causing:
+- **Duplicate content** at `/account` and `/en/account`
+- **SEO penalties** for duplicate content
+- **State inconsistency** if one route is updated but not the other
+
+**Solution**: Choose ONE canonical route. For i18n projects, the localized route is canonical. Remove the non-localized duplicate.
+
+```tsx
+// ❌ WRONG — duplicate content at /account and /en/account
+// src/app/account/page.tsx        ← DELETE THIS
+// src/app/[locale]/account/page.tsx ← KEEP THIS (canonical)
+```
+
+**Migration path**:
+1. Merge unique content from the non-localized page into the localized one.
+2. Delete the non-localized `page.tsx`.
+3. In `src/app/account/`, add a `route.ts` or `page.tsx` that redirects:
+
+```tsx
+// src/app/account/page.tsx (redirect to canonical locale)
+import { redirect } from "next/navigation";
+import { defaultLocale } from "@/i18n/config";
+export default function RootAccountRedirect() {
+  redirect(`/${defaultLocale}/account`);
+}
+```
+
+**Prevention**: Run `find src/app -name "page.tsx" | sort` periodically. Any two `page.tsx` files with the same name under different route segments indicate potential duplication.
+
+---
+
+### 14.14 Root Layout `lang` Attribute
+
+**Problem**: The root `<html>` element hardcodes `lang="en"`, but the app supports multiple locales. This fails accessibility audits (screen readers announce the wrong language) and creates content-language mismatches.
+
+**Solution**: Use `defaultLocale` from the i18n configuration as the fallback, and localize via `[locale]/layout.tsx` for localized routes.
+
+```tsx
+// src/app/layout.tsx (root, non-localized pages)
+import { defaultLocale } from "@/i18n/config";
+export default function RootLayout({ children }: RootLayoutProps) {
+  return (
+    <html lang={defaultLocale}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+```tsx
+// src/app/[locale]/layout.tsx (localized pages)
+export default async function LocaleLayout({ params }: LocaleLayoutProps) {
+  const { locale } = await params; // Layout: await is correct
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**Prevention**: Search for `lang="` in `src/app/**/*.tsx` — only root and `[locale]/layout.tsx` should have it. No `page.tsx` should have `lang`.
+
+---
+
+### 14.15 Monorepo Search Path Gotchas in Lint Scripts
+
+**Problem**: A monorepo has multiple `src/` directories (`apps/web/src/`, `packages/ui/src/`, `packages/utils/src/`). Running `grep -r ... src/` from the monorepo root finds the first `src/` at root (which doesn't exist), causing silent failures.
+
+**Solution**: Use explicit per-workspace search paths. Exclude build artifacts (`.next/`, `.turbo/`, `dist/`).
+
+```bash
+# ❌ WRONG — misses packages, finds wrong src/ directory
+grep -rEn 'pattern' src/
+
+# ✅ CORRECT — checks all workspaces, excludes build dirs
+grep -rEn \
+  --exclude-dir=.next \
+  --exclude-dir=node_modules \
+  --exclude-dir=dist \
+  --exclude-dir=.turbo \
+  --exclude="*.log" \
+  'pattern' \
+  packages/ apps/
+```
+
+**Key insight from Remediation (2026-05-25)**: The `validate-deprecated-twind.sh` script originally searched `src/` from the monorepo root, which doesn't exist. It silently failed with `grep: src/: No such file or directory` but the script's `exit` logic didn't trigger a CI failure because `grep` exiting with `1` (no match) was indistinguishable from a real pass. The fix: explicitly search `packages/` and `apps/`.
+
+---
+
+### 14.16 RSC Account Page with `getServerSession`
+
+**Problem**: Account pages traditionally use `"use client"` + `useSession()` from `next-auth/react`, making them Client Components. This defeats SSR and requires client-side hydration for protected routes.
+
+**Solution**: Use `getServerSession` (or `getToken` in tRPC) in a Server Component. If unauthenticated, redirect server-side.
+
+```tsx
+// src/app/[locale]/account/page.tsx
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+
+interface AccountPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AccountPage({ params }: AccountPageProps) {
+  const { locale } = await params;
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect(`/${locale}/login?callbackUrl=/${locale}/account`);
+  }
+  return (
+    <main>
+      {/* ... authenticated content ... */}
+    </main>
+  );
+}
+```
+
+**Key rules**:
+- `getServerSession` is safe in RSC because it runs on the server.
+- `getServerSession(authOptions)` in NextAuth v4 requires the `authOptions` export from `lib/auth.ts`.
+- For tRPC-protected endpoints, use the `Context` pattern with `getToken` (see §14.12).
+
+---
+
+### 14.17 `[class]` Range vs Exact Match in grep Regex
+
+**Problem**: `outline-none[^-]` (character class) fails at end-of-class-name boundaries. `[class]` is a **character class** (matches any single character in the set), not a boundary assertion.
+
+| Pattern | Type | Matches `outline-none` | Matches `outline-none ring-1` | Fails at EOL |
+|---------|------|------------------------|------------------------------|--------------|
+| `outline-none` | Literal | ✅ | ✅ | ✅ |
+| `outline-none[^-]` | Character class | ✅ | ✅ | ❌ (requires char after) |
+| `\bonline-none\b` | Word boundary | ✅ | ✅ | ✅ |
+
+**Solution**: Use `\b` (word boundary) for exact class name matching in grep:
+
+```bash
+# ✅ CORRECT — exact word boundaries for class names
+grep -rEn '\bonline-none\b|\bflex-shrink-0\b|\bbg-gradient-to-[a-z]+\b' ...
+```
+
+---
+
+### 14.18 NextAuth v4 Environment Variable Duality
+
+**Problem**: NextAuth v4 uses `NEXTAUTH_SECRET` in some contexts but `AUTH_SECRET` in others. The `.env` may have `NEXTAUTH_SECRET` but the tRPC context expects `AUTH_SECRET`, causing silent auth failures.
+
+**Fix**: Standardize on `AUTH_SECRET` in application code, with a fallback for backward compatibility:
+
+```ts
+const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+if (!secret) throw new Error("AUTH_SECRET or NEXTAUTH_SECRET required");
+```
+
+**Why**: NextAuth v4.24.14 `authOptions.secret` reads from `process.env.AUTH_SECRET` by convention. The `getToken` function also reads from `process.env.AUTH_SECRET` by default. Using a single variable name eliminates confusion.
 
 ---
 
@@ -2041,8 +2292,16 @@ grep -rEn 'bg-gradient-to-(r|l|t|b)|outline-none[^-]|flex-shrink-0' src/ package
 | `async` on non-fetching components | Misleading, TypeScript confusion | Remove `async` when no `await` |
 | Missing `useId()` | Duplicate IDs, broken ARIA | Always use `useId()` for label/input pairs |
 | `bg-gradient-to-*` | Build error in Tailwind v4 | Use `bg-linear-to-*` |
-| `outline-none` | Missing focus indicators | Use `outline-hidden` |
+| `outline-none` | Missing focus indicators (breaks Forced Colors Mode) | Use `outline-hidden` for visibility; preserves a11y |
 | `flex-shrink-0` | Silent utility failure | Use `shrink-0` |
+| Hardcoded `lang="en"` | i18n/content-language mismatch | Use `lang={defaultLocale}` or `lang={locale}` |
+| Non-localized route alongside `/${locale}/` | Duplicate routes, SEO penalties | Merge or redirect |
+| `getServerSession` in tRPC / App Router | Type error (NextRequest ≠ NextApiRequest) | Use `getToken` from `next-auth/jwt` |
+| Hardcoded `lang="en"` | i18n/content-language mismatch | Use `lang={defaultLocale}` or `lang={locale}` |
+| Non-localized `/page.tsx` alongside `/${locale}/page.tsx` | Duplicate routes, SEO penalties | Merge or redirect |
+| `getServerSession` in tRPC context | Type error (NextApiRequest ≠ NextRequest) | Use `getToken` from `next-auth/jwt` |
+| `src/` search path in monorepo | Silent lint failures (wrong directory) | Use `packages/ apps/` with `--exclude-dir` |
+| `NEXTAUTH_SECRET` env var | Inconsistent with NextAuth v4 convention | Standardize on `AUTH_SECRET` |
 
 ---
 
@@ -2069,6 +2328,12 @@ grep -rn 'window.location' src/ packages/ apps/ --include="*.tsx"
 
 # `any` type scan
 grep -rn ': any' src/ packages/ apps/ --include="*.ts" --include="*.tsx"
+
+# `getServerSession` / `getToken` wrong usage scan
+grep -rn 'getServerSession' src/ --include="*.ts" --include="*.tsx" | grep -v "import.*getServerSession" | grep -v "getServerSession(authOptions)" | grep -v "getServerSession(authOptions)" | head -5
+
+# Deprecated `next lint` in package.json
+grep -rn '"lint".*"next lint"' src/ packages/ apps/ --include="*.json"
 
 # `enum` / `namespace` scan
 grep -rn 'enum ' src/ packages/ apps/ --include="*.ts" --include="*.tsx"
