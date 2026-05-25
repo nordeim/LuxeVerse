@@ -12,7 +12,7 @@ IMPORTANT: File is read fresh for every conversation. Be brief and practical. Th
 
 ---
 
-## Project State (2026-05-24)
+## Project State (2026-05-25)
 
 | Phase | Status | Completion | Key Deliverables |
 |-------|--------|------------|-----------------|
@@ -20,10 +20,10 @@ IMPORTANT: File is read fresh for every conversation. Be brief and practical. Th
 | 1: Core Commerce | Complete | 2026-05-20 | Product catalog, cart, checkout, Stripe, Auth |
 | 2: Cinematic UX | Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
 | 3: AI Personalization | Complete | 2026-05-22 | AI service layer, style quiz, streaming chat, outfit generation, size recommendations |
-| 4: Scale, Loyalty & Social | Complete | 2026-05-24 | Loyalty engine (12 tests), i18n (EN/FR/AR), PWA (webpack mode), UGC, Sustainability, Account Hub |
+| 4: Scale, Loyalty & Social | Complete | 2026-05-25 | Loyalty engine (12 tests), i18n (EN/FR/AR), PWA (webpack mode), UGC, Sustainability, Account Hub |
 | 5: Hardening & Launch | Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
 
-**Verification**: TypeScript 0 errors, 85 tests passing, build succeeds with --webpack PWA flag.
+**Verification**: TypeScript 0 errors, 91 tests passing (18 test files), build succeeds with --webpack PWA flag.
 
 ---
 
@@ -50,11 +50,38 @@ Follow this six-phase workflow for ALL implementation tasks:
 
 ## Critical Gotchas (Updated 2026-05-24)
 
-### Next.js 16 `params` (Layout vs Page nuance)
-* **Layouts**: `params` is a `Promise` — must `await` it: `const { slug } = await params` (use `Promise<{ slug: string }>` type)
-* **Pages**: `params` is a plain object — use direct destructuring: `const { slug } = params` (use `{ slug: string }` type)
-* **Why**: Next.js 16 changed page `params` to plain objects for sync access, but layout `params` remains a Promise due to async resolution across nested segments.
-* **File**: See `src/app/[locale]/layout.tsx` vs `src/app/[locale]/page.tsx`
+### Next.js 16 `params` — The Runtime vs. Type Duality
+
+**CRITICAL DUALITY (Updated 2026-05-25)**:
+
+| Layer | Type | Must Use |
+|-------|------|----------|
+| **Runtime** | Plain object `{}` | `const { slug } = params` (direct destructuring) |
+| **Generated Types** (`.next/types/`) | `Promise<{ ... }>` | `params: Promise<{...}>` + `await` to satisfy tsc |
+
+**Rule for Layouts**: `params` **IS** a `Promise` in `layout.tsx` and `template.tsx`. Always `await` it.
+
+**Rule for Pages**: At **runtime**, `params` is a plain object. BUT `.next/types/` generates `Promise<T>` for `page.tsx` props (especially in Next.js 16.2+ with i18n route groups). You **must** type as `Promise<T>` and `await` it to prevent `TS2345` or `TS2307` errors.
+
+```tsx
+// ✅ CORRECT for pages (Must satisfy .next/types/ Promise<T> generation)
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params; // ✅ Required by generated types
+  // ...
+}
+
+// ✅ CORRECT for layouts (Always Promise in Next.js 15+)
+export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params; // ✅ Always correct for layouts
+}
+```
+
+**Why the duality exists**: Next.js 16's `.next/types/` generator interprets dynamic segments as `Promise<T>` to enable async prop resolution, even though the actual runtime `params` is a plain object. JavaScript's `await` on a non-Promise returns the same value (not a bug), so the runtime behavior is correct. TypeScript just needs the `Promise<T>` type annotation to pass `tsc --noEmit`.
+
+**Prevention**: Always check `.next/types/app/[...]/page.ts` after build failures. If `params` is typed as `Promise<any>`, update your page props to match. Never fight the generated types — they are the source of truth for the type-checker.
 
 ### PWA Build with next-pwa
 * **Symptom**: "This build is using Turbopack, with a webpack config and no turbopack config"
@@ -374,15 +401,25 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 
 ## Last Updated
 
-**2026-05-24** — Post-Phase 4 Remediation: 
-- Loyalty engine with atomic transactions + 12 tests
-- i18n with EN/FR/AR locale routing + RTL support
-- PWA with `--webpack` flag for next-pwa compatibility
-- UGC Prisma model + tRPC router
-- Sustainability scoring + Scorecard component
-- Account Hub with profile/activity cards
-- superjson integration for tRPC date serialization
-- TypeScript 0 errors, 85 tests passing
+**2026-05-25** — Post-Phase 4 Remediation + Next.js 16 Params Type Duality Fix:
+- **TypeScript**: 0 errors, 91 tests passing (18 test files)
+- **Next.js 16 `params`**: Updated all page components to use `params: Promise<{...}>` + `await` (satisfies `.next/types/` generator, no runtime regression)
+- **Tailwind v4**: `outline-none` → `outline-hidden` in 5 files (Forced Colors Mode a11y fix)
+- **tRPC + NextAuth v4**: `getToken` from `next-auth/jwt` replaces `getServerSession` in tRPC context (App Router compatibility)
+- **i18n**: i18n alignment: `lang={defaultLocale}` in root layout, `dir={isRTL(locale)}` in locale layout
+- **Lint scripts**: Fixed monorepo search paths (`src/` → `packages/ apps/`), added `--exclude-dir=.turbo`
+- **Account routing**: Removed duplicate `/account` route, consolidated under `[locale]/account`
+- **Tailwind regex**: `\b` word boundaries for exact class name matching (prevents false negatives)
+
+**Updated SKILL.md**: v4.0.0 with new sections §14.12–18 on:
+- tRPC + NextAuth v4 `getToken` pattern
+- Duplicate route anti-pattern
+- Root layout `lang` attribute
+- Monorepo search path gotchas
+- RSC Account pages with `getServerSession`
+- `[class]` vs `\b` regex matching
+- NextAuth env var duality (`NEXTAUTH_SECRET` vs `AUTH_SECRET`)
+- New anti-patterns: hardcoded `lang`, duplicate routes, `getServerSession` in App Router, monorepo root `src/` search
 
 ---
 

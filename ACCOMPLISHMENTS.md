@@ -83,7 +83,7 @@
 | **useCart.ts** typo | `result.item` → `result.items` | Correctly accesses cart `items` array |
 | **useWishlist.ts** | Updated mutation contracts | Matches updated `wishlist.ts` router (removed `userId` from input, added `removeItem` with `productId`) |
 | **global-error.test.tsx** | Fixed `beforeAll`/`afterAll` unused imports | Clean test output |
-| **Next.js 16 `params`** | All `page.tsx` files | Layouts use `Promise<{...}>`, pages use plain object |
+| **Next.js 16 `params`** | All `page.tsx` files | Layouts use `Promise<{...}>`, pages use `Promise<{...}>` with `await` (satisfies `.next/types/` generator) |
 
 ### 9. Remaining Phase 4 Gaps
 
@@ -94,8 +94,8 @@
 | PWA custom service worker (beyond auto-generated) | Medium | Phase 5 |
 | UGC image upload (cloud storage integration) | Medium | Phase 5 |
 | Sustainability data source (verified schema vs hardcoded) | Medium | Phase 5 |
-
----
+| CSS logical properties for RTL (`margin-inline`, `text-align: start`) | Medium | Phase 5 |
+| Custom service worker (`src/sw.ts`) beyond auto-generated | Medium | Phase 5 |
 
 ## Phase 3 Remediation — AI & Personalization (2026-05-22)
 

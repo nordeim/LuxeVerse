@@ -1,4 +1,5 @@
 
+
 > @luxeverse/web@0.1.0 build /home/project/LuxeVerse/apps/web
 > next build --webpack
 
@@ -13,18 +14,13 @@
  ○ (pwa) Service worker: /home/project/LuxeVerse/apps/web/public/sw.js
  ○ (pwa)   URL: /sw.js
  ○ (pwa)   Scope: /
-✓ Compiled successfully in 11.9s
-  Running TypeScript ...
-  Finished TypeScript in 12.9s ...
-  Collecting page data using 3 workers ...
-  Generating static pages using 3 workers (0/10) ...
+✓ Compiled successfully in 9.8s
+  Finished TypeScript in 13.9s    ✓ Finished TypeScript in 13.9s 
+  Collecting page data using 3 workers in 788ms    ✓ Collecting page data using 3 workers in 788ms 
 ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
-  Generating static pages using 3 workers (2/10) 
-  Generating static pages using 3 workers (4/10) 
-  Generating static pages using 3 workers (7/10) 
-✓ Generating static pages using 3 workers (10/10) in 561ms
-  Finalizing page optimization ...
-  Collecting build traces ...
+✓ Generating static pages using 3 workers (10/10) in 586ms
+  Collecting build traces in 13.8s    ✓ Collecting build traces in 13.8s 
+  Finalizing page optimization in 13.8s    ✓ Finalizing page optimization in 13.8s 
 
 Route (app)
 ┌ ○ /

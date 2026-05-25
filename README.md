@@ -1,6 +1,6 @@
 # LuxeVerse
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/luxeverse/luxeverse/releases)
+[![Version](https://img.shields.io/badge/version-3.4.0-blue)](https://github.com/luxeverse/luxeverse/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/luxeverse/luxeverse/ci.yml?branch=main&label=CI)](https://github.com/luxeverse/luxeverse/actions)
 [![License](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
@@ -334,7 +334,7 @@ open https://vercel.com/luxeverse/web/deployments
 | **TYPE-001** | Integrated `superjson` for tRPC date serialization | Prisma `Date` fields correctly deserialized |
 | **TYPE-002** | Fixed case-sensitive import issues (Linux) | `button.test.tsx` → `Button.tsx`, `input.test.tsx` → `Input.tsx` |
 
-## 📋 Troubleshooting (Updated 2026-05-24)
+## 📋 Troubleshooting (Updated 2026-05-25)
 
 ### Prisma Schema Issues
 If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client types:
@@ -343,30 +343,92 @@ If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client 
 * **Context**: This occurs because Prisma's TypeScript types are generated from the schema. If the schema changes but the types aren't regenerated, any new or modified fields will be missing from the generated type definitions.
 
 ### Tailwind v4 Migration
-| v3 Utility | v4 Replacement |
-|------------|----------------|
-| `bg-gradient-to-r` | `bg-linear-to-r` |
-| `outline-none` | `outline-hidden` |
-| `flex-shrink-0` | `shrink-0` |
+| v3 Utility | v4 Replacement | Notes |
+|------------|----------------|-------|
+| `bg-gradient-to-r` | `bg-linear-to-r` | Build error if not migrated |
+| `bg-gradient-to-t` | `bg-linear-to-t` | Build error if not migrated |
+| `outline-none` | `outline-hidden` | **Critical a11y fix** — preserves Forced Colors Mode |
+| `flex-shrink-0` | `shrink-0` | Silent style failure otherwise |
 
 * **Symptom**: Styles not applying or build errors mentioning `bg-gradient-to-r`
-* **Context**: Tailwind v4 is CSS-first and uses different utility names for some properties. Check the generated CSS in `.next/static/chunks` to confirm utilities are being compiled.
+* **Context**: Tailwind v4 is CSS-first and uses different utility names for some properties. The `outline-none` → `outline-hidden` migration is not cosmetic — it preserves accessibility.
+* **Files found with deprecated utilities**: `UGCGallery.tsx`, `AccountOverview.tsx`, `LanguageSwitcher.tsx`, `Input.tsx`, `Button.tsx` — all fixed.
+
+### Monorepo Search Path Gotchas in Lint Scripts
+* **Symptom**: Lint scripts fail silently with `grep: src/: No such file or directory`
+* **Root cause**: In a monorepo, running `grep ... src/` from the root searches a non-existent `src/` directory at root, not the one inside `apps/web/`
+* **Fix**: Use per-workspace search paths. Exclude build directories:
+  ```bash
+  grep -rEn --exclude-dir=.next --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.turbo "PATTERN" packages/ apps/
+  ```
+* **Files**: `scripts/validate-deprecated-twind.sh`, `scripts/validate-colors.sh`
 
 ### PWA Build with next-pwa
 * **Symptom**: `This build is using Turbopack, with a webpack config and no turbopack config`
 * **Fix**: Add `--webpack` to the build script: `"build": "next build --webpack"` in `package.json`. Keep `swSrc` undefined (auto-generated SW) for reliability.
 * **Context**: `@ducanh2912/next-pwa` relies on `workbox-webpack-plugin`, which Turbopack cannot process.
 
-### Next.js 16 `params` (Layout vs Page nuance)
-* **Layouts**: `params` is a `Promise` — must `await` it: `const { slug } = await params`
-* **Pages**: `params` is a plain object — use direct destructuring: `const { slug } = params`
-* **Why**: Next.js 16 changed page `params` to plain objects for sync access, but layout `params` remains a Promise due to async resolution across nested segments.
+### Next.js 16 `params` — The Runtime vs. Type Duality
+
+**CRITICAL**: Next.js 16's `.next/types/` generator types `params` as `Promise<any>` for page components, even though at runtime `params` is a plain object.
+
+| Layer | Type | Must Use |
+|-------|------|---------|
+| **Runtime** | Plain object `{}` | `const { slug } = params` (direct destructuring) |
+| **Generated Types** (`.next/types/`) | `Promise<{ ... }>` | `params: Promise<{...}>` + `await` to satisfy tsc |
+
+**For Pages (Updated for Next.js 16.2+)**:
+```tsx
+// ✅ CORRECT — satisfies both runtime and generated types
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params; // Required by .next/types/ Promise<T>
+}
+```
+
+**For Layouts** (always a real Promise):
+```tsx
+// ✅ CORRECT — layouts always receive a Promise
+export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params; // Always correct for layouts
+}
+```
+
+* **Why the duality**: `.next/types/` generates `Promise<any>` to enable async prop resolution. At runtime, `await` on a non-Promise returns the same value (no runtime bug). TypeScript just needs the `Promise<T>` annotation to pass `tsc --noEmit`.
+* **Files**: All `page.tsx` files in the monorepo were updated.
+
+### tRPC + NextAuth v4 in App Router — Use `getToken`, Not `getServerSession`
+
+* **Symptom**: Type error when using `getServerSession(authOptions)` in tRPC context: `Type 'NextRequest' is not assignable to parameter of type 'GetServerSidePropsContext'`
+* **Root cause**: `getServerSession` is designed for **Pages Router** (`NextApiRequest`/`NextApiResponse`), not App Router's `NextRequest`
+* **Fix**: Use `getToken` from `next-auth/jwt` in tRPC context. It reads the `next-auth.session-token` cookie, verifies it with `AUTH_SECRET`, and returns the JWT payload.
+* **File**: `src/server/context.ts`
 
 ### tRPC Date Serialization with superjson
 * **Symptom**: `Type 'string' is not assignable to type 'Date'` on client when using Prisma types
 * **Fix**: Ensure `superjson` is registered in BOTH server `initTRPC` AND client `httpBatchLink`
 * **File**: `src/server/trpc.ts` + `src/trpc/provider.tsx`
 * **Context**: Without `superjson`, tRPC serializes dates as ISO strings over the wire. Prisma types expect Date objects, causing type mismatches.
+
+### Root Layout `lang` Attribute
+* **Symptom**: Accessibility audit fails with "HTML lang attribute does not match page language"
+* **Fix**: Use `defaultLocale` from `i18n/config` in root `layout.tsx`, and `locale` from `params` in `[locale]/layout.tsx`
+  ```tsx
+  // Root layout (fallback)
+  <html lang={defaultLocale}>
+  
+  // Locale layout (localized)
+  <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}
+  ```
+* **File**: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`
+
+### Duplicate i18n Routes
+* **Symptom**: Both `/account` and `/en/account` exist, serving duplicate content with potential SEO penalties
+* **Fix**: Remove the non-localized route (`src/app/account/page.tsx`) and keep only the localized one (`src/app/[locale]/account/page.tsx`)
+* **Context**: Phase 4 remediation removed the non-localized `/account` route to prevent duplicate-content issues
+* **File**: `src/app/account/page.tsx` (deleted), `src/app/[locale]/account/page.tsx`
 
 ### i18n Locale Switching
 * **Symptom**: Full page reload or lost state when switching languages
@@ -449,8 +511,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-24 (Post-Phase 4 Remediation)  
-> **Next Review**: 2026-06-15  
-> **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3  
-> **Status**: Phases 0-4 complete, Phase 5 pending  
+> **Last Updated**: 2026-05-25 (Post-Phase 4 Remediation + Params Type Duality Fix)
+> **Next Review**: 2026-06-15
+> **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3
+> **Status**: Phases 0-4 complete (91 tests passing), Phase 5 pending
 > **Contact**: engineering@luxeverse.com
