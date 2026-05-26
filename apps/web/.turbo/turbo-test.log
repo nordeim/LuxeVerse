@@ -5,32 +5,17 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
-stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
-[CheckoutAction] AUTH_SECRET not set, skipping session verification
-
-stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
-[CheckoutAction] Failed: Error: Invariant: static generation store missing in revalidatePath /checkout
-    at revalidate (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:127:11)
-    at revalidatePath (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:117:10)
-    at Module.createCheckoutAction [90m(/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.ts:125:5[90m)[39m
-[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
-    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:55:20
-    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
-
- ❯ src/app/actions/checkout.actions.test.ts (2 tests | 1 failed) 39ms
-   ✓ createCheckoutAction > should fail with validation error for missing fields 11ms
-   × createCheckoutAction > should create order successfully 27ms
-     → expected 'error' to be 'success' // Object.is equality
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 217ms
- ✓ src/server/ai.service.test.ts (6 tests) 1045ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1024ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 182ms
 stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/drawer.test.tsx (2 tests) 285ms
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 211ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1050ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1026ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 203ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -39,12 +24,11 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/dialog.test.tsx (1 test) 235ms
- ✓ src/components/ui/button.test.tsx (4 tests) 241ms
- ✓ src/components/ui/input.test.tsx (3 tests) 144ms
- ✓ src/server/routers/ai.test.ts (5 tests) 176ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 175ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 157ms
+ ✓ src/components/ui/dialog.test.tsx (1 test) 218ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 141ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 137ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 137ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 121ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -60,38 +44,31 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
- ✓ src/app/global-error.test.tsx (1 test) 75ms
- ✓ src/server/routers/review.test.ts (14 tests) 61ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 34ms
- ✓ src/server/routers/search.test.ts (9 tests) 32ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 40ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 14ms
- ✓ src/i18n/config.test.ts (5 tests) 14ms
- ✓ src/lib/utils.test.ts (2 tests) 8ms
- ✓ next.config.test.ts (2 tests) 10ms
+ ✓ src/app/global-error.test.tsx (1 test) 71ms
+ ✓ src/server/routers/review.test.ts (14 tests) 54ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 30ms
+stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
+[CheckoutAction] AUTH_SECRET not set, skipping session verification
 
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
+[CheckoutAction] Failed: Error: Invariant: static generation store missing in revalidatePath /checkout
+    at revalidate (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:127:11)
+    at revalidatePath (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:117:10)
+    at Module.createCheckoutAction [90m(/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.ts:125:5[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:58:20
+    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- FAIL  src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
-AssertionError: expected 'error' to be 'success' // Object.is equality
+ ✓ src/app/actions/checkout.actions.test.ts (2 tests) 28ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 26ms
+ ✓ src/server/routers/search.test.ts (9 tests) 24ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 16ms
+ ✓ src/i18n/config.test.ts (5 tests) 11ms
+ ✓ src/lib/utils.test.ts (2 tests) 7ms
+ ✓ next.config.test.ts (2 tests) 8ms
 
-Expected: [32m"success"[39m
-Received: [31m"error"[39m
+ Test Files  19 passed (19)
+      Tests  93 passed (93)
+   Start at  09:10:53
+   Duration  9.76s (transform 555ms, setup 4.41s, collect 2.79s, tests 2.68s, environment 10.77s, prepare 2.11s)
 
- ❯ src/app/actions/checkout.actions.test.ts:57:27
-
- Test Files  1 failed | 18 passed (19)
-     55|     const result = await createCheckoutAction({ status: "idle" }, mock…
-     56| 
-     57|     expect(result.status).toBe("success");
-       |                           ^
-      Tests  1 failed | 92 passed (93)
-   Start at  07:25:20
-     58|     expect(result.orderId).toBe(mockOrder.id);
-   Duration  11.59s (transform 736ms, setup 5.39s, collect 3.61s, tests 3.00s, environment 13.23s, prepare 2.56s)
-     59|   });
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
-
-
- ELIFECYCLE  Test failed. See above for more details.
