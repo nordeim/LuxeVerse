@@ -8,8 +8,9 @@ export interface ArticleCardProps {
     slug: string;
     category: string;
     title: string;
-    excerpt: string;
-    cover: string;
+    excerpt?: string | null;
+    cover?: string | null;
+    coverImage?: string | null;
     author: string;
     readTime: number;
     featured?: boolean;
@@ -18,11 +19,14 @@ export interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, featured = false }: ArticleCardProps) {
+  const coverImage = article.coverImage ?? article.cover ?? "/placeholder-editorial.jpg";
+  const excerpt = article.excerpt ?? "";
+
   return (
     <article className={cn("group flex flex-col gap-4", featured ? "gap-6" : "")}>
       <div className={cn("relative overflow-hidden rounded-xl bg-obsidian-100", featured ? "aspect-[16/9]" : "aspect-[4/3]")}>
         <Image
-          src={article.cover}
+          src={coverImage}
           alt={article.title}
           width={featured ? 1200 : 600}
           height={featured ? 675 : 450}
@@ -39,7 +43,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
             {article.title}
           </Link>
         </h2>
-        <p className="text-sm text-obsidian-600 line-clamp-2">{article.excerpt}</p>
+        <p className="text-sm text-obsidian-600 line-clamp-2">{excerpt}</p>
         <div className="mt-1 flex items-center gap-3 text-xs text-obsidian-500">
           <span>{article.author}</span>
           <span aria-hidden="true">·</span>

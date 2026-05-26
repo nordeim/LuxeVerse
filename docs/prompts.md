@@ -100,5 +100,9 @@ VALIDATE - please meticulously plan to proceed with Phase 0 execution.
 
 ---
 
+Please meticulously review @status_12.md , @MASTER_EXECUTION_PLAN.md and @skills/luxeverse-architect-skill/SKILL.md to meticulously plan to create a detailed implementation plan with ToDo list for Phase 5, prioritizing the tasks below. Then review and validate the Phase 5 implementation plan against the codebase to ensure alignment before proceeding to execute it meticulously. use TDD approach to make code changes.
+
+---
+
 yes, confirm all as suggested. please proceed meticulously with the corrected plan.
 

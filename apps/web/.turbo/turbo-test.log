@@ -1,134 +1,37 @@
 
-
 > @luxeverse/web@0.1.0 test /home/project/LuxeVerse/apps/web
 > vitest run
 
-[?25l
+
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
-[?2026h
- Test Files 0 passed (18)
-      Tests 0 passed (0)
-   Start at 13:17:58
-   Duration 955ms
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/style-quiz/style-quiz.test.tsx [queued]
+stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
+[CheckoutAction] AUTH_SECRET not set, skipping session verification
 
- Test Files 0 passed (18)
-      Tests 0 passed (0)
-   Start at 13:17:58
-   Duration 1.16s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/style-quiz/style-quiz.test.tsx 0/3
- ❯ src/components/ui/drawer.test.tsx [queued]
- ❯ src/server/ai.service.test.ts [queued]
+stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
+[CheckoutAction] Failed: Error: Invariant: static generation store missing in revalidatePath /checkout
+    at revalidate (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:127:11)
+    at revalidatePath (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:117:10)
+    at Module.createCheckoutAction [90m(/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.ts:125:5[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:55:20
+    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- Test Files 0 passed (18)
-      Tests 0 passed (3)
-   Start at 13:17:58
-   Duration 1.66s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/style-quiz/style-quiz.test.tsx 1/3
- ❯ src/components/ui/drawer.test.tsx [queued]
- ❯ src/server/ai.service.test.ts 0/6
-
- Test Files 0 passed (18)
-      Tests 1 passed (9)
-   Start at 13:17:58
-   Duration 1.76s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/style-quiz/style-quiz.test.tsx 2/3
- ❯ src/components/ui/drawer.test.tsx 0/2
- ❯ src/server/ai.service.test.ts 4/6
-
- Test Files 0 passed (18)
-      Tests 6 passed (11)
-   Start at 13:17:58
-   Duration 1.86s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 237ms
-
- ❯ src/app/style-quiz/style-quiz.test.tsx 3/3
- ❯ src/components/ui/drawer.test.tsx 1/2
- ❯ src/server/ai.service.test.ts 4/6
-
- Test Files 1 passed (18)
-      Tests 8 passed (11)
-   Start at 13:17:58
-   Duration 2.06s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[Kstderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
+ ❯ src/app/actions/checkout.actions.test.ts (2 tests | 1 failed) 39ms
+   ✓ createCheckoutAction > should fail with validation error for missing fields 11ms
+   × createCheckoutAction > should create order successfully 27ms
+     → expected 'error' to be 'success' // Object.is equality
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 217ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1045ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1024ms
+stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
-
- ❯ src/app/style-quiz/style-quiz.test.tsx 3/3
- ❯ src/components/ui/drawer.test.tsx 1/2
- ❯ src/server/ai.service.test.ts 4/6
-
- Test Files 1 passed (18)
-      Tests 8 passed (11)
-   Start at 13:17:58
-   Duration 2.06s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/ui/drawer.test.tsx (2 tests) 258ms
-
- ❯ src/app/style-quiz/style-quiz.test.tsx 3/3
- ❯ src/components/ui/drawer.test.tsx 2/2
- ❯ src/server/ai.service.test.ts 5/6
-
- Test Files 2 passed (18)
-      Tests 10 passed (11)
-   Start at 13:17:58
-   Duration 2.77s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/ai.service.test.ts (6 tests) 1054ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1030ms
-
- ❯ src/components/ui/button.test.tsx [queued]
- ❯ src/components/ui/drawer.test.tsx 2/2
- ❯ src/server/ai.service.test.ts 6/6
-
- Test Files 3 passed (18)
-      Tests 11 passed (11)
-   Start at 13:17:58
-   Duration 2.87s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/button.test.tsx [queued]
- ❯ src/components/ui/dialog.test.tsx [queued]
- ❯ src/server/ai.service.test.ts 6/6
-
- Test Files 3 passed (18)
-      Tests 11 passed (11)
-   Start at 13:17:58
-   Duration 3.07s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/button.test.tsx 0/4
- ❯ src/components/ui/dialog.test.tsx [queued]
- ❯ src/server/ai.service.test.ts 6/6
-
- Test Files 3 passed (18)
-      Tests 11 passed (15)
-   Start at 13:17:58
-   Duration 3.28s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/button.test.tsx 1/4
- ❯ src/components/ui/dialog.test.tsx [queued]
- ❯ src/server/ai.service.test.ts 6/6
-
- Test Files 3 passed (18)
-      Tests 12 passed (15)
-   Start at 13:17:58
-   Duration 3.38s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/ui/button.test.tsx (4 tests) 242ms
-
- ❯ src/components/ui/button.test.tsx 4/4
- ❯ src/components/ui/dialog.test.tsx 0/1
- ❯ src/server/ai.service.test.ts 6/6
-
- Test Files 4 passed (18)
-      Tests 15 passed (16)
-   Start at 13:17:58
-   Duration 3.58s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[Kstderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 285ms
+stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
 If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
@@ -136,275 +39,59 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
-
- ❯ src/components/ui/button.test.tsx 4/4
- ❯ src/components/ui/dialog.test.tsx 1/1
-
- Test Files 4 passed (18)
-      Tests 16 passed (16)
-   Start at 13:17:58
-   Duration 3.88s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/ui/dialog.test.tsx (1 test) 256ms
-
- ❯ src/components/size/SizeRecommendation.test.tsx 0/6
- ❯ src/components/ui/dialog.test.tsx 1/1
-
- Test Files 5 passed (18)
-      Tests 16 passed (22)
-   Start at 13:17:58
-   Duration 4.28s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/size/SizeRecommendation.test.tsx 1/6
- ❯ src/components/ui/dialog.test.tsx 1/1
-
- Test Files 5 passed (18)
-      Tests 17 passed (22)
-   Start at 13:17:58
-   Duration 4.38s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 157ms
-
- ❯ src/components/size/SizeRecommendation.test.tsx 6/6
- ❯ src/server/routers/ai.test.ts [queued]
-
- Test Files 6 passed (18)
-      Tests 22 passed (22)
-   Start at 13:17:58
-   Duration 4.59s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/size/SizeRecommendation.test.tsx 6/6
- ❯ src/server/routers/ai.test.ts [queued]
-
- Test Files 6 passed (18)
-      Tests 22 passed (22)
-   Start at 13:17:58
-   Duration 4.89s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/input.test.tsx [queued]
- ❯ src/server/routers/ai.test.ts [queued]
-
- Test Files 6 passed (18)
-      Tests 22 passed (22)
-   Start at 13:17:58
-   Duration 5.09s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/input.test.tsx [queued]
- ❯ src/server/routers/ai.test.ts 0/5
-
- Test Files 6 passed (18)
-      Tests 22 passed (27)
-   Start at 13:17:58
-   Duration 5.30s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ui/input.test.tsx 0/3
- ❯ src/server/routers/ai.test.ts 0/5
-
- Test Files 6 passed (18)
-      Tests 22 passed (30)
-   Start at 13:17:58
-   Duration 5.40s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/routers/ai.test.ts (5 tests) 180ms
-
- ❯ src/components/ui/input.test.tsx 1/3
- ❯ src/server/routers/ai.test.ts 5/5
-
- Test Files 7 passed (18)
-      Tests 28 passed (30)
-   Start at 13:17:58
-   Duration 5.60s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/ui/input.test.tsx (3 tests) 161ms
-
- ❯ src/components/ai-stylist/OutfitCard.test.tsx [queued]
- ❯ src/components/ui/input.test.tsx 3/3
-
- Test Files 8 passed (18)
-      Tests 30 passed (30)
-   Start at 13:17:58
-   Duration 5.90s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/components/ai-stylist/OutfitCard.test.tsx 1/5
- ❯ src/components/ui/input.test.tsx 3/3
-
- Test Files 8 passed (18)
-      Tests 31 passed (35)
-   Start at 13:17:58
-   Duration 6.11s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 158ms
-
- ❯ src/app/global-error.test.tsx [queued]
-
- Test Files 9 passed (18)
-      Tests 35 passed (35)
-   Start at 13:17:58
-   Duration 6.61s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/global-error.test.tsx [queued]
- ❯ src/server/routers/review.test.ts [queued]
-
- Test Files 9 passed (18)
-      Tests 35 passed (35)
-   Start at 13:17:58
-   Duration 6.81s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/app/global-error.test.tsx [queued]
- ❯ src/server/routers/review.test.ts [queued]
-
- Test Files 9 passed (18)
-      Tests 35 passed (35)
-   Start at 13:17:58
-   Duration 6.91s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[Kstderr | src/app/global-error.test.tsx > GlobalError > renders error message
+ ✓ src/components/ui/dialog.test.tsx (1 test) 235ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 241ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 144ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 176ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 175ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 157ms
+stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
 [GlobalError] Unhandled error: Error: Test error
-    at /home/project/LuxeVerse/apps/web/src/app/global-error.test.tsx:7:32
-    at file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
-    at file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
-    at file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/global-error.test.tsx:7:32
+    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
     at new Promise (<anonymous>)
-    at runWithTimeout (file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
-    at runTest (file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
-    at processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at runSuite (file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
-    at runSuite (file:///home/project/LuxeVerse/node_modules/.pnpm/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runWithTimeout (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12)
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
+
+ ✓ src/app/global-error.test.tsx (1 test) 75ms
+ ✓ src/server/routers/review.test.ts (14 tests) 61ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 34ms
+ ✓ src/server/routers/search.test.ts (9 tests) 32ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 40ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 14ms
+ ✓ src/i18n/config.test.ts (5 tests) 14ms
+ ✓ src/lib/utils.test.ts (2 tests) 8ms
+ ✓ next.config.test.ts (2 tests) 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
+AssertionError: expected 'error' to be 'success' // Object.is equality
+
+Expected: [32m"success"[39m
+Received: [31m"error"[39m
+
+ ❯ src/app/actions/checkout.actions.test.ts:57:27
+
+ Test Files  1 failed | 18 passed (19)
+     55|     const result = await createCheckoutAction({ status: "idle" }, mock…
+     56| 
+     57|     expect(result.status).toBe("success");
+       |                           ^
+      Tests  1 failed | 92 passed (93)
+   Start at  07:25:20
+     58|     expect(result.orderId).toBe(mockOrder.id);
+   Duration  11.59s (transform 736ms, setup 5.39s, collect 3.61s, tests 3.00s, environment 13.23s, prepare 2.56s)
+     59|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
 
 
- ❯ src/app/global-error.test.tsx 1/1
- ❯ src/server/routers/review.test.ts [queued]
-
- Test Files 9 passed (18)
-      Tests 36 passed (36)
-   Start at 13:17:58
-   Duration 7.11s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/app/global-error.test.tsx (1 test) 80ms
-
- ❯ src/app/global-error.test.tsx 1/1
- ❯ src/server/routers/review.test.ts 0/14
-
- Test Files 10 passed (18)
-      Tests 36 passed (50)
-   Start at 13:17:58
-   Duration 7.32s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/routers/review.test.ts (14 tests) 52ms
-
- ❯ src/server/routers/review.test.ts 14/14
- ❯ src/server/routers/savedOutfit.test.ts 0/6
-
- Test Files 11 passed (18)
-      Tests 50 passed (56)
-   Start at 13:17:58
-   Duration 7.82s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/routers/savedOutfit.test.ts (6 tests) 49ms
-
- ❯ src/server/routers/review.test.ts 14/14
- ❯ src/server/routers/savedOutfit.test.ts 6/6
-
- Test Files 12 passed (18)
-      Tests 56 passed (56)
-   Start at 13:17:58
-   Duration 7.92s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/server/loyalty.service.test.ts [queued]
- ❯ src/server/routers/savedOutfit.test.ts 6/6
-
- Test Files 12 passed (18)
-      Tests 56 passed (56)
-   Start at 13:17:58
-   Duration 8.32s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/server/loyalty.service.test.ts [queued]
- ❯ src/server/routers/search.test.ts [queued]
-
- Test Files 12 passed (18)
-      Tests 56 passed (56)
-   Start at 13:17:58
-   Duration 8.53s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/server/loyalty.service.test.ts 0/13
- ❯ src/server/routers/search.test.ts [queued]
-
- Test Files 12 passed (18)
-      Tests 56 passed (69)
-   Start at 13:17:58
-   Duration 8.63s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/loyalty.service.test.ts (13 tests) 55ms
-
- ❯ src/server/loyalty.service.test.ts 13/13
- ❯ src/server/routers/search.test.ts [queued]
-
- Test Files 13 passed (18)
-      Tests 69 passed (69)
-   Start at 13:17:58
-   Duration 8.93s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/server/routers/search.test.ts 1/9
- ❯ src/stores/style-quiz.test.ts [queued]
-
- Test Files 13 passed (18)
-      Tests 70 passed (78)
-   Start at 13:17:58
-   Duration 9.03s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/server/routers/search.test.ts (9 tests) 43ms
-
- ❯ src/server/routers/search.test.ts 9/9
- ❯ src/stores/style-quiz.test.ts 0/4
-
- Test Files 14 passed (18)
-      Tests 78 passed (82)
-   Start at 13:17:58
-   Duration 9.33s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/stores/style-quiz.test.ts (4 tests) 17ms
-
- ❯ src/server/routers/search.test.ts 9/9
-
- Test Files 15 passed (18)
-      Tests 82 passed (82)
-   Start at 13:17:58
-   Duration 9.93s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ src/i18n/config.test.ts [queued]
-
- Test Files 15 passed (18)
-      Tests 82 passed (82)
-   Start at 13:17:58
-   Duration 10.13s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ next.config.test.ts [queued]
- ❯ src/i18n/config.test.ts [queued]
-
- Test Files 15 passed (18)
-      Tests 82 passed (82)
-   Start at 13:17:58
-   Duration 10.45s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/i18n/config.test.ts (5 tests) 17ms
-
- ❯ next.config.test.ts [queued]
- ❯ src/lib/utils.test.ts [queued]
-
- Test Files 16 passed (18)
-      Tests 87 passed (87)
-   Start at 13:17:58
-   Duration 10.75s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
- ❯ next.config.test.ts [queued]
- ❯ src/lib/utils.test.ts [queued]
-
- Test Files 16 passed (18)
-      Tests 87 passed (87)
-   Start at 13:17:58
-   Duration 10.95s
-[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ src/lib/utils.test.ts (2 tests) 8ms
-
- ❯ next.config.test.ts 0/2
-
- Test Files 17 passed (18)
-      Tests 89 passed (91)
-   Start at 13:17:58
-   Duration 11.65s
-[?2026l[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K ✓ next.config.test.ts (2 tests) 15ms
-
- Test Files  18 passed (18)
-      Tests  91 passed (91)
-   Start at  13:17:58
-   Duration  11.78s (transform 636ms, setup 5.34s, collect 3.34s, tests 3.04s, environment 13.71s, prepare 2.59s)
-
-[?25h
+ ELIFECYCLE  Test failed. See above for more details.

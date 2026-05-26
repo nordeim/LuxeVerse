@@ -10,9 +10,24 @@ interface GlobalErrorProps {
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    // Report to telemetry (Sentry, etc.)
+    // Report to telemetry
     console.error("[GlobalError] Unhandled error:", error);
-    // TODO: Integrate with Sentry or similar error tracking service
+
+    // Initialize Sentry (if DSN is configured)
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      import("@/lib/sentry")
+        .then(({ captureException }) => {
+          captureException(error, {
+            extra: {
+              digest: error.digest,
+              page: "global-error",
+            },
+          });
+        })
+        .catch(() => {
+          console.error("[GlobalError] Sentry not available");
+        });
+    }
   }, [error]);
 
   return (

@@ -1,19 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@luxeverse/utils";
+import { createFeaturedCollectionsService } from "@/server/services/featuredCollections.service";
 
-// Mock data fetch. In production: await prisma.collection.findMany...
-const collections = [
-  { id: "1", name: "Midnight Atelier", slug: "midnight-atelier", image: "/collections/1.jpg", count: 24 },
-  { id: "2", name: "Solaris Gold", slug: "solaris-gold", image: "/collections/2.jpg", count: 18 },
-  { id: "3", name: "Urban Silence", slug: "urban-silence", image: "/collections/3.jpg", count: 32 },
-];
+export async function FeaturedCollections() {
+  const service = createFeaturedCollectionsService();
+  const collections = await service.list();
 
-export function FeaturedCollections() {
+  if (collections.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="bg-obsidian-50 py-24 px-4 sm:px-6 lg:px-8" aria-labelledby="featured-collections-heading">
+    <section
+      className="bg-obsidian-50 py-24 px-4 sm:px-6 lg:px-8"
+      aria-labelledby="featured-collections-heading"
+    >
       <div className="mx-auto max-w-7xl">
-        <h2 id="featured-collections-heading" className="mb-12 text-center text-3xl font-display font-medium text-obsidian-900 sm:text-4xl">
+        <h2
+          id="featured-collections-heading"
+          className="mb-12 text-center text-3xl font-display font-medium text-obsidian-900 sm:text-4xl"
+        >
           Curated Collections
         </h2>
         <div className="grid gap-8 md:grid-cols-3">
@@ -28,7 +35,7 @@ export function FeaturedCollections() {
             >
               <div className="relative aspect-[4/5] w-full overflow-hidden">
                 <Image
-                  src={col.image}
+                  src={col.image ?? "/placeholder-collection.jpg"}
                   alt={col.name}
                   width={600}
                   height={750}
@@ -38,7 +45,9 @@ export function FeaturedCollections() {
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <h3 className="text-xl font-display font-medium">{col.name}</h3>
-                <p className="mt-1 text-sm text-obsidian-100/80">{col.count} Pieces</p>
+                <p className="mt-1 text-sm text-obsidian-100/80">
+                  {col.productCount} Pieces
+                </p>
               </div>
             </Link>
           ))}

@@ -1,10 +1,11 @@
 "use server";
 
 import { z } from "zod";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { type NextRequest } from "next/server";
 
 // Flattened checkout schema matching FormData field names
 const checkoutSchema = z.object({
@@ -25,6 +26,50 @@ export type CheckoutState = {
   orderId?: string;
   clientSecret?: string;
 };
+
+/**
+ * Extract user session from request cookies using NextAuth JWT.
+ * Works in App Router Server Actions.
+ */
+async function getUserFromSession(): Promise<{ id: string; email: string; role: string } | null> {
+  if (!process.env.AUTH_SECRET) {
+    console.warn("[CheckoutAction] AUTH_SECRET not set, skipping session verification");
+    return null;
+  }
+
+  try {
+    // Get cookies from the request (await required in Next.js 15+)
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get("next-auth.session-token")?.value;
+
+    if (!sessionToken) {
+      return null;
+    }
+
+    // Decode the session token to get the user
+    const token = await getToken({
+      req: {
+        headers: {
+          cookie: `next-auth.session-token=${sessionToken}`,
+        },
+      } as unknown as NextRequest,
+      secret: process.env.AUTH_SECRET,
+    });
+
+    if (token?.id && typeof token.id === "string") {
+      return {
+        id: token.id,
+        email: (token.email as string) ?? "",
+        role: (token.role as string) || "CUSTOMER",
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("[CheckoutAction] Session extraction failed:", error);
+    return null;
+  }
+}
 
 export async function createCheckoutAction(
   _prevState: CheckoutState,
@@ -47,6 +92,10 @@ export async function createCheckoutAction(
     const shipping = 0;
     const total = subtotal + tax + shipping;
 
+    // Get user session or generate guest ID
+    const user = await getUserFromSession();
+    const userId = user?.id ?? `guest-${crypto.randomUUID()}`;
+
     // Create Stripe PaymentIntent
     // Production: const intent = await stripe.paymentIntents.create({ amount: total, currency: "usd" });
     const intent = {
@@ -58,7 +107,7 @@ export async function createCheckoutAction(
     const order = await prisma.order.create({
       data: {
         orderNumber: `LV-${Date.now()}`,
-        userId: "user_mock_id",
+        userId,
         status: "PENDING",
         paymentStatus: "PENDING",
         subtotal: subtotal / 100,
