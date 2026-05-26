@@ -5,17 +5,18 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 182ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 195ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 148ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1039ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1020ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 184ms
 stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/drawer.test.tsx (2 tests) 211ms
- ✓ src/server/ai.service.test.ts (6 tests) 1050ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1026ms
- ✓ src/components/ui/button.test.tsx (4 tests) 203ms
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 265ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -24,11 +25,10 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/dialog.test.tsx (1 test) 218ms
- ✓ src/server/routers/ai.test.ts (5 tests) 141ms
- ✓ src/components/ui/input.test.tsx (3 tests) 137ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 137ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 121ms
+ ✓ src/components/ui/dialog.test.tsx (1 test) 202ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 147ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 119ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 128ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -45,8 +45,9 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
  ✓ src/app/global-error.test.tsx (1 test) 71ms
- ✓ src/server/routers/review.test.ts (14 tests) 54ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 30ms
+ ✓ src/server/routers/review.test.ts (14 tests) 59ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 31ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 27ms
 stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
 [CheckoutAction] AUTH_SECRET not set, skipping session verification
 
@@ -59,16 +60,15 @@ stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > shoul
     at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:58:20
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- ✓ src/app/actions/checkout.actions.test.ts (2 tests) 28ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 26ms
+ ✓ src/app/actions/checkout.actions.test.ts (2 tests) 30ms
+ ✓ src/i18n/config.test.ts (5 tests) 12ms
  ✓ src/server/routers/search.test.ts (9 tests) 24ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 16ms
- ✓ src/i18n/config.test.ts (5 tests) 11ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 13ms
  ✓ src/lib/utils.test.ts (2 tests) 7ms
  ✓ next.config.test.ts (2 tests) 8ms
 
  Test Files  19 passed (19)
       Tests  93 passed (93)
-   Start at  09:10:53
-   Duration  9.76s (transform 555ms, setup 4.41s, collect 2.79s, tests 2.68s, environment 10.77s, prepare 2.11s)
+   Start at  12:26:25
+   Duration  9.84s (transform 573ms, setup 4.30s, collect 2.86s, tests 2.71s, environment 11.12s, prepare 2.19s)
 

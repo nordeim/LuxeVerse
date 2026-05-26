@@ -119,7 +119,43 @@ TS errors like `TS2339` (missing property) are usually solved by regenerating.
 - **next-pwa + Turbopack**: Custom `sw.ts` causes build failures. Use auto-generated mode (no `swSrc`) or force `--webpack` flag.
 - **superjson for tRPC**: Prisma `Date` fields serialize to ISO strings over tRPC. Register `superjson` on both server (`transformer: superjson`) and client (`httpBatchLink`) to preserve `Date` objects.
 
-## Building and Running
+### 5.8 next-intl v4: Root Layout Must Not Render Site Components
+**Issue**: In `next-intl` v4 with App Router, the **root layout** (`app/layout.tsx`) must be a **minimal pass-through**. Rendering `Navbar`, `Footer`, `SkipLink`, or `ErrorBoundary` in the root layout causes:
+1. `Error: Couldn't find next-intl config file` — because the render tree tries to access i18n context before `NextIntlClientProvider` is mounted
+2. Duplicate component rendering — root layout AND `app/[locale]/layout.tsx` both render the same site components
+3. SSR hydration issues when `defaultLocale` is hardcoded in root layout vs dynamic locale in `[locale]/layout.tsx`
+
+**Fix**: Root layout should be a minimal pass-through; all site components live in `app/[locale]/layout.tsx` wrapped by `NextIntlClientProvider`.
+
+```tsx
+// app/layout.tsx — MINIMAL pass-through, no site components
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return children;
+}
+
+// app/[locale]/layout.tsx — REAL layout with NextIntlClientProvider + all site components
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params;
+  // ...locale validation...
+  const messages = (await import(`../../../messages/${locale}.json`)).default;
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <SkipLink />
+          <ErrorBoundary>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </ErrorBoundary>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+**Why**: `next-intl` v4 auto-discovers its configuration file (e.g., `src/i18n.ts`) and expects the locale-aware layout to provide `NextIntlClientProvider`. The root layout should only be a stub that lets the router resolve to `[locale]/layout.tsx`.
 
 ### Core Commands (Root)
 | Command | Action |
