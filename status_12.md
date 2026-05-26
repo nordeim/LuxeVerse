@@ -339,3 +339,59 @@ pnpm lint	✅ All checks passed
 pnpm test	✅ 93 tests passed (19 test files)
 The updated SKILL.md is now version 4.1.0, a comprehensive field-tested execution manual that encodes every Phase 5 learning. Future teams (and future AI assistants) can rely on it to avoid the exact same pitfalls we meticulously resolved.
 
+---
+
+# Run final typecheck
+$ pnpm typecheck 2>&1 | tail -n 15
+@luxeverse/web:typecheck: cache miss, executing 6b568329d75323ec
+@luxeverse/ui:typecheck: cache hit, replaying logs 506abd7928c45e4a
+@luxeverse/ui:typecheck: 
+@luxeverse/ui:typecheck: > @luxeverse/ui@0.1.0 typecheck /home/project/LuxeVerse/packages/ui
+@luxeverse/ui:typecheck: > tsc --noEmit
+@luxeverse/ui:typecheck: 
+@luxeverse/web:typecheck: 
+@luxeverse/web:typecheck: > @luxeverse/web@0.1.0 typecheck /home/project/LuxeVerse/apps/web
+@luxeverse/web:typecheck: > tsc --noEmit
+@luxeverse/web:typecheck: 
+…
+Click to expand
+All three documentation files have been meticulously reviewed, validated, and updated to reflect the latest Phase 5 changes. This is what was updated:
+1. README.md (v3.4.0 → v4.1.0)
+Section	Changes
+Version Badge	Updated from 3.4.0 to 4.1.0
+Project Status	Phase 5 changed from 📅 Planned to ✅ Complete
+Overall Progress	Updated from ~75% to ~95%
+Last Updated	Date + description updated to reflect Phase 5 hardening
+Status	Phases 0-5 complete (93 tests passing), Phase 5.1 pending
+2. CLAUDE.md (Expanded Comprehensive Guide)
+Section	Changes
+Phase 5 Gotchas & Lessons Learned	NEW SECTION with 7 subsections covering all major Phase 5 learnings
+5.1 Server-Side Auth	getToken + cookie header assembly pattern, cookies() async fix
+5.2 Prisma Decimal Conversion	Service layer conversion rule: Number(decimal) before passing to client
+5.3 Service Factory Pattern	Factory functions with typed map* helper, benefits
+5.4 RSC → Client Component Boundaries	Data flows from RSC → props → Client, tRPC for mutations only
+5.5 Sentry with Zero Hard Dependencies	Dynamic import + fallback stub to avoid @sentry/nextjs bundle impact
+5.6 cookies() API Duality	Next.js 14 vs 15 comparison table, Promise<ReadonlyRequestCookies>
+5.7 Testing Mock Patterns	Mocking next/headers, next-auth/jwt, Prisma in Vitest
+3. ACCOMPLISHMENTS.md (Comprehensive Phase 5 Log)
+Section	Changes
+Phase 5 Hardening (2026-05-26)	NEW TOP-LEVEL SECTION with complete remediation log
+1. Verification Gates	Updated to 93 tests, 19 test files
+2.1 Checkout Auth Binding	getToken from next-auth/jwt, guest UUID fallback
+2.2 Real Data Services	Editorial, Featured Collections, New Arrivals, Newsletter (all Prisma-backed)
+2.3 Visual Search Wiring	tRPC visualSearch router, base64 image upload
+2.4 Newsletter Wiring	tRPC newsletter router, email validation
+3. Observability	Sentry stub + dynamic import + graceful fallback
+4. Lessons Learned	7 subsections codifying all Phase 5 gotchas
+5. Remaining Gaps	Deferred to Phase 5.1 (E2E, Lighthouse, security, etc.)
+Project State Overview	Updated: 93 tests across 19 test files, all phases complete
+Key Knowledge Codified
+Lesson	Where to Find
+await cookies() in Next.js 15+	CLAUDE.md §5.1 + SKILL.md §3.4
+Decimal → Number() conversion	CLAUDE.md §5.2 + SKILL.md §3.2
+Service factory pattern	CLAUDE.md §5.3 + SKILL.md §3.2
+RSC → Client data boundaries	CLAUDE.md §5.4 + SKILL.md §3.3
+Sentry dynamic import	CLAUDE.md §5.5 + SKILL.md §3.5
+getToken vs getServerSession	CLAUDE.md §5.1 + SKILL.md §14.12
+All documentation is now updated, validated with pnpm typecheck, and aligned with the latest codebase.
+

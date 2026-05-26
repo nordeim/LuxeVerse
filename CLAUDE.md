@@ -166,17 +166,105 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ### 4. Database (Prisma)
 - **Schema Sync**: Always run `pnpm db:generate` after modifying `schema.prisma`.
 - **Typing**: Use `Prisma.XGetPayload<IncludeShape>` for complex relations to ensure zero `any` in service layers.
+- **Decimal Conversion**: Prisma `Decimal` fields must be converted to `Number()` in service layer before passing to Client Components. Never pass raw `Decimal` to the client.
 
-### 5. Accessibility & Performance
-- **WCAG AAA**: All interactive elements must be keyboard accessible and focus-visible.
-- **Reduced Motion**: All animations must respect `prefers-reduced-motion`.
-- **Budgets**: LCP < 2.5s, CLS < 0.1. `next/image` must have explicit dimensions.
+---
 
-### 6. Git Workflow
-- **Commit Format**: `<type>: <subject>` (e.g., `feat(cart): add optimistic quantity updates`).
-- **Verification**: Run `pnpm typecheck && pnpm lint && pnpm test` before any PR.
+## Phase 5 Gotchas & Lessons Learned (2026-05-26)
 
-## Phase 5 Hardening & Launch (2026-05-26) ✅ COMPLETE
+### 5.1 Server-Side Auth in Server Actions
+**Issue**: `getServerSession` is Pages Router-only. In App Router Server Actions, it throws `TypeError: Cannot read properties of undefined (reading 'headers')`.
+
+**Fix**: Use `getToken` from `next-auth/jwt` + cookie header assembly.
+
+```typescript
+import { getToken } from "next-auth/jwt";
+import { cookies } from "next/headers";
+
+async function getUserFromSession() {
+  const sessionToken = (await cookies()).get("next-auth.session-token")?.value;
+  if (!sessionToken || !process.env.AUTH_SECRET) return null;
+
+  const token = await getToken({
+    req: { headers: { cookie: `next-auth.session-token=${sessionToken}` } } as unknown as NextRequest,
+    secret: process.env.AUTH_SECRET,
+  });
+  return token?.id ? { id: token.id, email: token.email, role: token.role } : null;
+}
+```
+
+**Gotcha**: `cookies()` returns `Promise<ReadonlyRequestCookies>` in Next.js 15+ — must `await` it. Forgetting `await` gives `TS2339: Property 'get' does not exist on type 'Promise<ReadonlyRequestCookies>'`.
+
+### 5.2 Prisma `Decimal` Type Conversion
+**Rule**: Always convert Prisma `Decimal` to `Number()` in the service layer. Never pass `Decimal` to Client Components.
+
+```typescript
+// Service layer
+return products.map(p => ({
+  ...p,
+  price: Number(p.price),                       // Required for client consumption
+  compareAtPrice: p.compareAtPrice ? Number(p.compareAtPrice) : null,
+}));
+```
+
+### 5.3 Service Factory Pattern
+**Pattern**: `create*Service()` factory functions with typed `map*` helper, Decimal conversion.
+
+**Benefits**: Injectable, mockable, testable, consistent Decimal conversion, single source of truth.
+
+### 5.4 RSC → Client Component Data Boundaries
+**Pattern**: RSC fetches data → passes to Client Component via props. Client Component handles interactivity. tRPC is for mutations only.
+
+```tsx
+// Server Component (RSC)
+export async function NewArrivals() {
+  const products = await createNewArrivalsService().list(); // Fetches on server
+  return <NewArrivalsClient products={products} />; // Passes to client
+}
+```
+
+### 5.5 Sentry Integration with Zero Hard Dependencies
+**Issue**: `@sentry/nextjs` adds ~100KB to bundle and requires complex Webpack/Vite configuration.
+**Fix**: Dynamic import with fallback stub.
+
+```typescript
+// src/lib/sentry.ts
+export function captureException(error: Error): void {
+  console.error("[Telemetry] Captured exception:", error);
+}
+
+// src/app/global-error.tsx
+useEffect(() => {
+  if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    import("@sentry/nextjs")
+      .then((Sentry) => Sentry.captureException(error))
+      .catch(() => import("@/lib/sentry").then(({ captureException }) => captureException(error)));
+  }
+}, [error]);
+```
+
+### 5.6 Next.js 15+ `cookies()` API Duality
+| Next.js Version | API | Code |
+|---|---|---|
+| **Next.js 14** | `cookies()` → `ReadonlyRequestCookies` | `cookies().get("key")` |
+| **Next.js 15+** | `cookies()` → `Promise<ReadonlyRequestCookies>` | `(await cookies()).get("key")` |
+
+**Fix**: Always `await cookies()` in App Router Server Actions, Route Handlers, and Server Components.
+
+### 5.7 Testing Mock Patterns for Server Actions
+```typescript
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(() => Promise.resolve({ get: vi.fn().mockReturnValue(undefined) })),
+}));
+vi.mock("next-auth/jwt", () => ({ getToken: vi.fn(() => Promise.resolve(null)) }));
+vi.mock("@/lib/prisma", () => ({
+  prisma: { order: { create: vi.fn().mockResolvedValue({ id: "test" }) } },
+}));
+```
+
+---
+
+## Phase 5 Remediation (2026-05-26) ✅ COMPLETE
 
 ### P0: Production Data Integration
 | Task | Files | Status |

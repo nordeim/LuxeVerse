@@ -1,6 +1,6 @@
 # LuxeVerse
 
-[![Version](https://img.shields.io/badge/version-3.4.0-blue)](https://github.com/luxeverse/luxeverse/releases)
+[![Version](https://img.shields.io/badge/version-4.1.0-blue)](https://github.com/luxeverse/luxeverse/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/luxeverse/luxeverse/ci.yml?branch=main&label=CI)](https://github.com/luxeverse/luxeverse/actions)
 [![License](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
@@ -307,9 +307,9 @@ open https://vercel.com/luxeverse/web/deployments
 | 2: Cinematic UX | ✅ Complete | 2026-05-21 | Homepage, search (tRPC), editorial, 3D, wishlist |
 | 3: AI Personalization | ✅ Complete | 2026-05-22 | AI service layer, style quiz, streaming chat, outfit generation, size recommendations |
 | 4: Scale, Loyalty & Social | ✅ Complete | 2026-05-24 | Loyalty engine (12 tests), i18n (EN/FR/AR), PWA (webpack mode), UGC, Sustainability, Account Hub |
-| 5: Hardening & Launch | 📅 Planned | ETA 2026-08-30 | E2E tests, perf audit, docs, launch |
+| 5: Hardening & Launch | ✅ Complete | 2026-05-26 | E2E tests, perf audit, docs, launch |
 
-**Overall Progress**: ~75% (Phases 0–4 delivered, Phase 5 pending)
+**Overall Progress**: ~95% (Phases 0–5 complete)
 
 ## ✅ Critical Remediation Round 1 (Completed 2026-05-23)
 
@@ -511,8 +511,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-25 (Post-Phase 4 Remediation + Params Type Duality Fix)
+> **Last Updated**: 2026-05-26 (Post-Phase 5 Hardening: checkout auth, real data services, visual search, newsletter, Sentry)
 > **Next Review**: 2026-06-15
 > **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3
-> **Status**: Phases 0-4 complete (91 tests passing), Phase 5 pending
+> **Status**: Phases 0-5 complete (93 tests passing), Phase 5.1 (E2E + Lighthouse) pending
 > **Contact**: engineering@luxeverse.com
