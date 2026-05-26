@@ -1,103 +1,174 @@
 # LuxeVerse — Agent Instructions
 
-## Identity & Purpose
-LuxeVerse is a cinematic luxury e-commerce platform built on the **Anti-Generic Mandate**. It merges editorial-grade design with AI-driven personalization. Every interaction must feel premium, intentional, and high-performance.
+## 1. Identity & Philosophy
+LuxeVerse is a cinematic luxury e-commerce platform ("digital atelier") built on the **Anti-Generic Mandate**. 
+- **Core Philosophy**: Reject template-driven aesthetics, "AI-slop", purple gradients, bento grids, and system font fallbacks. Prioritize whitespace, hierarchy, and artistic storytelling.
+- **Emotional Resonance**: Every pixel must feel intentional, premium, and high-performance. Imperfection and human fingerprint signal authorship over machine-generated monotony.
+- **Accessibility**: WCAG AAA target. ADA Title II compliance is a baseline, not an afterthought.
 
-**Core Philosophy**: Reject template-driven aesthetics and "AI-slop". Prioritize whitespace, hierarchy, and artistic storytelling.
+## 2. Tech Stack & Architecture
+- **Framework**: Next.js 16 (App Router, RSC-first, PPR, Turbopack)
+- **UI**: React 19, Tailwind CSS v4 (CSS-first, OKLCH palette), Radix/shadcn
+- **Language**: TypeScript (Strict, `erasableSyntaxOnly`, `verbatimModuleSyntax`)
+- **DB & API**: PostgreSQL, Prisma (Zero-enum), tRPC v11 (End-to-end type safety)
+- **State**: Zustand (Client), TanStack Query (Server)
+- **Auth & Payments**: NextAuth, Stripe
+- **i18n**: next-intl v4 (Split Edge/Node architecture)
+- **3D/Media**: Three.js, React Three Fiber, Motion (`motion/react`)
+- **Testing**: Vitest, React Testing Library, Playwright
+- **Monorepo**: Turborepo + `pnpm` workspaces (`apps/web`, `apps/admin`, `packages/ui`, `packages/utils`, `packages/config`, `packages/db`).
 
-## Tech Stack
-- **Framework**: Next.js 16.2.6 (App Router, RSC-first)
-- **UI Library**: React 19.2.6
-- **Language**: TypeScript 6.0.3 (Strict mode)
-- **Styling**: Tailwind CSS v4.3.0 (CSS-first, OKLCH palette)
-- **Database**: PostgreSQL 17 + Prisma 6.19.3
-- **API**: tRPC 11.17.0 (End-to-end type safety)
-- **Auth**: NextAuth 4.24.14
-- **State**: Zustand 5.0.13
-- **i18n**: next-intl 4.12.0
-- **Payments**: Stripe 17.7.0
-
-## Architecture
-Turborepo monorepo with pnpm workspaces:
-- `apps/web`: Primary Next.js 16 storefront.
-- `packages/ui`: Shared Radix-based primitives (Button, Input, etc.).
-- `packages/utils`: Shared helper functions (cn, formatting).
-- `packages/config`: Shared TS, ESLint, and Tailwind configurations.
-
-## Building and Running
-### Core Commands (Root)
+## 3. Essential Commands
 | Command | Action |
-|---------|--------|
+|---|---|
 | `pnpm install` | Install all dependencies |
-| `pnpm turbo dev` | Start all services in development mode |
-| `pnpm turbo build` | Build all apps for production (Note: Web app uses `--webpack` flag) |
-| `pnpm turbo test` | Run Vitest unit and component tests |
+| `pnpm turbo dev` | Start all services (Turbopack for web) |
+| `pnpm turbo build` | Build all apps (Web uses `--webpack` for PWA) |
+| `pnpm turbo test` | Run Vitest unit/component tests |
 | `pnpm turbo lint` | Run custom lint validation (TW4 + colors) |
-| `pnpm turbo typecheck` | Run TypeScript check across all packages |
-| `pnpm db:generate` | Regenerate Prisma client (Mandatory after schema changes) |
+| `pnpm typecheck` | Run TypeScript check across all packages |
+| `pnpm db:generate` | Regenerate Prisma client (**Mandatory** after schema changes) |
 
-### Apps/Web Specifics
-From `apps/web/`:
-- `pnpm dev`: Start Next.js with Turbopack.
-- `pnpm build`: Build with PWA webpack mode.
-- `pnpm db:migrate`: Run Prisma migrations.
-- `pnpm db:seed`: Seed DB with luxury product data.
+## 4. Core Development Conventions
 
-## Development Conventions
-
-### 1. TypeScript Strictness
-- **Zero Enums**: Banned by `erasableSyntaxOnly`. Use string unions: `type Status = "ACTIVE" | "DRAFT"`.
-- **Zero Namespace**: Use ES modules exclusively.
-- **Zero `any`**: Use `unknown` or explicit typed interfaces.
-- **Import Type**: Use `import type` for type-only imports (`verbatimModuleSyntax`).
-
-### 2. Next.js 16 `params` Duality
-- **Layouts**: `params` is a `Promise` — must `await`: `const { locale } = await params`.
-- **Pages**: At runtime `params` is a plain object, but generated types expect `Promise<T>`.
-- **Convention**: Type as `Promise<T>` and use `await` to satisfy `tsc --noEmit`.
-  ```tsx
-  export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
-  }
-  ```
-
-### 3. Tailwind CSS v4 (CSS-First)
-- **No Config File**: Do not create `tailwind.config.*`. All tokens live in `src/app/globals.css` via `@theme inline`.
-- **Tokens**: Use OKLCH design tokens (e.g., `bg-obsidian-900`) instead of raw hex codes.
-- **Utility Migration**: Use `bg-linear-to-r` (v4), `outline-hidden` (a11y), and `shrink-0`.
-
-### 4. React 19 Patterns
+### TypeScript & React 19
+- **Zero Enums/Namespaces**: Banned by `erasableSyntaxOnly`. Use string unions (`type Status = "ACTIVE" | "DRAFT"`).
+- **Imports**: Use `import type` for type-only imports (`verbatimModuleSyntax`).
+- **Return Types**: Prefer inferred. `JSX.Element` is banned (global namespace removed in React 19).
 - **Forms**: Use `useActionState` + Zod v4 (`result.error.issues[0].message`).
-- **Instant UI**: Use `useOptimistic` + `startTransition` for optimistic updates.
-- **Id**: Use `useId()` for stable ARIA pairs to avoid hydration mismatches.
+- **Instant UI**: Use `useOptimistic` + `startTransition`. Use `useId()` for stable ARIA pairs.
 
-### 5. Zustand State Discipline
-- **Selectors**: Always use selectors in JSX: `const items = useCartStore(s => s.items)`.
-- **No getState in JSX**: `.getState()` is strictly prohibited in render loops; use only in actions.
-- **Persistence**: `partialize` must exclude UI state (`isOpen`, `isLoading`).
+### Next.js 16 Async APIs (Critical)
+- **Params & SearchParams**: **ALWAYS Promises** in both Layouts and Pages. **Must `await`** everywhere.
+  - *Mandatory Comment*: `// Next.js 16: params is a real Promise, always await it.`
+- **Cookies**: `cookies()` is async → **always `await cookies()`** in Server Actions/RSC.
+- **Middleware**: Next.js 16 uses `proxy.ts` instead of `middleware.ts`.
+- **Global Error**: `global-error.tsx` **must** define its own `<html>` and `<body>` tags (it replaces the root layout).
 
-### 6. RSC vs Client Boundaries
-- **RSC by Default**: Keep logic in Server Components.
-- **"use client"**: Must be the very first line (before imports).
-- **No Browser APIs in RSC**: Do not access `window`, `document`, or `localStorage` in Server Components.
+### Tailwind CSS v4 (CSS-First)
+- **Zero Config**: No `tailwind.config.*`. All tokens live in `globals.css` via `@theme inline`.
+- **Custom Utilities**: Use `@utility name { ... }` (NOT `@layer utilities`).
+- **Tokens**: Use OKLCH tokens (e.g., `bg-obsidian-900`), **never raw hex**.
+- **CSS Variables**: Use v4 parenthesis syntax `bg-(--brand)` (NOT v3 bracket syntax `bg-[--brand]`).
+- **Variant Stacking**: Left-to-right order (e.g., `*:first:pt-0`, NOT `first:*:pt-0`).
+- **Utility Migration**: `bg-linear-to-r` (not gradient), `outline-hidden` (not none), `shrink-0` (not flex-shrink-0).
 
-### 7. Testing (TDD)
-- **Stack**: Vitest + React Testing Library + Playwright.
-- **Mocking**: Write failing tests with mock data before implementing.
-- **Setup**: `src/test/setup.ts` contains mandatory mocks (rAF, crypto).
+### State & Data (Zustand / Prisma / tRPC)
+- **Zustand Selectors**: Always use in JSX: `const items = useStore(s => s.items)`. No `getState` in render loops.
+- **Zustand Persistence**: `partialize` must exclude UI state (`isOpen`, `isLoading`).
+- **Prisma Decimals**: Convert Prisma `Decimal` to `Number()` in service layers before passing to Client Components.
+- **tRPC v11 Superjson**: Required for Date serialization. In v11, `transformer: superjson` **must** be placed inside `httpBatchLink()`, not at the root client config.
+- **Service Factories**: Use `create*Service()` for RSC data fetching. tRPC is for mutations, RSC is for initial page data.
 
-### 8. Anti-Generic UX
-- **Icons**: Lucide icons ONLY. No raw characters (✕) or emojis in UI.
-- **A11y**: WCAG AAA target. Mandatory `SkipLink` and focus traps for overlays.
-- **Motion**: Respect `useReducedMotion()`.
+### i18n (next-intl v4 Split Architecture)
+- **`routing.ts`** (Edge): Uses `defineRouting()`. Consumed by `proxy.ts`.
+- **`request.ts`** (Node): Uses `getRequestConfig()`. Consumed by `createNextIntlPlugin`.
+- **Fatal Error**: Pointing the plugin to `routing.ts` causes a `TypeError` crash.
+- **Turbopack Alias**: Required in `next.config.ts`: `turbopack: { resolveAlias: { "next-intl/config": "./src/i18n/request.ts" } }`.
+- **Root Layout**: Must be a minimal pass-through. Site components (`Navbar`, `Footer`) and `NextIntlClientProvider` belong in `[locale]/layout.tsx`.
 
-## Quality Gates
-Before completion claim, ensure:
-1. `pnpm typecheck` passes (zero errors).
-2. `pnpm lint` passes (zero warnings, no hex colors, no deprecated utilities).
-3. `pnpm turbo test` passes (100% success rate).
-4. `pnpm turbo build` completes successfully.
+### Accessibility & UX
+- **Icons**: Lucide icons ONLY. **Zero raw characters** (e.g., `≡`, `✕`, `→`) or emojis in UI.
+- **Typography**: **Zero system font fallbacks** (e.g., no `system-ui, sans-serif`). Rely strictly on explicit web fonts.
+- **Motion**: Respect `useReducedMotion()`. Animations must be disabled entirely when reduced motion is preferred.
+- **Overlays**: Mandatory `useFocusTrap`, ESC dismiss, and `useLockBodyScroll` for all modals/sheets.
 
----
-**Last Updated**: 2026-05-25
-**Environment**: Node 22, Next.js 16.2.6, React 19.2.6, TS 6.0.3, TW 4.3.0, Prisma 6.19.3
+## 5. Patterns & Anti-Patterns
+
+| Category | ✅ Valid Pattern (Do This) | ❌ Anti-Pattern (Never Do This) |
+|---|---|---|
+| **Routing** | `const { slug } = await params;` | `const { slug } = params;` (Crashes in Next 15/16) |
+| **Styling** | `bg-(--brand)`, `@utility glass { ... }` | `bg-[--brand]`, `@layer utilities { ... }` |
+| **Components** | `<Sheet>` with focus trap & scroll lock | Custom `<div>` overlay with manual `z-index` math |
+| **Data Fetching** | RSC fetches via Service Factory → passes to Client | tRPC `useQuery` for initial above-the-fold page data |
+| **Auth (Server)** | `getToken` + `await cookies()` assembly | `getServerSession` (Pages Router only, crashes in RSC) |
+| **Mobile Nav** | Symmetrical: `hidden md:flex` / `md:hidden` | JS-based viewport width checking on mount |
+
+## 6. Troubleshooting & Battle-Tested Gotchas
+
+### PWA & Turbopack Conflict
+- **Issue**: `@ducanh2912/next-pwa` relies on `workbox-webpack-plugin`, which Turbopack does not support.
+- **Fix**: You **must** use the `--webpack` flag for production builds (`next build --webpack`). Do not use `turbopack: {}` to silence warnings; it doesn't enable webpack plugins.
+- **Alternative**: Migrate to **Serwist** (Configurator mode) for native Turbopack support via post-build steps.
+
+### "Slow Filesystem" Warning
+- **Issue**: `⚠ Slow filesystem detected. The benchmark took >200ms.`
+- **Cause**: Turbopack performs thousands of micro-file reads. Running on a network mount, external HDD, or WSL2 cross-OS boundary causes HMR hangs and timeouts.
+- **Fix**: Move the project to a native Linux filesystem (e.g., `ext4`/`btrfs` in `/home/user/`).
+
+### tRPC Date Serialization (`Type 'string' is not assignable to type 'Date'`)
+- **Cause**: Standard JSON degrades Prisma `Date` objects to ISO strings.
+- **Fix**: Implement `superjson` globally. 
+  ```typescript
+  // Server: initTRPC.context().create({ transformer: superjson })
+  // Client (v11): httpBatchLink({ url: '/api/trpc', transformer: superjson })
+  ```
+- **Audit**: Search for `new Date(` to remove manual parsing wrappers that will break once `superjson` returns native Date objects.
+
+### Dual Localized Routes
+- **Issue**: Having both `/account` and `[locale]/account` causes routing conflicts.
+- **Fix**: Delete top-level pages. Merge into `[locale]/` and use `proxy.ts` (middleware) to redirect legacy paths to `/{defaultLocale}/...`.
+
+## 7. Architecture Blueprint
+```text
+apps/web/
+├── app/                      # App Router (RSC default)
+│   ├── globals.css           # Tailwind v4 @theme inline + @utility
+│   ├── layout.tsx            # Minimal root pass-through
+│   ├── [locale]/layout.tsx   # Real layout with Providers, Navbar, Footer
+│   ├── global-error.tsx      # MUST include <html> and <body>
+│   └── api/trpc/route.ts     # tRPC handler
+├── components/
+│   ├── layout/               # Navbar, Footer (RSC)
+│   ├── shared/               # SkipLink, ErrorBoundary
+│   ├── product/              # Card, Gallery, VariantSelector (Client)
+│   └── ui/                   # shadcn primitives (Button, Sheet, Input)
+├── hooks/                    # useFocusTrap, useReducedMotion, useCart
+├── lib/                      # prisma.ts, schemas.ts, auth.ts, sentry.ts
+├── server/
+│   ├── routers/              # tRPC routers (mutations)
+│   └── services/             # Factory functions (create*Service)
+├── stores/                   # Zustand (cart.ts, auth.ts)
+├── actions/                  # Server Actions (checkout, auth)
+├── i18n/
+│   ├── routing.ts            # defineRouting (Edge)
+│   └── request.ts            # getRequestConfig (Node)
+├── proxy.ts                  # Next.js 16 Middleware (replaces middleware.ts)
+└── prisma/schema.prisma      # Zero enums
+```
+
+## 8. Verification & Quality Gates
+
+### Pipeline (Must pass before completion)
+```bash
+pnpm typecheck && pnpm lint && pnpm test && pnpm build
+```
+
+### Custom Lint Regex (Tailwind v4 Migration)
+Use `\b` word boundaries to catch deprecated v3 classes without false positives:
+```bash
+# Scan for deprecated v3 utilities
+grep -rEn '\bbg-gradient-to-[a-z]+\b|\boutline-none\b|\bflex-shrink-0\b' src/
+# Scan for raw hex colors
+grep -rEn 'text-\[#[0-9A-Fa-f]{3,6}\]|bg-\[#[0-9A-Fa-f]{3,6}\]' src/
+# Scan for banned TS syntax
+grep -rn 'enum \|namespace ' src/
+```
+
+### Performance Budgets
+| Metric | Target | Enforcement |
+|---|---|---|
+| LCP | < 2.5s | Lighthouse CI |
+| CLS | < 0.1 | Lighthouse CI |
+| INP | < 200ms | Lighthouse CI |
+| Initial Bundle | < 150KB | Next.js analyze |
+| Accessibility | ≥ 95 | axe-core |
+
+### 6-Phase Execution Framework
+1. **ANALYZE**: Deep requirement mining, audit existing code.
+2. **PLAN**: File matrix, success criteria. *Gate: No code without documented plan.*
+3. **VALIDATE**: Confirm alignment with user.
+4. **IMPLEMENT**: Modular TDD, inline docs. *Gate: Zero console errors.*
+5. **VERIFY**: `tsc`, a11y, perf. *Gate: All checks green.*
+6. **DELIVER**: Handoff docs, runbook.
+
