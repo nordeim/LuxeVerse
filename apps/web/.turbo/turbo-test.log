@@ -5,18 +5,17 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 195ms
- ✓ src/server/routers/ai.test.ts (5 tests) 148ms
- ✓ src/server/ai.service.test.ts (6 tests) 1039ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1020ms
- ✓ src/components/ui/button.test.tsx (4 tests) 184ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 197ms
 stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/drawer.test.tsx (2 tests) 265ms
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 217ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1034ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1015ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 263ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -26,9 +25,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
  ✓ src/components/ui/dialog.test.tsx (1 test) 202ms
- ✓ src/components/ui/input.test.tsx (3 tests) 147ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 119ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 128ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 148ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 140ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 153ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 121ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -44,31 +44,31 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
- ✓ src/app/global-error.test.tsx (1 test) 71ms
- ✓ src/server/routers/review.test.ts (14 tests) 59ms
+ ✓ src/app/global-error.test.tsx (1 test) 78ms
+ ✓ src/server/routers/review.test.ts (14 tests) 52ms
  ✓ src/server/routers/savedOutfit.test.ts (6 tests) 31ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 27ms
 stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
 [CheckoutAction] AUTH_SECRET not set, skipping session verification
 
 stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
 [CheckoutAction] Failed: Error: Invariant: static generation store missing in revalidatePath /checkout
-    at revalidate (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:127:11)
-    at revalidatePath (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.0_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:117:10)
+    at revalidate (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.7_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:127:11)
+    at revalidatePath (/home/project/LuxeVerse/node_modules/[4m.pnpm[24m/next@16.2.6_@babel+core@7.29.7_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6/node_modules/[4mnext[24m/src/server/web/spec-extension/revalidate.ts:117:10)
     at Module.createCheckoutAction [90m(/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.ts:125:5[90m)[39m
 [90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
     at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:58:20
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- ✓ src/app/actions/checkout.actions.test.ts (2 tests) 30ms
- ✓ src/i18n/config.test.ts (5 tests) 12ms
- ✓ src/server/routers/search.test.ts (9 tests) 24ms
+ ✓ src/app/actions/checkout.actions.test.ts (2 tests) 24ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 24ms
  ✓ src/stores/style-quiz.test.ts (4 tests) 13ms
+ ✓ src/server/routers/search.test.ts (9 tests) 28ms
+ ✓ src/i18n/config.test.ts (5 tests) 10ms
  ✓ src/lib/utils.test.ts (2 tests) 7ms
  ✓ next.config.test.ts (2 tests) 8ms
 
  Test Files  19 passed (19)
       Tests  93 passed (93)
-   Start at  12:26:25
-   Duration  9.84s (transform 573ms, setup 4.30s, collect 2.86s, tests 2.71s, environment 11.12s, prepare 2.19s)
+   Start at  03:09:45
+   Duration  9.89s (transform 534ms, setup 4.23s, collect 2.82s, tests 2.75s, environment 10.85s, prepare 2.18s)
 

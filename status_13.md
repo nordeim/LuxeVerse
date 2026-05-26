@@ -124,3 +124,96 @@ fr.json
 → Read apps/web/messages/en.json [limit=30]
 Now let me check where next-intl is being used and how it's trying to resolve its config
 
+---
+
+Wait, the official example has the request.ts file at src/i18n/request.ts and the messages at src/messages/. So the relative path from src/i18n/request.ts to src/messages/ is ../messages/, not ../../messages/.
+But I moved messages/ from the root to src/. So the correct relative path from src/i18n/request.ts to src/messages/ is ../../messages/ (going up from i18n/ to src/, then into messages/).
+Wait that's ../ to get from src/i18n/ to src/, then messages/ is at src/messages/. So the path is ../messages/, not ../../messages/.
+Actually, let's count:
+- src/i18n/request.ts → ../ → src/ → messages/ → src/messages/
+So the correct relative path is ../messages/, not ../../messages/. I had it backwards - ../../messages/ from src/i18n/ goes to the project root, not to src/messages/.
+That's the bug! Because I moved messages/ to src/, the relative path should be ../messages/
+← Edit apps/web/src/i18n/request.ts
+import { routing } from "./routing";import { routing } from "./routing";
+async function loadMessages(locale: string): Promise<Record<string, unknown>> {async function loadMessages(locale: string): Promise<Record<string, unknown>> {
+  const messages = (await import(`../../messages/${String(locale)}.json`)).default;  const messages = (await import(`../messages/${String(locale)}.json`)).default;
+  return messages as Record<string, unknown>;  return messages as Record<string, unknown>;
+}}
+/**/**
+# Full verification after path fix
+$ cd /home/project/LuxeVerse && pnpm typecheck && pnpm lint && pnpm test && pnpm build
+> luxeverse@ typecheck /home/project/LuxeVerse
+> turbo typecheck
+• turbo 2.9.14
+   • Packages in scope: @luxeverse/ui, @luxeverse/utils, @luxeverse/web
+   • Running typecheck in 3 packages
+   • Remote caching disabled
+@luxeverse/web:typecheck: cache miss, executing 711901d3b8118051
+…
+Click to expand
+Build succeeds with a warning about app/[locale]/layout.tsx importing from ../../../messages. Let
+→ Read apps/web/src/app/[locale]/layout.tsx [limit=15, offset=40]
+← Edit apps/web/src/app/[locale]/layout.tsx
+// Load messages for the locale// Load messages for the locale
+let messages;let messages;
+try {try {
+  messages = (await import(`../../../messages/${locale}.json`)).default;  messages = (await import(`../../messages/${locale}.json`)).default;
+} catch {} catch {
+  notFound();  notFound();
+}}
+# Todos
+[✓] Read and understand current i18n configuration files and next.config.ts
+[✓] Create src/i18n/routing.ts with defineRouting next-intl v4 pattern
+[✓] Create src/i18n/request.ts with getRequestConfig
+[✓] Update next.config.ts with createNextIntlPlugin and turbopack alias
+[✓] Rename src/middleware.ts to src/proxy.ts and update imports
+[✓] Move messages directory to src/ and update imports
+[•] Run full verification pipeline
+# Run full verification pipeline
+$ cd /home/project/LuxeVerse && pnpm typecheck && pnpm lint && pnpm test && pnpm build
+> luxeverse@ typecheck /home/project/LuxeVerse
+> turbo typecheck
+• turbo 2.9.14
+   • Packages in scope: @luxeverse/ui, @luxeverse/utils, @luxeverse/web
+   • Running typecheck in 3 packages
+   • Remote caching disabled
+@luxeverse/ui:typecheck: cache hit, replaying logs 6c17d5f3014d3535
+…
+Click to expand
+All verification gates pass:
+Command	Result
+pnpm typecheck	✅ Zero errors
+pnpm lint	✅ No deprecated utilities, no raw hex
+pnpm test	✅ 93 passed (19 test files)
+pnpm build	✅ Production build succeeds
+Summary of Changes
+Files Created/Modified
+File	Action	Description
+src/i18n/routing.ts	Modified	Updated to use defineRouting from next-intl/routing with proper cast to string[]
+src/i18n/request.ts	Created	Request-scoped config using getRequestConfig factory, resolves messages via dynamic import
+next.config.ts	Modified	Added createNextIntlPlugin wrapper and turbopack.resolveAlias for next-intl/config
+src/proxy.ts	Created	Renamed from middleware.ts, imports routing from i18n/routing
+src/middleware.ts	Deleted	Deprecated in Next.js 16
+src/i18n.ts	Deleted	Deprecated monolithic config
+src/app/[locale]/layout.tsx	Modified	Updated messages import path to ../../messages/
+src/messages/	Moved	Moved from project root to src/messages/
+Architecture Now Follows next-intl v4 Best Practices
+Aspect	Before	After
+Routing Config	i18n.ts (monolithic)	i18n/routing.ts with defineRouting
+Request Config	None	i18n/request.ts with getRequestConfig
+Plugin Target	No plugin wrapper	createNextIntlPlugin('./src/i18n/request.ts')
+Turbopack Alias	None	next-intl/config → ./src/i18n/request.ts
+Middleware	middleware.ts	proxy.ts (Next.js 16)
+Messages Location	messages/ (root)	src/messages/
+Why These Changes Fix the Error
+Root Cause: The next-intl library uses a webpack alias (next-intl/config) to discover its request configuration. In Next.js 16 with Turbopack, this alias resolution fails unless explicitly configured in turbopack.resolveAlias. Additionally:
+1. src/i18n.ts was a monolithic config file that mixed routing and request concerns — next-intl v4 requires them to be split
+2. src/middleware.ts was the Next.js 15 convention — Next.js 16 uses proxy.ts
+3. messages/ was at the project root, which caused path resolution issues when request.ts was aliased from inside node_modules
+The Fix: 
+- Split config into routing.ts (routing rules) and request.ts (per-request message loading)
+- Wrapped next.config with createNextIntlPlugin pointing to request.ts
+- Added explicit turbopack.resolveAlias for next-intl/config
+- Renamed middleware.ts to proxy.ts per Next.js 16
+- Moved messages/ into src/ so dynamic imports resolve correctly from the aliased request.ts
+

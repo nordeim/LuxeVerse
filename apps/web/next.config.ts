@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import withPWA from "@ducanh2912/next-pwa";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -12,6 +15,11 @@ const nextConfig: NextConfig = {
   },
   typescript: {
     ignoreBuildErrors: false,
+  },
+  turbopack: {
+    resolveAlias: {
+      "next-intl/config": "./src/i18n/request.ts",
+    },
   },
   async headers() {
     return [
@@ -47,7 +55,4 @@ const nextConfig: NextConfig = {
 export default withPWA({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
-  // Auto-generated SW mode (GenerateSW) — more reliable than custom swSrc
-  // with Next.js 16 Turbopack. Cache strategies: assets (CacheFirst),
-  // API (NetworkFirst), images (StaleWhileRevalidate)
-})(nextConfig);
+})(withNextIntl(nextConfig));
