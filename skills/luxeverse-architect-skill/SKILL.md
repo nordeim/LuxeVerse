@@ -2,9 +2,17 @@
 
 ## Comprehensive Architectural & Execution Framework for Cinematic, Production-Grade, Anti-Generic Web Platforms
 
-**Version**: 4.1.0
-**Date**: 2026-05-26
+**Version**: 5.0.0
+**Date**: 2026-05-27
 **Scope**: Phases 0–5 verified (Foundation, Core Commerce, Cinematic Experience, AI Integration, Scale & Social Remediation, Hardening & Production Data Integration)
+**New Since v4.1.0**: 
+- next-intl v4 configuration migration: mandatory split of `routing.ts` (`defineRouting`) and `request.ts` (`getRequestConfig`)
+- Next.js 16 Turbopack alias (`turbopack.resolveAlias`) required for `next-intl/config` resolution
+- `middleware.ts` → `proxy.ts` rename for Next.js 16 compatibility
+- Dynamic import path resolution in aliased files vs. webpack bundle location
+- Messages directory relocation (`messages/` → `src/messages/`) for consistent module resolution
+- `getRequestConfig` factory pattern and `RequestConfig` return type strictness
+
 **New Since v4.0.0**: 
 - Next.js 15+ `cookies()` API returns `Promise<ReadonlyRequestCookies>` instead of synchronous object — causes TS2339 "Property 'get' does not exist"
 - Server-side auth extraction for checkout actions using `getToken` + cookie header assembly (balances SSR compatibility with NextAuth v5)
@@ -16,7 +24,7 @@
 
 **Source**: Distilled from Phase 5 Hardening (2026-05-26) — checkout auth binding, Prisma data integration, visual search API wiring, newsletter subscription, Sentry error tracking, and comprehensive TDD coverage.
 
-**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`, `NextAuth v4 App Router tRPC`, `Prisma Decimal service pattern`, `RSC factory service`, `cookies() Promise Next.js 15`
+**Triggers**: `build luxury e-commerce`, `cinematic UI architecture`, `Next.js 16 phased rollout`, `anti-generic design system`, `tRPC Zustand commerce`, `NextAuth v4 App Router tRPC`, `Prisma Decimal service pattern`, `RSC factory service`, `cookies() Promise Next.js 15`, `next-intl v4 configuration`, `next-intl defineRouting getRequestConfig`, `next-intl Turbopack alias`, `next-intl middleware to proxy migration`
 
 ---
 
@@ -457,7 +465,146 @@ type CartWithItems = Prisma.CartGetPayload<{
 
 ---
 
-## 8. Next.js 16 `params` Duality
+## 8. next-intl v4 Configuration Architecture (Critical Upgrade Path)
+
+### 8.1 The Mandatory Split: `routing.ts` vs. `request.ts`
+
+Since `next-intl@3.22` / `v4.0`, the monolithic `i18n.ts` config is **deprecated** and **will cause runtime crashes**. You **must** split into two files:
+
+| File | Purpose | Consumed By | Required Export |
+|------|---------|-------------|---------------|
+| `src/i18n/routing.ts` | Routing rules (locales, defaultLocale, localePrefix) | `proxy.ts` (`createMiddleware`), `Navigation` APIs | `defineRouting()` |
+| `src/i18n/request.ts` | Per-request message loading | `createNextIntlPlugin`, Server Components (`getTranslations`) | `getRequestConfig()` |
+
+**Why the split matters**: `routing.ts` runs in the **Edge runtime** (middleware), while `request.ts` runs in **Node.js** (Server Components). Mixing them causes bundler errors and runtime crashes.
+
+### 8.2 `routing.ts` — Routing Configuration
+
+```typescript
+// src/i18n/routing.ts
+import { defineRouting } from "next-intl/routing";
+import { locales, defaultLocale } from "./config";
+
+export const routing = defineRouting({
+  // Cast required: TypeScript readonly tuple → Array<string>
+  locales: locales as unknown as Array<string>,
+  defaultLocale,
+  localePrefix: "always",
+});
+
+// Keep backward-compatible re-exports for existing consumers
+export { locales, defaultLocale };
+export type { Locale } from "./config";
+```
+
+**Critical**: `defineRouting` expects `Array<string>`. If your `locales` is a readonly tuple (`as const`), TypeScript will error. Cast through `unknown` → `Array<string>` or use `as unknown as Array<string>`.
+
+### 8.3 `request.ts` — Request Configuration
+
+```typescript
+// src/i18n/request.ts
+import { getRequestConfig } from "next-intl/server";
+import { routing } from "./routing";
+
+export default getRequestConfig(async ({ requestLocale }) => {
+  const requested = await requestLocale;
+  const locale =
+    requested && routing.locales.includes(requested)
+      ? (requested as Locale)
+      : routing.defaultLocale;
+
+  // Dynamic import path: relative to THIS file's location in the build output
+  const messages = (await import(`../messages/${String(locale)}.json`)).default;
+
+  return {
+    locale,
+    messages,
+  };
+});
+```
+
+**Critical**: The `request.ts` file is aliased by `next-intl/config` at build time. Dynamic import paths are resolved from the **aliased file's location**, not from the source tree. This means:
+- If `messages/` is at the project root, but `request.ts` is aliased from `node_modules/next-intl/`, the relative path will resolve to `node_modules/next-intl/messages/` (which doesn't exist).
+- **Fix**: Move `messages/` into `src/` so it's in the same directory tree as the aliased file, OR use a path alias.
+
+### 8.4 `next.config.ts` — Plugin & Turbopack Alias
+
+```typescript
+// next.config.ts
+import withPWA from "@ducanh2912/next-pwa";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// CRITICAL: Plugin must point to request.ts, NOT routing.ts
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+const nextConfig = {
+  // ... other config ...
+
+  // Next.js 16 stable Turbopack config
+  turbopack: {
+    resolveAlias: {
+      // Forces Turbopack to resolve next-intl's internal alias correctly
+      "next-intl/config": "./src/i18n/request.ts",
+    },
+  },
+};
+
+// Compose plugins: next-intl wraps config, then PWA wraps the result
+export default withPWA({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+})(withNextIntl(nextConfig));
+```
+
+**Troubleshooting**: If you see `Error: Couldn't find next-intl config file`, check:
+1. `createNextIntlPlugin` points to `request.ts` (not `routing.ts`)
+2. `turbopack.resolveAlias` has `"next-intl/config": "./src/i18n/request.ts"`
+3. `request.ts` exports a `getRequestConfig()` factory, not a plain object
+4. The path in `createNextIntlPlugin` is relative to `next.config.ts`
+
+### 8.5 `proxy.ts` — Next.js 16 Middleware
+
+```typescript
+// src/proxy.ts (formerly middleware.ts — Next.js 16 convention)
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
+
+export default createMiddleware(routing);
+
+export const config = {
+  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+};
+```
+
+**Warning**: Next.js 16 deprecates `middleware.ts` in favor of `proxy.ts`. The `createMiddleware` function works identically; only the filename changes.
+
+### 8.6 Dynamic Import Path Resolution in Aliased Files
+
+When `next-intl` aliases `request.ts` at build time, dynamic `import()` paths inside it are resolved from the **alias target location**, not from the source tree. This causes `"Module not found"` errors for `messages/`.
+
+**Before (broken)**:
+```
+/home/project/LuxeVerse/apps/web/
+├── messages/              ← at root
+├── src/
+│   └── i18n/
+│       └── request.ts     ← does import("../../../messages/...")
+```
+
+**After (fixed)**:
+```
+/home/project/LuxeVerse/apps/web/
+├── src/
+│   ├── messages/          ← moved into src/
+│   └── i18n/
+│       └── request.ts     ← does import("../messages/...")
+```
+
+**Rule of thumb**: Place any directory dynamically imported by an aliased file **at the same level or below** the aliased file in the source tree.
+
+---
+
+## 9. Next.js 16 `params` Duality
 
 | File Type | `params` Type | Access Pattern |
 |---|---|---|
@@ -467,7 +614,7 @@ type CartWithItems = Prisma.CartGetPayload<{
 
 ---
 
-## 9. Verification Commands Cheat Sheet
+## 10. Verification Commands Cheat Sheet
 
 ```bash
 # Full verification pipeline
@@ -487,6 +634,9 @@ grep -rn 'getServerSession' src/ --include="*.ts" --include="*.tsx"
 
 # `enum` / `namespace` scan
 grep -rn 'enum ' src/ packages/ apps/ --include="*.ts" --include="*.tsx"
+
+# next-intl config file scan (should find request.ts, NOT i18n.ts monolith)
+grep -rn "createNextIntlPlugin" next.config.ts
 ```
 
 ---
