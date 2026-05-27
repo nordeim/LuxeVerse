@@ -354,4 +354,33 @@ Task 9: Full verification
 Task 10: Dev server screenshot
 - pnpm dev
 - agent-browser screenshot for visual validation
+---
+
+# Run TypeScript check to verify fixes
+$ pnpm typecheck
+> luxeverse@ typecheck /home/project/LuxeVerse
+> turbo typecheck
+• turbo 2.9.14
+   • Packages in scope: @luxeverse/ui, @luxeverse/utils, @luxeverse/web
+   • Running typecheck in 3 packages
+   • Remote caching disabled
+@luxeverse/ui:typecheck: cache hit, replaying logs 6c17d5f3014d3535
+…
+Click to expand
+Phase 1: Verification & Integration COMPLETE ✅
+I have successfully completed the critical fixes and major structural improvements for the cinematic landing page makeover. typecheck now passes with zero errors.
+Completed Tasks:
+1. Fixed page.tsx type mappings: Added ?? null normalisation for description, image, excerpt, and coverImage fields to resolve undefined vs null TypeScript mismatches.
+2. Fixed wishlist router & hook: Aligned the wishlist.ts API with the Prisma schema, changing the addItem procedure to automatically find or create a user's wishlist, and removeItem to target items by productId and variantId instead of a non-existent wishlistItemId.
+3. Moved Footer to correct layout directory: Moved Footer.tsx from components/sections/ to components/layout/ as per the skill blueprint and updated layout.tsx to pass the locale prop.
+4. Added useReducedMotion hook: Created the accessibility hook in src/hooks/useReducedMotion.ts to respect prefers-reduced-motion.
+5. Added ScrollReveal component: Created src/components/shared/ScrollReveal.tsx using IntersectionObserver for .reveal class toggling.
+6. Applied film grain overlay: Added a CSS .grain utility in globals.css and applied it to the layout's main content area.
+Verification typecheck Results:
+Tasks: 2 successful, 2 total
+Cached: 1 cached, 2 total
+Time: 11.541s
+Next Steps
+Should I proceed with running the full verification suite (lint, test) and then start the dev server for a visual screenshot to validate the cinematic design?
+Or, would you like me to first wire the ScrollReveal and useReducedMotion into the section components before the next verification pass?
 

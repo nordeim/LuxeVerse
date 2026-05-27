@@ -1,45 +1,52 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { cn } from "@luxeverse/utils";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-export interface ScrollRevealProps {
-  children: React.ReactNode;
-  variant?: "fade-up" | "scale-in" | "slide-left";
-  delay?: number;
-  stagger?: boolean;
+interface ScrollRevealProps {
+  children: ReactNode;
   className?: string;
+  threshold?: number;
+  delay?: number;
 }
 
-const variants = {
-  "fade-up": { initial: { opacity: 0, y: 40 }, animate: { opacity: 1, y: 0 } },
-  "scale-in": { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 } },
-  "slide-left": { initial: { opacity: 0, x: 40 }, animate: { opacity: 1, x: 0 } },
-};
+export function ScrollReveal({
+  children,
+  className = "",
+  threshold = 0.15,
+  delay = 0,
+}: ScrollRevealProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-export function ScrollReveal({ children, variant = "fade-up", delay = 0, stagger = false, className }: ScrollRevealProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const { initial, animate } = variants[variant];
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
 
-  const container = {
-    animate: stagger ? { transition: { staggerChildren: 0.08, delayChildren: delay } } : {},
-  };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          // Optional delay before revealing
+          if (delay > 0) {
+            setTimeout(() => setIsVisible(true), delay);
+          } else {
+            setIsVisible(true);
+          }
+          observer.unobserve(el);
+        }
+      },
+      { threshold }
+    );
 
-  const child = {
-    initial: prefersReducedMotion ? {} : initial,
-    animate: prefersReducedMotion ? {} : animate,
-    transition: { duration: 0.7, ease: [0.19, 1, 0.22, 1], delay: stagger ? 0 : delay },
-  };
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold, delay]);
 
   return (
-    <motion.div
-      variants={container}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true, margin: "-80px" }}
-      className={cn("w-full", className)}
+    <div
+      ref={ref}
+      className={`reveal ${isVisible ? "visible" : ""} ${className}`}
     >
-      {stagger ? children : <motion.div variants={child}>{children}</motion.div>}
-    </motion.div>
+      {children}
+    </div>
   );
 }

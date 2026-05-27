@@ -69,7 +69,7 @@ export default async function LocaleLayout({
             >
               {children}
             </main>
-            <Footer />
+            <Footer locale={locale} />
           </ErrorBoundary>
         </NextIntlClientProvider>
       </body>

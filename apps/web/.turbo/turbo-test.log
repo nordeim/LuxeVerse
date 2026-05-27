@@ -5,6 +5,17 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 173ms
+stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 220ms
+ ✓ src/server/ai.service.test.ts (6 tests) 1036ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1020ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 200ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -13,22 +24,12 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
-stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
-Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-
- ✓ src/components/ui/dialog.test.tsx (1 test) 165ms
-stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
-Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-
- ✓ src/components/ui/drawer.test.tsx (2 tests) 207ms
- ✓ src/server/ai.service.test.ts (6 tests) 1050ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1027ms
- ✓ src/components/ui/button.test.tsx (4 tests) 203ms
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 226ms
- ✓ src/server/routers/ai.test.ts (5 tests) 151ms
- ✓ src/components/ui/input.test.tsx (3 tests) 131ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 143ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 111ms
+ ✓ src/components/ui/dialog.test.tsx (1 test) 225ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 252ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 117ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 130ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 108ms
+ ✓ src/server/routers/review.test.ts (14 tests) 51ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -44,10 +45,9 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
- ✓ src/app/global-error.test.tsx (1 test) 67ms
- ✓ src/server/routers/review.test.ts (14 tests) 73ms
- ✓ src/server/routers/savedOutfit.test.ts (6 tests) 32ms
- ✓ src/server/routers/search.test.ts (9 tests) 34ms
+ ✓ src/app/global-error.test.tsx (1 test) 82ms
+ ✓ src/server/routers/search.test.ts (9 tests) 27ms
+ ✓ src/server/routers/savedOutfit.test.ts (6 tests) 37ms
 stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
 [CheckoutAction] AUTH_SECRET not set, skipping session verification
 
@@ -60,15 +60,15 @@ stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > shoul
     at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:58:20
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- ✓ src/app/actions/checkout.actions.test.ts (2 tests) 26ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 24ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 13ms
+ ✓ src/app/actions/checkout.actions.test.ts (2 tests) 33ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 23ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 15ms
  ✓ src/i18n/config.test.ts (5 tests) 11ms
- ✓ src/lib/utils.test.ts (2 tests) 7ms
- ✓ next.config.test.ts (2 tests) 9ms
+ ✓ src/lib/utils.test.ts (2 tests) 8ms
+ ✓ next.config.test.ts (2 tests) 8ms
 
  Test Files  19 passed (19)
       Tests  93 passed (93)
-   Start at  16:06:54
-   Duration  9.88s (transform 609ms, setup 4.40s, collect 2.97s, tests 2.68s, environment 11.06s, prepare 2.18s)
+   Start at  22:56:58
+   Duration  10.07s (transform 598ms, setup 4.30s, collect 3.01s, tests 2.76s, environment 10.87s, prepare 2.15s)
 
