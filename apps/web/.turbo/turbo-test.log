@@ -5,17 +5,16 @@
 
  RUN  v3.2.4 /home/project/LuxeVerse/apps/web
 
- ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 194ms
+ ✓ src/components/ui/button.test.tsx (4 tests) 191ms
 stderr | src/components/ui/drawer.test.tsx > Drawer > opens and closes drawer
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
 stderr | src/components/ui/drawer.test.tsx > Drawer > renders with correct side class
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/drawer.test.tsx (2 tests) 232ms
+ ✓ src/components/ui/drawer.test.tsx (2 tests) 211ms
  ✓ src/server/ai.service.test.ts (6 tests) 1039ms
-   ✓ createAIService > handles OpenAI errors gracefully with fallback  1017ms
- ✓ src/components/ui/button.test.tsx (4 tests) 212ms
+   ✓ createAIService > handles OpenAI errors gracefully with fallback  1016ms
 stderr | src/components/ui/dialog.test.tsx > Dialog > renders when open
 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
@@ -24,11 +23,12 @@ If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden c
 For more information, see https://radix-ui.com/primitives/docs/components/dialog
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/ui/dialog.test.tsx (1 test) 206ms
- ✓ src/server/routers/ai.test.ts (5 tests) 152ms
- ✓ src/components/ui/input.test.tsx (3 tests) 137ms
- ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 156ms
- ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 120ms
+ ✓ src/components/ui/dialog.test.tsx (1 test) 189ms
+ ✓ src/app/style-quiz/style-quiz.test.tsx (3 tests) 194ms
+ ✓ src/components/ai-stylist/OutfitCard.test.tsx (5 tests) 119ms
+ ✓ src/components/ui/input.test.tsx (3 tests) 143ms
+ ✓ src/server/routers/ai.test.ts (5 tests) 150ms
+ ✓ src/components/size/SizeRecommendation.test.tsx (6 tests) 128ms
 stderr | src/app/global-error.test.tsx > GlobalError > renders error message
 In HTML, <html> cannot be a child of <div>.
 This will cause a hydration error.
@@ -44,11 +44,9 @@ This will cause a hydration error.
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
     at runSuite (file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8)
 
- ✓ src/app/global-error.test.tsx (1 test) 101ms
- ✓ src/server/routers/review.test.ts (14 tests) 46ms
+ ✓ src/app/global-error.test.tsx (1 test) 72ms
+ ✓ src/server/routers/review.test.ts (14 tests) 56ms
  ✓ src/server/routers/savedOutfit.test.ts (6 tests) 29ms
- ✓ src/server/routers/search.test.ts (9 tests) 26ms
- ✓ src/server/loyalty.service.test.ts (13 tests) 25ms
 stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > should create order successfully
 [CheckoutAction] AUTH_SECRET not set, skipping session verification
 
@@ -61,14 +59,16 @@ stderr | src/app/actions/checkout.actions.test.ts > createCheckoutAction > shoul
     at [90m/home/project/LuxeVerse/apps/web/[39msrc/app/actions/checkout.actions.test.ts:58:20
     at file:///home/project/LuxeVerse/node_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
 
- ✓ src/app/actions/checkout.actions.test.ts (2 tests) 28ms
- ✓ src/i18n/config.test.ts (5 tests) 12ms
- ✓ src/stores/style-quiz.test.ts (4 tests) 16ms
+ ✓ src/app/actions/checkout.actions.test.ts (2 tests) 25ms
+ ✓ src/server/routers/search.test.ts (9 tests) 32ms
+ ✓ src/server/loyalty.service.test.ts (13 tests) 25ms
+ ✓ src/stores/style-quiz.test.ts (4 tests) 12ms
+ ✓ src/i18n/config.test.ts (5 tests) 10ms
  ✓ src/lib/utils.test.ts (2 tests) 7ms
- ✓ next.config.test.ts (2 tests) 8ms
+ ✓ next.config.test.ts (2 tests) 9ms
 
  Test Files  19 passed (19)
       Tests  93 passed (93)
-   Start at  07:07:50
-   Duration  10.81s (transform 607ms, setup 4.91s, collect 3.14s, tests 2.75s, environment 12.02s, prepare 2.46s)
+   Start at  12:28:02
+   Duration  9.53s (transform 544ms, setup 4.27s, collect 2.90s, tests 2.64s, environment 10.87s, prepare 2.08s)
 

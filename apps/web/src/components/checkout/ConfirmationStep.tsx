@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactElement } from "react";
-
 import { useRouter } from "next/navigation";
 import { Button } from "@luxeverse/ui";
 import { CheckCircle } from "lucide-react";
@@ -10,7 +8,7 @@ interface ConfirmationStepProps {
   orderId: string;
 }
 
-export function ConfirmationStep({ orderId }: ConfirmationStepProps): ReactElement {
+export function ConfirmationStep({ orderId }: ConfirmationStepProps) {
   const router = useRouter();
 
   return (

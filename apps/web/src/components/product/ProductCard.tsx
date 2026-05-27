@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductListItem } from "@/types";
@@ -10,7 +9,7 @@ interface ProductCardProps {
   product: ProductListItem;
 }
 
-export function ProductCard({ product }: ProductCardProps): ReactElement {
+export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group relative flex flex-col gap-3">
       <Link href={`/shop/outerwear/${product.slug}`} className="relative aspect-product overflow-hidden rounded-lg bg-obsidian-100 block">

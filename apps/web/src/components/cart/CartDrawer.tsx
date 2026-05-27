@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { ReactElement } from "react";
 import Link from "next/link";
 import { X, ShoppingBag } from "lucide-react";
 import { cn, formatCurrency } from "@luxeverse/utils";
@@ -15,7 +14,7 @@ export interface CartDrawerProps {
   freeShippingThreshold?: number;
 }
 
-export function CartDrawer({ freeShippingThreshold = 50000 }: CartDrawerProps): ReactElement {
+export function CartDrawer({ freeShippingThreshold = 50000 }: CartDrawerProps) {
   const { items, isOpen, total, itemCount, closeCart, isLoading } = useCart();
   const drawerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, useActionState } from "react";
-import type { ReactElement } from "react";
 import {
   createCheckoutAction,
   type CheckoutState,
@@ -16,7 +15,7 @@ type Step = "shipping" | "payment" | "review" | "confirmation";
 
 const steps: Step[] = ["shipping", "payment", "review", "confirmation"];
 
-export default function CheckoutForm(): ReactElement {
+export default function CheckoutForm() {
   const [currentStep, setCurrentStep] = useState<Step>("shipping");
   const [state, formAction, isPending] = useActionState(
     createCheckoutAction,

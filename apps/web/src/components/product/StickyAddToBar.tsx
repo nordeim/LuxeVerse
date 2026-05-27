@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import type { ReactElement } from "react";
 import { Button } from "@luxeverse/ui";
 import { PriceDisplay } from "./PriceDisplay";
 import Image from "next/image";
@@ -23,7 +22,7 @@ export function StickyAddToBar({
   imageUrl,
   onAddToCart,
   isAdding,
-}: StickyAddToBarProps): ReactElement {
+}: StickyAddToBarProps) {
   const [isVisible, setIsVisible] = useState(false);
   const addToCartRef = useRef<HTMLDivElement>(null);
 

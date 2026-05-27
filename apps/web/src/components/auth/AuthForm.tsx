@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect, useId, useState } from "react";
-import type { ReactElement } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button, Input } from "@luxeverse/ui";
@@ -13,7 +12,7 @@ interface AuthFormProps {
   initialState: AuthState;
 }
 
-export function AuthForm({ type, action, initialState }: AuthFormProps): ReactElement {
+export function AuthForm({ type, action, initialState }: AuthFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const formId = useId();
 

@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { ReactElement } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 
-export function Navbar(): ReactElement {
+export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);

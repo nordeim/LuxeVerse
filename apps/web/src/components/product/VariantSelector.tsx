@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useCallback, useTransition } from "react";
-import type { ReactElement } from "react";
 import { cn } from "@luxeverse/utils";
 
 export interface VariantOption {
@@ -24,7 +23,7 @@ export function VariantSelector({
   options,
   selectedId,
   onSelect,
-}: VariantSelectorProps): ReactElement {
+}: VariantSelectorProps) {
   const groupId = useId();
   const [_isPending, startTransition] = useTransition();
 

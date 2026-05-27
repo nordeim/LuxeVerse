@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import type { ReactElement } from "react";
 import { cn } from "@luxeverse/utils";
 import { Gift } from "lucide-react";
 
@@ -18,7 +17,7 @@ export function FreeShippingProgress({
   current,
   threshold,
   currency,
-}: FreeShippingProgressProps): ReactElement {
+}: FreeShippingProgressProps) {
   const progress = useMemo(
     () => Math.min((current / threshold) * 100, 100),
     [current, threshold]

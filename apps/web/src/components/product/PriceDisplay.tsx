@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 interface PriceDisplayProps {
   current: number;
   compareAt: number | null;
@@ -10,7 +9,7 @@ function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount / 100);
 }
 
-export function PriceDisplay({ current, compareAt, currency, installments }: PriceDisplayProps): ReactElement {
+export function PriceDisplay({ current, compareAt, currency, installments }: PriceDisplayProps) {
   const hasDiscount = compareAt !== null && compareAt > current;
   const savings = hasDiscount ? compareAt - current : 0;
 

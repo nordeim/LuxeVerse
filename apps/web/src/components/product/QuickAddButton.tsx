@@ -1,7 +1,6 @@
 "use client";
 
 import { startTransition, useState } from "react";
-import type { ReactElement } from "react";
 import { Button } from "@luxeverse/ui";
 import { useCart } from "@/hooks/useCart";
 
@@ -9,7 +8,7 @@ interface QuickAddButtonProps {
   productId: string;
 }
 
-export function QuickAddButton({ productId }: QuickAddButtonProps): ReactElement {
+export function QuickAddButton({ productId }: QuickAddButtonProps) {
   const { addItem, isLoading } = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
