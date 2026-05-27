@@ -1,6 +1,6 @@
 # LuxeVerse
 
-[![Version](https://img.shields.io/badge/version-4.1.0-blue)](https://github.com/luxeverse/luxeverse/releases)
+[![Version](https://img.shields.io/badge/version-5.0.0-blue)](https://github.com/luxeverse/luxeverse/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/luxeverse/luxeverse/ci.yml?branch=main&label=CI)](https://github.com/luxeverse/luxeverse/actions)
 [![License](https://img.shields.io/badge/license-proprietary-red)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
@@ -342,6 +342,38 @@ If you modify `prisma/schema.prisma`, you **must** regenerate the Prisma Client 
 * **Symptom**: TypeScript errors like `TS2339: Property 'X' does not exist on type 'Y'`
 * **Context**: This occurs because Prisma's TypeScript types are generated from the schema. If the schema changes but the types aren't regenerated, any new or modified fields will be missing from the generated type definitions.
 
+### Prisma Schema Issues
+* **Symptom**: TypeScript errors like `TS2339: Property 'X' does not exist on type 'Y'`
+* **Root cause**: Prisma Client types are generated from the schema. If the schema changes but types aren't regenerated, new/modified fields are missing.
+* **Fix**: Run `cd apps/web && pnpm db:generate` after any `prisma/schema.prisma` change.
+* **Context**: This is the single most common cause of cryptic type errors after schema modifications.
+
+### next-intl v4 Configuration (Critical)
+* **Symptom**: `Couldn't find next-intl config file` error at runtime
+* **Fix**: Split monolithic `i18n.ts` into `routing.ts` (`defineRouting`) + `request.ts` (`getRequestConfig`), add `turbopack.resolveAlias` in `next.config.ts`
+* **Files**: `src/i18n/routing.ts`, `src/i18n/request.ts`, `next.config.ts`
+
+### Turbopack Alias Required for next-intl v4
+* **Symptom**: `Error: Couldn't find next-intl config file` in Next.js 16 with Turbopack
+* **Fix**: Add explicit alias in `next.config.ts`: `turbopack: { resolveAlias: { 'next-intl/config': './src/i18n/request.ts' } }`
+* **File**: `next.config.ts`
+
+### middleware.ts → proxy.ts Rename (Next.js 16)
+* **Symptom**: Deprecation warning: `The "middleware" file convention is deprecated. Please use "proxy" instead`
+* **Fix**: Rename `src/middleware.ts` to `src/proxy.ts`, update imports to use `routing` from `i18n/routing.ts`
+* **File**: `src/proxy.ts` (renamed from `src/middleware.ts`)
+
+### Dynamic Import Path Resolution in Aliased Files
+* **Symptom**: `Module not found: Can't resolve '../../../messages'` when using dynamic imports in `request.ts`
+* **Root cause**: When `next-intl/config` is aliased, dynamic imports resolve relative to the alias target (inside `node_modules/next-intl/`), not the source file
+* **Fix**: Move `messages/` directory into `src/` and update import paths: `import(\`../messages/${locale}.json\`)` from `src/i18n/request.ts`
+* **File**: `src/i18n/request.ts`, `src/messages/` (moved from root)
+
+### Readonly Tuple → Array Cast for defineRouting
+* **Symptom**: `Type 'readonly ["en", "fr", "ar"]' is not assignable to type 'string[]'`
+* **Fix**: Cast through `unknown`: `locales: locales as unknown as Array<string>`
+* **File**: `src/i18n/routing.ts`
+
 ### Tailwind v4 Migration
 | v3 Utility | v4 Replacement | Notes |
 |------------|----------------|-------|
@@ -494,6 +526,10 @@ Before submitting a PR, verify:
 
 | Issue | Solution |
 |-------|----------|
+| `Couldn't find next-intl config file` | Split `i18n.ts` → `routing.ts` + `request.ts`, add `turbopack.resolveAlias` |
+| `Type 'readonly [...]' is not assignable to type 'string[]'` | Cast: `locales as unknown as Array<string>` |
+| `Module not found: Can't resolve '../../../messages'` | Move `messages/` into `src/`, update import paths |
+| `middleware.ts deprecation warning` | Rename to `proxy.ts`, import from `i18n/routing.ts` |
 | `bottom--24` not working | Use `-bottom-24` (single hyphen for negatives in Tailwind v4) |
 | `tsc` errors but tests pass | Run `pnpm tsc --noEmit` FIRST — type errors cause cryptic test failures |
 | Zustand store not updating in JSX | Use selector: `useStore(s => s.field)`, not `.getState()` |
@@ -511,8 +547,8 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-26 (Post-Phase 5 Hardening: checkout auth, real data services, visual search, newsletter, Sentry)
+> **Last Updated**: 2026-05-27 (next-intl v4 migration: routing/request split, Turbopack alias, proxy.ts, dynamic import resolution)
 > **Next Review**: 2026-06-15
 > **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3
-> **Status**: Phases 0-5 complete (93 tests passing), Phase 5.1 (E2E + Lighthouse) pending
+> **Status**: Phases 0-5 complete (93 tests passing, all gates green), Phase 5.1 (E2E + Lighthouse) pending
 > **Contact**: engineering@luxeverse.com
