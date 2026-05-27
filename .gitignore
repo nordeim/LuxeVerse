@@ -19,7 +19,7 @@ upload/
 .agents
 .env.local
 .env.*.local
-
+mock/
 # Ignore Turborepo cache files
 .turbo/
 

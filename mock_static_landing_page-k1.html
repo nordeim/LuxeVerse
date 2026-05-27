@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LuxeVerse — A cinematic luxury digital atelier. Where artistry meets artificial intelligence.">
+  <title>LuxeVerse — Digital Atelier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            obsidian: { 50: '#f7f7f8', 100: '#eeeef0', 200: '#d9d9dd', 300: '#b8b8bf', 400: '#92929c', 500: '#74747f', 600: '#5e5e67', 700: '#4c4c54', 800: '#414147', 900: '#1c1c1f', 950: '#0c0c0e' },
+            champagne: { 50: '#fdf9f0', 100: '#f7e7ce', 200: '#e8c896', 300: '#d4a85a', 400: '#c4943a', 500: '#b8860b', 600: '#9a6f0a', 700: '#7a5a0c', 800: '#5c4410', 900: '#3d2e0f' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --c-o950: oklch(0.08 0.003 260); --c-o900: oklch(0.12 0.005 260); --c-o800: oklch(0.18 0.008 260);
+      --c-o700: oklch(0.25 0.012 260); --c-o600: oklch(0.35 0.015 260); --c-o500: oklch(0.45 0.018 260);
+      --c-o400: oklch(0.55 0.02 260); --c-o300: oklch(0.65 0.018 260); --c-o200: oklch(0.75 0.015 260);
+      --c-o100: oklch(0.85 0.01 260); --c-o50: oklch(0.95 0.005 260);
+      --c-c500: oklch(0.78 0.14 85); --c-c400: oklch(0.82 0.12 85); --c-c300: oklch(0.86 0.1 85); --c-c200: oklch(0.9 0.06 85);
+      --s-3xs: 0.236rem; --s-2xs: 0.382rem; --s-xs: 0.618rem; --s-sm: 1rem; --s-md: 1.618rem; --s-lg: 2.618rem; --s-xl: 4.236rem; --s-2xl: 6.854rem; --s-3xl: 11.09rem;
+      --f-hero: clamp(3.5rem, 2.5rem + 5vw, 8rem); --f-h1: clamp(2.5rem, 2rem + 2.5vw, 4rem); --f-h2: clamp(2rem, 1.7rem + 1.5vw, 3rem); --f-h3: clamp(1.5rem, 1.3rem + 1vw, 2rem); --f-body: clamp(1rem, 0.9rem + 0.5vw, 1.125rem); --f-small: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --e-out: cubic-bezier(0.19, 1, 0.22, 1); --e-inout: cubic-bezier(0.87, 0, 0.13, 1); --e-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); --e-luxe: cubic-bezier(0.25, 0.1, 0.25, 1); --e-dram: cubic-bezier(0.77, 0, 0.175, 1);
+      --d-i: 100ms; --d-f: 200ms; --d-n: 400ms; --d-s: 600ms; --d-d: 1000ms; --d-c: 1500ms;
+      --sh-sub: 0 1px 2px rgba(0,0,0,0.05); --sh-sm: 0 2px 8px rgba(0,0,0,0.08); --sh-md: 0 4px 16px rgba(0,0,0,0.12); --sh-lg: 0 8px 32px rgba(0,0,0,0.16); --sh-xl: 0 16px 48px rgba(0,0,0,0.24); --sh-dram: 0 24px 64px rgba(0,0,0,0.32); --sh-glow: 0 0 40px rgba(218,165,32,0.15);
+      --z-base: 0; --z-dd: 100; --z-st: 200; --z-ov: 300; --z-md: 400; --z-pop: 500; --z-toast: 600; --z-tip: 700;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+    body { font-family: 'DM Sans', system-ui, sans-serif; font-size: var(--f-body); line-height: 1.7; letter-spacing: 0.01em; color: var(--c-o200); background-color: var(--c-o950); overflow-x: hidden; }
+    ::selection { background: rgba(218,165,32,0.3); color: #fff; }
+    .film-grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 200px 200px; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--c-o950); } ::-webkit-scrollbar-thumb { background: var(--c-o700); border-radius: 3px; } ::-webkit-scrollbar-thumb:hover { background: var(--c-o600); }
+    .skip-link { position: absolute; top: -100%; left: 50%; transform: translateX(-50%); background: var(--c-c500); color: var(--c-o950); padding: var(--s-sm) var(--s-md); font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; text-decoration: none; z-index: 10000; transition: top var(--d-f) var(--e-out); }
+    .skip-link:focus { top: var(--s-md); }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-st); padding: var(--s-md) var(--s-xl); display: flex; justify-content: space-between; align-items: center; transition: background-color var(--d-n) var(--e-out), backdrop-filter var(--d-n) var(--e-out), padding var(--d-n) var(--e-out); }
+    .nav--scrolled { background-color: rgba(12,12,14,0.85); backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2); padding: var(--s-sm) var(--s-xl); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .nav__logo { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.75rem); font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-c400); text-decoration: none; transition: color var(--d-f) var(--e-out); }
+    .nav__logo:hover { color: var(--c-c200); }
+    .nav__links { display: none; gap: var(--s-lg); list-style: none; }
+    @media (min-width: 1024px) { .nav__links { display: flex; } }
+    .nav__link { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-o300); text-decoration: none; position: relative; padding-bottom: 2px; transition: color var(--d-f) var(--e-out); }
+    .nav__link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--c-c400); transition: width var(--d-s) var(--e-out); }
+    .nav__link:hover { color: var(--c-c300); } .nav__link:hover::after { width: 100%; }
+    .nav__actions { display: flex; align-items: center; gap: var(--s-md); }
+    .nav__icon-btn { background: none; border: none; cursor: pointer; color: var(--c-o300); padding: var(--s-xs); transition: color var(--d-f) var(--e-out); display: flex; align-items: center; justify-content: center; }
+    .nav__icon-btn:hover { color: var(--c-c300); } .nav__icon-btn svg { width: 20px; height: 20px; stroke-width: 1.5; }
+    .nav__menu-btn { display: flex; background: none; border: none; cursor: pointer; color: var(--c-o300); padding: var(--s-xs); transition: color var(--d-f) var(--e-out); }
+    .nav__menu-btn:hover { color: var(--c-c300); }
+    @media (min-width: 1024px) { .nav__menu-btn { display: none; } }
+    .hero { position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; padding: var(--s-2xl) var(--s-xl); }
+    .hero__bg { position: absolute; inset: 0; z-index: var(--z-base); }
+    .hero__bg-image { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: brightness(0.35) saturate(0.8); transform: scale(1.05); animation: heroZoom 20s ease-in-out infinite alternate; }
+    @keyframes heroZoom { 0% { transform: scale(1.05); } 100% { transform: scale(1.15); } }
+    .hero__overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, transparent 0%, rgba(12,12,14,0.4) 70%, rgba(12,12,14,0.9) 100%), linear-gradient(to bottom, rgba(12,12,14,0.3) 0%, rgba(12,12,14,0.1) 40%, rgba(12,12,14,0.6) 100%); z-index: 1; }
+    .hero__vignette { position: absolute; inset: 0; box-shadow: inset 0 0 150px rgba(0,0,0,0.5); z-index: 2; pointer-events: none; }
+    .hero__content { position: relative; z-index: 10; text-align: center; max-width: 900px; width: 100%; }
+    .hero__overline { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--c-c400); margin-bottom: var(--s-md); opacity: 0; transform: translateY(20px); animation: fadeUp 1s var(--e-out) 0.3s forwards; }
+    .hero__title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: var(--f-hero); font-weight: 300; line-height: 1.05; letter-spacing: -0.03em; color: #fff; margin-bottom: var(--s-lg); opacity: 0; transform: translateY(40px); animation: fadeUp 1.2s var(--e-out) 0.6s forwards; }
+    .hero__title em { font-style: italic; font-weight: 400; color: var(--c-c300); }
+    .hero__subtitle { font-family: 'DM Sans', sans-serif; font-size: var(--f-body); font-weight: 300; line-height: 1.8; color: var(--c-o300); max-width: 560px; margin: 0 auto var(--s-xl); opacity: 0; transform: translateY(30px); animation: fadeUp 1s var(--e-out) 1s forwards; }
+    .hero__cta-group { display: flex; flex-direction: column; gap: var(--s-sm); align-items: center; opacity: 0; transform: translateY(20px); animation: fadeUp 1s var(--e-out) 1.3s forwards; }
+    @media (min-width: 640px) { .hero__cta-group { flex-direction: row; justify-content: center; gap: var(--s-md); } }
+    .hero__cta { display: inline-flex; align-items: center; justify-content: center; padding: var(--s-sm) var(--s-xl); font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border-radius: 0; cursor: pointer; transition: all var(--d-n) var(--e-out); position: relative; overflow: hidden; }
+    .hero__cta--primary { background: var(--c-c500); color: var(--c-o950); border: 1px solid var(--c-c500); }
+    .hero__cta--primary:hover { background: var(--c-c400); border-color: var(--c-c400); box-shadow: var(--sh-glow); transform: translateY(-2px); }
+    .hero__cta--secondary { background: transparent; color: var(--c-c300); border: 1px solid rgba(218,165,32,0.3); }
+    .hero__cta--secondary:hover { border-color: var(--c-c400); color: var(--c-c200); background: rgba(218,165,32,0.05); transform: translateY(-2px); }
+    .hero__scroll-indicator { position: absolute; bottom: var(--s-xl); left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: var(--s-xs); opacity: 0; animation: fadeIn 1s var(--e-out) 2s forwards; }
+    .hero__scroll-text { font-family: 'DM Sans', sans-serif; font-size: 0.625rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-o500); }
+    .hero__scroll-line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--c-o500), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%, 100% { opacity: 0.3; transform: scaleY(0.5); } 50% { opacity: 1; transform: scaleY(1); } }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .section { position: relative; padding: var(--s-3xl) var(--s-xl); overflow: hidden; }
+    .section__overline { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-c400); margin-bottom: var(--s-md); }
+    .section__title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: var(--f-h2); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; color: #fff; margin-bottom: var(--s-lg); }
+    .section__title em { font-style: italic; font-weight: 400; color: var(--c-c300); }
+    .section__body { font-family: 'DM Sans', sans-serif; font-size: var(--f-body); font-weight: 300; line-height: 1.8; color: var(--c-o300); max-width: 640px; }
+    .manifesto { background: var(--c-o950); display: grid; grid-template-columns: 1fr; gap: var(--s-2xl); align-items: center; }
+    @media (min-width: 1024px) { .manifesto { grid-template-columns: 1fr 1fr; gap: var(--s-3xl); } }
+    .manifesto__text { max-width: 560px; }
+    .manifesto__quote { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(1.75rem, 1.5rem + 1vw, 2.5rem); font-weight: 300; font-style: italic; line-height: 1.4; color: var(--c-o200); margin-bottom: var(--s-lg); position: relative; padding-left: var(--s-lg); border-left: 1px solid rgba(218,165,32,0.3); }
+    .manifesto__image-wrapper { position: relative; aspect-ratio: 3/4; overflow: hidden; }
+    .manifesto__image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%) brightness(0.8); transition: filter var(--d-s) var(--e-out), transform var(--d-s) var(--e-out); }
+    .manifesto__image-wrapper:hover .manifesto__image { filter: grayscale(0%) brightness(0.9); transform: scale(1.03); }
+    .manifesto__image-caption { position: absolute; bottom: var(--s-md); left: var(--s-md); font-family: 'DM Sans', sans-serif; font-size: 0.625rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-o400); background: rgba(12,12,14,0.7); padding: var(--s-2xs) var(--s-sm); backdrop-filter: blur(8px); }
+    .collection { background: var(--c-o900); padding-top: var(--s-3xl); padding-bottom: var(--s-3xl); }
+    .collection__header { text-align: center; margin-bottom: var(--s-2xl); }
+    .collection__grid { display: grid; grid-template-columns: 1fr; gap: var(--s-md); max-width: 1400px; margin: 0 auto; }
+    @media (min-width: 640px) { .collection__grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .collection__grid { grid-template-columns: 1.2fr 0.8fr 1fr; grid-template-rows: auto auto; gap: var(--s-md); } .collection__item:nth-child(1) { grid-row: span 2; } .collection__item:nth-child(4) { grid-column: span 2; } }
+    .collection__item { position: relative; overflow: hidden; cursor: pointer; }
+    .collection__item-image { width: 100%; height: 100%; min-height: 400px; object-fit: cover; filter: brightness(0.7); transition: filter var(--d-s) var(--e-out), transform var(--d-s) var(--e-out); }
+    .collection__item:hover .collection__item-image { filter: brightness(0.85); transform: scale(1.05); }
+    .collection__item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0.3) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: var(--s-lg); transition: background var(--d-s) var(--e-out); }
+    .collection__item:hover .collection__item-overlay { background: linear-gradient(to top, rgba(12,12,14,0.95) 0%, rgba(12,12,14,0.5) 60%, transparent 100%); }
+    .collection__item-brand { font-family: 'DM Sans', sans-serif; font-size: 0.625rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-c400); margin-bottom: var(--s-xs); transform: translateY(10px); opacity: 0; transition: all var(--d-n) var(--e-out); }
+    .collection__item:hover .collection__item-brand { transform: translateY(0); opacity: 1; }
+    .collection__item-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: var(--f-h3); font-weight: 400; line-height: 1.2; color: #fff; margin-bottom: var(--s-xs); }
+    .collection__item-price { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 400; color: var(--c-o300); letter-spacing: 0.05em; }
+    .collection__item-cta { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); opacity: 0; padding: var(--s-sm) var(--s-lg); background: rgba(218,165,32,0.9); color: var(--c-o950); font-family: 'DM Sans', sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; border: none; cursor: pointer; transition: all var(--d-n) var(--e-out); pointer-events: none; }
+    .collection__item:hover .collection__item-cta { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+    .collection__item-cta:hover { background: var(--c-c400); box-shadow: var(--sh-glow); }
+    .ai-stylist { background: var(--c-o950); position: relative; }
+    .ai-stylist::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(218,165,32,0.2), transparent); }
+    .ai-stylist__content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: var(--s-2xl); align-items: center; }
+    @media (min-width: 1024px) { .ai-stylist__content { grid-template-columns: 1fr 1fr; } }
+    .ai-stylist__visual { position: relative; aspect-ratio: 4/3; background: var(--c-o900); border: 1px solid rgba(255,255,255,0.04); overflow: hidden; }
+    .ai-stylist__visual-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 2px; }
+    .ai-stylist__visual-cell { background: var(--c-o800); position: relative; overflow: hidden; }
+    .ai-stylist__visual-cell img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(60%) brightness(0.6); transition: filter var(--d-s) var(--e-out), transform var(--d-s) var(--e-out); }
+    .ai-stylist__visual-cell:hover img { filter: grayscale(0%) brightness(0.8); transform: scale(1.1); }
+    .ai-stylist__visual-cell::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(218,165,32,0.1), transparent); opacity: 0; transition: opacity var(--d-n) var(--e-out); }
+    .ai-stylist__visual-cell:hover::after { opacity: 1; }
+    .ai-stylist__chat-bubble { position: absolute; bottom: var(--s-md); left: var(--s-md); right: var(--s-md); background: rgba(12,12,14,0.9); border: 1px solid rgba(218,165,32,0.15); padding: var(--s-md); backdrop-filter: blur(12px); }
+    .ai-stylist__chat-text { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); color: var(--c-o200); line-height: 1.6; }
+    .ai-stylist__chat-text strong { color: var(--c-c300); font-weight: 500; }
+    .ai-stylist__chat-cursor { display: inline-block; width: 2px; height: 1em; background: var(--c-c400); margin-left: 2px; animation: cursorBlink 1s step-end infinite; vertical-align: text-bottom; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .ai-stylist__features { list-style: none; margin-top: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-md); }
+    .ai-stylist__feature { display: flex; align-items: flex-start; gap: var(--s-sm); }
+    .ai-stylist__feature-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(218,165,32,0.2); border-radius: 50%; flex-shrink: 0; color: var(--c-c400); }
+    .ai-stylist__feature-text { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); color: var(--c-o300); line-height: 1.6; }
+    .ai-stylist__feature-text strong { color: var(--c-o200); display: block; margin-bottom: 2px; font-weight: 500; }
+    .sustainability { background: var(--c-o900); padding: var(--s-2xl) var(--s-xl); text-align: center; }
+    .sustainability__stats { display: grid; grid-template-columns: 1fr; gap: var(--s-xl); max-width: 1000px; margin: 0 auto; }
+    @media (min-width: 640px) { .sustainability__stats { grid-template-columns: repeat(3, 1fr); } }
+    .sustainability__stat { position: relative; padding: var(--s-lg); }
+    .sustainability__stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; bottom: 20%; width: 1px; background: linear-gradient(to bottom, transparent, rgba(218,165,32,0.15), transparent); }
+    @media (max-width: 639px) { .sustainability__stat:not(:last-child)::after { right: 10%; left: 10%; top: auto; bottom: 0; width: auto; height: 1px; background: linear-gradient(to right, transparent, rgba(218,165,32,0.15), transparent); } }
+    .sustainability__stat-number { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(3rem, 2rem + 3vw, 5rem); font-weight: 300; line-height: 1; color: var(--c-c400); margin-bottom: var(--s-xs); }
+    .sustainability__stat-label { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-o400); }
+    .sustainability__stat-desc { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--c-o500); margin-top: var(--s-xs); line-height: 1.5; }
+    .marquee { background: var(--c-o950); padding: var(--s-xl) 0; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .marquee__track { display: flex; width: max-content; animation: marqueeScroll 30s linear infinite; }
+    .marquee__track:hover { animation-play-state: paused; }
+    @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .marquee__item { display: flex; align-items: center; gap: var(--s-md); padding: 0 var(--s-xl); white-space: nowrap; }
+    .marquee__separator { width: 4px; height: 4px; background: var(--c-c500); border-radius: 50%; opacity: 0.5; }
+    .marquee__text { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); font-weight: 300; font-style: italic; color: var(--c-o400); letter-spacing: 0.02em; }
+    .marquee__text--highlight { color: var(--c-c400); font-weight: 400; }
+    .footer { background: var(--c-o950); padding: var(--s-3xl) var(--s-xl) var(--s-xl); border-top: 1px solid rgba(255,255,255,0.04); }
+    .footer__grid { display: grid; grid-template-columns: 1fr; gap: var(--s-2xl); max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 640px) { .footer__grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .footer__grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
+    .footer__brand { max-width: 320px; }
+    .footer__logo { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(1.5rem, 1.25rem + 0.5vw, 2rem); font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-c400); margin-bottom: var(--s-md); display: inline-block; text-decoration: none; }
+    .footer__tagline { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); color: var(--c-o500); line-height: 1.7; margin-bottom: var(--s-lg); }
+    .footer__newsletter { display: flex; gap: var(--s-xs); }
+    .footer__newsletter-input { flex: 1; background: var(--c-o900); border: 1px solid rgba(255,255,255,0.08); padding: var(--s-sm) var(--s-md); font-family: 'DM Sans', sans-serif; font-size: var(--f-small); color: var(--c-o200); outline: none; transition: border-color var(--d-f) var(--e-out); }
+    .footer__newsletter-input::placeholder { color: var(--c-o600); } .footer__newsletter-input:focus { border-color: var(--c-c500); }
+    .footer__newsletter-btn { background: var(--c-c500); color: var(--c-o950); border: none; padding: var(--s-sm) var(--s-md); font-family: 'DM Sans', sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background var(--d-f) var(--e-out), box-shadow var(--d-f) var(--e-out); flex-shrink: 0; }
+    .footer__newsletter-btn:hover { background: var(--c-c400); box-shadow: var(--sh-glow); }
+    .footer__column-title { font-family: 'DM Sans', sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--c-o200); margin-bottom: var(--s-md); }
+    .footer__links { list-style: none; display: flex; flex-direction: column; gap: var(--s-sm); }
+    .footer__link { font-family: 'DM Sans', sans-serif; font-size: var(--f-small); color: var(--c-o500); text-decoration: none; transition: color var(--d-f) var(--e-out); display: inline-block; }
+    .footer__link:hover { color: var(--c-c300); }
+    .footer__bottom { max-width: 1200px; margin: var(--s-2xl) auto 0; padding-top: var(--s-xl); border-top: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: var(--s-md); align-items: center; justify-content: space-between; }
+    @media (min-width: 640px) { .footer__bottom { flex-direction: row; } }
+    .footer__copyright { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--c-o600); }
+    .footer__social { display: flex; gap: var(--s-md); }
+    .footer__social-link { color: var(--c-o500); transition: color var(--d-f) var(--e-out); } .footer__social-link:hover { color: var(--c-c400); }
+    .footer__social-link svg { width: 18px; height: 18px; stroke-width: 1.5; }
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity var(--d-d) var(--e-out), transform var(--d-d) var(--e-out); }
+    .reveal--visible { opacity: 1; transform: translateY(0); }
+    .reveal--scale { transform: translateY(40px) scale(0.95); } .reveal--scale.reveal--visible { transform: translateY(0) scale(1); }
+    .reveal--left { transform: translateX(-40px); } .reveal--left.reveal--visible { transform: translateX(0); }
+    .reveal--right { transform: translateX(40px); } .reveal--right.reveal--visible { transform: translateX(0); }
+    .reveal--stagger-1 { transition-delay: 0.1s; } .reveal--stagger-2 { transition-delay: 0.2s; } .reveal--stagger-3 { transition-delay: 0.3s; } .reveal--stagger-4 { transition-delay: 0.4s; } .reveal--stagger-5 { transition-delay: 0.5s; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } .hero__bg-image { animation: none; transform: scale(1); } .marquee__track { animation: none; } .reveal { opacity: 1; transform: none; } }
+    :focus-visible { outline: 2px solid var(--c-c500); outline-offset: 2px; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--c-c500); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div class="film-grain" aria-hidden="true"></div>
+  <nav class="nav" id="navbar" role="navigation" aria-label="Main navigation">
+    <a href="/" class="nav__logo" aria-label="LuxeVerse Home">LuxeVerse</a>
+    <ul class="nav__links">
+      <li><a href="#collection" class="nav__link">Collection</a></li>
+      <li><a href="#ai-stylist" class="nav__link">AI Stylist</a></li>
+      <li><a href="#sustainability" class="nav__link">Sustainability</a></li>
+      <li><a href="#editorial" class="nav__link">Editorial</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="nav__icon-btn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+      <button class="nav__icon-btn" aria-label="Wishlist"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button>
+      <button class="nav__icon-btn" aria-label="Shopping bag"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
+      <button class="nav__menu-btn" aria-label="Open menu" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    </div>
+  </nav>
+  <main id="main-content">
+    <section class="hero" aria-label="Hero">
+      <div class="hero__bg"><img src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?q=80&w=2574&auto=format&fit=crop" alt="" class="hero__bg-image" aria-hidden="true" loading="eager"></div>
+      <div class="hero__overlay" aria-hidden="true"></div>
+      <div class="hero__vignette" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="hero__overline">Digital Atelier — Est. MMXXVI</p>
+        <h1 class="hero__title">Where <em>Artistry</em><br>Meets Intelligence</h1>
+        <p class="hero__subtitle">A cinematic luxury commerce experience crafted for the discerning. Every interaction choreographed, every curation personal, every detail intentional.</p>
+        <div class="hero__cta-group">
+          <a href="#collection" class="hero__cta hero__cta--primary">Explore Collection</a>
+          <a href="#ai-stylist" class="hero__cta hero__cta--secondary">Meet Your Stylist</a>
+        </div>
+      </div>
+      <div class="hero__scroll-indicator" aria-hidden="true"><span class="hero__scroll-text">Scroll</span><div class="hero__scroll-line"></div></div>
+    </section>
+    <section class="section manifesto" id="manifesto" aria-labelledby="manifesto-heading">
+      <div class="manifesto__text reveal reveal--left">
+        <p class="section__overline">Our Philosophy</p>
+        <h2 class="section__title" id="manifesto-heading">Commerce as<br><em>Cinematic Art</em></h2>
+        <blockquote class="manifesto__quote">"We do not sell products. We curate experiences that honor the heritage, craftsmanship, and exclusivity that define true luxury."</blockquote>
+        <p class="section__body">LuxeVerse transcends traditional online shopping to create an immersive, AI-driven digital boutique. Inspired by the editorial precision of haute couture and the atmospheric depth of cinematic storytelling, every pixel serves a purpose. Every interaction feels like stepping into a flagship boutique on Rue du Faubourg Saint-Honoré — yet amplified by the capabilities of modern intelligence.</p>
+      </div>
+      <div class="manifesto__image-wrapper reveal reveal--right reveal--scale">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=1000&auto=format&fit=crop" alt="Luxury atelier interior with warm lighting and curated displays" class="manifesto__image" loading="lazy">
+        <span class="manifesto__image-caption">The Atelier — Paris</span>
+      </div>
+    </section>
+    <section class="section collection" id="collection" aria-labelledby="collection-heading">
+      <div class="collection__header reveal">
+        <p class="section__overline">Curated Selection</p>
+        <h2 class="section__title" id="collection-heading">The <em>Spring/Summer</em> Edit</h2>
+      </div>
+      <div class="collection__grid">
+        <article class="collection__item reveal reveal--stagger-1">
+          <img src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=800&auto=format&fit=crop" alt="Structured silk evening gown in midnight black" class="collection__item-image" loading="lazy">
+          <div class="collection__item-overlay"><span class="collection__item-brand">Maison Margiela</span><h3 class="collection__item-name">Silk Evening Gown</h3><p class="collection__item-price">$4,850</p></div>
+          <button class="collection__item-cta">Quick View</button>
+        </article>
+        <article class="collection__item reveal reveal--stagger-2">
+          <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=800&auto=format&fit=crop" alt="Handcrafted leather tote in cognac" class="collection__item-image" loading="lazy">
+          <div class="collection__item-overlay"><span class="collection__item-brand">Bottega Veneta</span><h3 class="collection__item-name">Intrecciato Tote</h3><p class="collection__item-price">$3,200</p></div>
+          <button class="collection__item-cta">Quick View</button>
+        </article>
+        <article class="collection__item reveal reveal--stagger-3">
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop" alt="Minimalist timepiece with champagne dial" class="collection__item-image" loading="lazy">
+          <div class="collection__item-overlay"><span class="collection__item-brand">Jaeger-LeCoultre</span><h3 class="collection__item-name">Reverso Tribute</h3><p class="collection__item-price">$12,400</p></div>
+          <button class="collection__item-cta">Quick View</button>
+        </article>
+        <article class="collection__item reveal reveal--stagger-4">
+          <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=800&auto=format&fit=crop" alt="Sculptural heel sandals in metallic gold" class="collection__item-image" loading="lazy">
+          <div class="collection__item-overlay"><span class="collection__item-brand">Amina Muaddi</span><h3 class="collection__item-name">Begum Pump</h3><p class="collection__item-price">$1,150</p></div>
+          <button class="collection__item-cta">Quick View</button>
+        </article>
+      </div>
+    </section>
+    <section class="section ai-stylist" id="ai-stylist" aria-labelledby="ai-stylist-heading">
+      <div class="ai-stylist__content">
+        <div class="ai-stylist__text reveal reveal--left">
+          <p class="section__overline">Artificial Intelligence</p>
+          <h2 class="section__title" id="ai-stylist-heading">Your Personal<br><em>Style Architect</em></h2>
+          <p class="section__body">Our AI stylist does not recommend — it understands. Through deep style profiling, body measurement intelligence, and contextual occasion awareness, it architects complete looks that feel unmistakably you. Not algorithmic. Not generic. Unapologetically personal.</p>
+          <ul class="ai-stylist__features">
+            <li class="ai-stylist__feature"><span class="ai-stylist__feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M16 8.5v.01"/><path d="M8.5 15.5v.01"/></svg></span><span class="ai-stylist__feature-text"><strong>Style DNA Analysis</strong>Visual preference mapping, color season detection, and aesthetic scoring across 12 dimensions.</span></li>
+            <li class="ai-stylist__feature"><span class="ai-stylist__feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><span class="ai-stylist__feature-text"><strong>Complete Look Generation</strong>Outfit architecture with role-based piece selection and real-time budget optimization.</span></li>
+            <li class="ai-stylist__feature"><span class="ai-stylist__feature-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="ai-stylist__feature-text"><strong>Virtual Fitting Room</strong>AR-powered try-on with body measurement inference and fit prediction accuracy above 94%.</span></li>
+          </ul>
+        </div>
+        <div class="ai-stylist__visual reveal reveal--right reveal--scale">
+          <div class="ai-stylist__visual-grid">
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=400&auto=format&fit=crop" alt="Fashion look 1" loading="lazy"></div>
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=400&auto=format&fit=crop" alt="Fashion look 2" loading="lazy"></div>
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop" alt="Fashion look 3" loading="lazy"></div>
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400&auto=format&fit=crop" alt="Fashion look 4" loading="lazy"></div>
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=400&auto=format&fit=crop" alt="Fashion look 5" loading="lazy"></div>
+            <div class="ai-stylist__visual-cell"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=400&auto=format&fit=crop" alt="Fashion look 6" loading="lazy"></div>
+          </div>
+          <div class="ai-stylist__chat-bubble"><p class="ai-stylist__chat-text"><strong>LuxeStylist:</strong> Based on your profile, I have curated a gallery evening look featuring the Margiela gown with gold accent accessories. Shall I generate the complete outfit?<span class="ai-stylist__chat-cursor"></span></p></div>
+        </div>
+      </div>
+    </section>
+    <section class="section sustainability" id="sustainability" aria-labelledby="sustainability-heading">
+      <div class="reveal"><p class="section__overline" style="text-align:center;margin-bottom:var(--s-lg);">Conscious Commerce</p><h2 class="section__title" id="sustainability-heading" style="text-align:center;margin-bottom:var(--s-2xl);">Sustainability by<br><em>Design, Not Afterthought</em></h2></div>
+      <div class="sustainability__stats">
+        <div class="sustainability__stat reveal reveal--stagger-1"><div class="sustainability__stat-number">94%</div><div class="sustainability__stat-label">Carbon Neutral</div><div class="sustainability__stat-desc">Offset through verified reforestation and renewable energy projects</div></div>
+        <div class="sustainability__stat reveal reveal--stagger-2"><div class="sustainability__stat-number">100%</div><div class="sustainability__stat-label">Traceable Supply</div><div class="sustainability__stat-desc">Full chain-of-custody documentation from raw material to delivery</div></div>
+        <div class="sustainability__stat reveal reveal--stagger-3"><div class="sustainability__stat-number">Zero</div><div class="sustainability__stat-label">Single-Use Plastic</div><div class="sustainability__stat-desc">Compostable, recycled, or reusable packaging on every shipment</div></div>
+      </div>
+    </section>
+    <section class="marquee" id="editorial" aria-label="Featured publications">
+      <div class="marquee__track">
+        <div class="marquee__item"><span class="marquee__text">Vogue</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"The future of luxury e-commerce"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Wallpaper*</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"Where AI meets haute couture"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Business of Fashion</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"Redefining digital luxury"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Harper's Bazaar</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"The atelier experience, digitized"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Vogue</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"The future of luxury e-commerce"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Wallpaper*</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"Where AI meets haute couture"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Business of Fashion</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"Redefining digital luxury"</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text">Harper's Bazaar</span><span class="marquee__separator"></span></div>
+        <div class="marquee__item"><span class="marquee__text marquee__text--highlight">"The atelier experience, digitized"</span><span class="marquee__separator"></span></div>
+      </div>
+    </section>
+    <footer class="footer" role="contentinfo">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo">LuxeVerse</a>
+          <p class="footer__tagline">A cinematic luxury digital atelier. Where artistry meets artificial intelligence, and every interaction feels like stepping into a flagship boutique.</p>
+          <form class="footer__newsletter" onsubmit="event.preventDefault();" aria-label="Newsletter subscription">
+            <input type="email" class="footer__newsletter-input" placeholder="Enter your email" aria-label="Email address" required>
+            <button type="submit" class="footer__newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+        <div class="footer__column">
+          <h3 class="footer__column-title">Shop</h3>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">New Arrivals</a></li>
+            <li><a href="#" class="footer__link">Collections</a></li>
+            <li><a href="#" class="footer__link">Designers</a></li>
+            <li><a href="#" class="footer__link">Accessories</a></li>
+            <li><a href="#" class="footer__link">Sale</a></li>
+          </ul>
+        </div>
+        <div class="footer__column">
+          <h3 class="footer__column-title">Experience</h3>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">AI Stylist</a></li>
+            <li><a href="#" class="footer__link">Virtual Fitting</a></li>
+            <li><a href="#" class="footer__link">Personal Shopping</a></li>
+            <li><a href="#" class="footer__link">Gift Services</a></li>
+            <li><a href="#" class="footer__link">Appointments</a></li>
+          </ul>
+        </div>
+        <div class="footer__column">
+          <h3 class="footer__column-title">Company</h3>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">Our Story</a></li>
+            <li><a href="#" class="footer__link">Sustainability</a></li>
+            <li><a href="#" class="footer__link">Careers</a></li>
+            <li><a href="#" class="footer__link">Press</a></li>
+            <li><a href="#" class="footer__link">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 LuxeVerse. All rights reserved.</p>
+        <div class="footer__social">
+          <a href="#" class="footer__social-link" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+          <a href="#" class="footer__social-link" aria-label="Pinterest"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="8" y2="21"/><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.5 16.5a7 7 0 0 1 7 0"/></svg></a>
+          <a href="#" class="footer__social-link" aria-label="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <script>
+    (function() {
+      'use strict';
+      // Navbar scroll behavior
+      const navbar = document.getElementById('navbar');
+      let lastScroll = 0;
+      window.addEventListener('scroll', function() {
+        const currentScroll = window.pageYOffset;
+        if (currentScroll > 50) {
+          navbar.classList.add('nav--scrolled');
+        } else {
+          navbar.classList.remove('nav--scrolled');
+        }
+        lastScroll = currentScroll;
+      }, { passive: true });
+      // Intersection Observer for scroll reveals
+      const revealElements = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal--visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      revealElements.forEach(function(el) { revealObserver.observe(el); });
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
