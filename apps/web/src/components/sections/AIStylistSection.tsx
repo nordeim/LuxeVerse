@@ -58,7 +58,7 @@ export function AIStylistSection({ locale }: AIStylistProps) {
             <div className="relative">
               <div className="aspect-[3/4] bg-obsidian-900 relative overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f7?w=600&h=800&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69b041?w=600&h=800&fit=crop&q=80"
                   alt=""
                   role="presentation"
                   width={600}

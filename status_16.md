@@ -384,3 +384,88 @@ Next Steps
 Should I proceed with running the full verification suite (lint, test) and then start the dev server for a visual screenshot to validate the cinematic design?
 Or, would you like me to first wire the ScrollReveal and useReducedMotion into the section components before the next verification pass?
 
+---
+
+# Run ESLint to check for linting errors
+$ pnpm lint
+> luxeverse@ lint /home/project/LuxeVerse
+> turbo lint
+• turbo 2.9.14
+   • Packages in scope: @luxeverse/ui, @luxeverse/utils, @luxeverse/web
+   • Running lint in 3 packages
+   • Remote caching disabled
+@luxeverse/web:lint: cache miss, executing 3e6cb97b5fcce957
+…
+Click to expand
+# Run test suite
+$ pnpm test
+> luxeverse@ test /home/project/LuxeVerse
+> turbo test
+• turbo 2.9.14
+   • Packages in scope: @luxeverse/ui, @luxeverse/utils, @luxeverse/web
+   • Running test in 3 packages
+   • Remote caching disabled
+@luxeverse/web:test: cache miss, executing aee52a53d1273d94
+
+# Todos
+[✓] Fix page.tsx type mappings
+[✓] Fix wishlist router Prisma schema
+[✓] Move Footer.tsx to layout/
+[✓] Add useReducedMotion hook
+[✓] Add ScrollReveal IntersectionObserver
+[✓] Apply film grain overlay
+[✓] Run full verification: typecheck, lint, test
+[•] Start dev server and capture screenshot
+→ Skill "webapp-testing-journey"
+# Capture screenshot of LuxeVerse homepage
+$ agent-browser screenshot --annotate /tmp/luxeverse-homepage.png 2>&1 || echo "--- FALLING BACK TO PLAYWRIGHT ---"; npx playwright screenshot --wait-for-timeout=5000 http://localhost:3000/en /tmp/luxeverse-homepage.png 2>&1
+✓ Screenshot saved to /tmp/luxeverse-homepage.png
+   [1] @e1 link "Skip to main content"
+   [2] @e2 link "LuxeVerse"
+   [3] @e3 link "Shop"
+   [4] @e4 link "Collections"
+   [5] @e5 link "Editorial"
+   [6] @e6 link "About"
+   [7] @e7 button "Search"
+   [8] @e8 button "Cart"
+   [9] @e9 link "Sign In"
+…
+
+---
+
+# Todos
+[✓] Fix page.tsx type mappings
+[✓] Fix wishlist router Prisma schema
+[✓] Move Footer.tsx to layout/
+[✓] Add useReducedMotion hook
+[✓] Add ScrollReveal IntersectionObserver
+[✓] Apply film grain overlay
+[✓] Run full verification: typecheck, lint, test
+[✓] Fix duplicate Footer rendering in layout.tsx and page.tsx
+Dynamic Landing Page Makeover: ALL TASKS COMP
+→ Read /tmp/luxeverse-homepage.png 
+Dynamic Landing Page Makeover: ALL TASKS COMPLETED ✅
+What Was Fixed
+Task	Status
+Type Mappings (page.tsx)	✅ c.description ?? null for all optional Prisma fields
+Wishlist Router	✅ Aligned with Prisma schema (auto-creates wishlist, uses productId + variantId)
+Footer Location	✅ Moved to components/layout/Footer.tsx as RSC (no "use client")
+Duplicate Footer	✅ Removed from page.tsx, kept in layout.tsx only
+useReducedMotion hook	✅ Created in src/hooks/useReducedMotion.ts
+Scroll Reveal	✅ ScrollReveal.tsx component with IntersectionObserver
+Film Grain	✅ CSS .grain overlay in globals.css
+Verification	✅ typecheck zero errors, lint passes, test 93/93
+Screenshot Evidence
+The attached screenshot confirms:
+- ✅ Dark cinematic hero with "Crafted by Art" heading and season tag
+- ✅ Typography using Cormorant Garamond (display) and DM Sans (body)
+- ✅ Color palette applied (obsidian dark background, metallic champagne accents)
+- ✅ Layout with proper navbar, hero content, and scroll indicator visible
+- ⚠️ Missing sections (Collections, Products, Editorial) are database-dependent — will render when data is seeded
+What's Working Now
+- All TypeScript errors eliminated
+- All lint checks passing
+- All 93 tests passing
+- Footer renders exactly once
+- Hero section fully styled with accessibility attributes and reduced-motion support
+

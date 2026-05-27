@@ -10,7 +10,6 @@ import { CraftsmanshipSection } from "@/components/sections/CraftsmanshipSection
 import { SustainabilityMetrics } from "@/components/sections/SustainabilityMetrics";
 import { EditorialSection } from "@/components/sections/EditorialSection";
 import { NewsletterSignup } from "@/components/sections/NewsletterSignup";
-import { Footer } from "@/components/layout/Footer";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -80,9 +79,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {/* Newsletter */}
       <NewsletterSignup locale={locale} />
-
-      {/* Footer */}
-      <Footer locale={locale} />
     </div>
   );
 }

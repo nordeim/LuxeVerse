@@ -28,7 +28,7 @@ export function CraftsmanshipSection({ locale }: CraftsmanshipProps) {
       {/* Full-width background image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1617122836964-e2992f0e0561?w=1920&h=900&fit=crop&q=80"
+          src="https://images.unsplash.com/photo-1556909211-a85df5706211?w=1920&h=900&fit=crop&q=80"
           alt=""
           role="presentation"
           fill
