@@ -36,7 +36,7 @@ LuxeVerse redefines luxury shopping by merging **cinematic storytelling**, **AI-
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
 | Framework | Next.js | 16.2.6+ | App Router, RSC, Turbopack |
-| Language | TypeScript | 6.0+ | Strict mode, `erasableSyntaxOnly` |
+| Language | TypeScript | 5.8+ | Strict mode, `erasableSyntaxOnly` |
 | Styling | Tailwind CSS | 4.3+ | CSS-first `@theme inline`, OKLCH tokens |
 | UI Primitives | shadcn/ui + Radix | Latest | Accessible, composable components |
 | State | Zustand | 5.0+ | Client state with `partialize` discipline |

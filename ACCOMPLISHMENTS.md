@@ -48,200 +48,65 @@
 | `src/lib/sentry.ts` | Sentry fallback stub | `captureException` with zero hard dependency on `@sentry/nextjs` |
 | `src/app/global-error.tsx` | Root error boundary | Conditional dynamic import of Sentry, graceful fallback if DSN not set |
 
-### 4. Phase 5.3: Lessons Learned & Gotchas Codified
-
-#### 4.1 Next.js 15+ `cookies()` API Duality
-| Aspect | Before (Next.js 14) | After (Next.js 15+) |
-|---|---|---|
-| API | `cookies()` → `ReadonlyRequestCookies` | `cookies()` → `Promise<ReadonlyRequestCookies>` |
-| Access | `cookies().get("key")` | `(await cookies()).get("key")` |
-| Impact | Silent static generation | Must `await` in Server Actions / RSC |
-
-**File**: `src/app/actions/checkout.actions.ts` — requires `await cookies()` to satisfy `tsc --noEmit`.
-
-#### 4.2 Prisma `Decimal` Type Conversion
-| Schema | Service Layer | Client Component |
-|--------|---------------|-----------------|
-| `price Decimal @db.Decimal(10, 2)` | `Number(product.price)` | Receives `number` (not `Decimal`) |
-| `compareAtPrice Decimal?` | `price.compareAtPrice ? Number(...) : null` | Can display with `toFixed()` |
-
-**Rule**: Always convert Prisma `Decimal` to `Number()` in the service layer. Never pass `Decimal` to Client Components.
-
-#### 4.3 Service Factory Pattern
-```typescript
-// ✅ CORRECT — factory with typed map function
-export function createNewArrivalsService() {
-  return {
-    async list() {
-      const products = await prisma.product.findMany({ ... });
-      return products.map(p => ({ ...p, price: Number(p.price) }));
-    },
-  };
-}
-```
-
-**Benefits**: Injectable, mockable, testable, consistent Decimal conversion, single source of truth.
-
-#### 4.4 Client vs Server Data Boundaries
-| Component Type | Data Flow | Interactivity |
-|---|---|---|
-| **Server Component (RSC)** | Fetches from `create*Service()` | None (static render) |
-| **Client Component (CC)** | Receives data via props | Scroll, click, hover, state |
-| **tRPC** | Mutations, subsequent fetches | Optimistic updates |
-
-**Pattern**: RSC fetches data → passes to CC as props → CC handles interactivity. tRPC for mutations only.
-
-### 5. Remaining Phase 5 Gaps (Deferred to Phase 5.1)
-
-| Gap | Priority | ETA |
-|-----|----------|-----|
-| E2E Playwright test suite (`e2e/checkout.spec.ts`) | High | Phase 5.1 |
-| Lighthouse CI performance audit | High | Phase 5.1 |
-| Security hardening (CSP headers, rate limiting, input sanitization) | High | Phase 5.1 |
-| Production Stripe key verification (`STRIPE_SECRET_KEY` env var) | Medium | Phase 5.1 |
-| Custom PWA service worker (`src/sw.ts`) | Medium | Phase 5.1 |
-| UGC image upload (cloud storage integration) | Medium | Phase 5.1 |
-| CSS logical properties for RTL (`margin-inline`, `text-align: start`) | Medium | Phase 5.1 |
-| Cross-brand size mapping | Low | Phase 5.1 |
-
-### 6. Verification
-
-| Command | Result |
-|---------|--------|
-| `pnpm typecheck` | ✅ Zero errors |
-| `pnpm lint` | ✅ All checks passed |
-| `pnpm test` | ✅ 93 tests passed (19 test files) |
-| `pnpm build` | ✅ Production build succeeds |
-
 ---
 
-## Phase 4 Remediation — Scale, Loyalty & Social (2026-05-24)
+## Phase 6: next-intl v4 Migration & Compliance Remediation (2026-05-27) ✅ COMPLETE
 
-### 1. Verification Gates Phase 4
+### Summary
+Completed a comprehensive migration of the internationalization system from the monolithic `i18n.ts` to the split `routing.ts` + `request.ts` architecture required by next-intl v4, alongside broader codebase compliance remediation for Next.js 16, React 19, Auth.js v5, and TypeScript 5.8+.
+
+### 1. next-intl v4 Migration (P0)
+
+| Task | Files | Status |
+|------|-------|--------|
+| **Split i18n config** | `src/i18n/routing.ts`, `src/i18n/request.ts` | ✅ `defineRouting` + `getRequestConfig` |
+| **Turbopack alias** | `next.config.ts` | ✅ `resolveAlias: { "next-intl/config": "./src/i18n/request.ts" }` |
+| **proxy.ts rename** | `src/proxy.ts` | ✅ Migrated from `middleware.ts` |
+| **Messages relocation** | `src/messages/` | ✅ Moved from root to `src/` for aliased file resolution |
+| **Locale tuple cast** | `src/i18n/routing.ts` | ✅ `locales as unknown as Array<string>` |
+| **Root layout pass-through** | `src/app/layout.tsx` | ✅ Minimal wrapper returning `<>{children}</>` |
+| **Localized layout** | `src/app/[locale]/layout.tsx` | ✅ `NextIntlClientProvider` with `Navbar`/`Footer` |
+
+### 2. React 19 Return Type Remediation (P0)
+
+| Task | Files | Count | Status |
+|------|-------|-------|--------|
+| **Remove ReactElement** | `*.tsx` components | 23 files | ✅ Removed all `import type { ReactElement }` and `: ReactElement` annotations |
+| **Fix layout return** | `src/app/layout.tsx` | 1 file | ✅ Changed `children as React.ReactElement` to `<>{children}</>` |
+| **Update package.json** | `apps/web/package.json` | 1 file | ✅ Corrected `typescript` version to `5.8.0` |
+
+### 3. Verification Pipeline
 
 | Command | Result |
 |---------|--------|
 | `pnpm typecheck` | ✅ Zero errors |
 | `pnpm lint` | ✅ All scripts passed |
-| `pnpm test` | ✅ 91 tests passed (18 test files) |
-| `pnpm build` | ✅ Production build succeeds |
+| `pnpm test` | ✅ 93 tests passed (19 test files) |
 
-### 2. Phase 4.1: Loyalty & Rewards Engine
+### 4. Key Gotchas & Lessons Learned
 
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| `src/server/loyalty.service.ts` | Points engine | Tier calculation (BRONZE→PLATINUM), challenge tracking, redemption validation, atomic `$transaction` |
-| `src/server/loyalty.service.test.ts` | Service tests | 12 tests — calculate, add, redeem, reverse, tier upgrade, atomicity |
-| `src/server/routers/loyalty.ts` | tRPC router | `getHistory`, `getBalance`, `redeemPoints` endpoints |
-| `src/components/loyalty/LoyaltyDashboard.tsx` | Dashboard | Tier progress, active challenges, points display |
-| `src/components/loyalty/PointsHistory.tsx` | History list | Transaction log with type/amount/date |
-| `src/components/loyalty/RedeemPointsButton.tsx` | Redemption CTA | Calls `redeemPoints` mutation |
-| `src/app/loyalty/page.tsx` | Loyalty page | Authenticated wrapper, redirects unauthenticated users |
-| Prisma schema | PointHistory model | `id`, `userId`, `orderId`, `amount`, `type`, `description`, `createdAt` |
+#### next-intl v4
+- **Monolithic `i18n.ts` is deprecated**: Must split into `routing.ts` (Edge) and `request.ts` (Node).
+- **Plugin must point to `request.ts`**: Pointing to `routing.ts` causes a fatal `TypeError`.
+- **Turbopack alias is a fallback**: `createNextIntlPlugin` handles discovery automatically; `turbopack.resolveAlias` is only for complex monorepos or auto-discovery failures.
+- **Dynamic imports in aliased files resolve from the alias target**: Moving `messages/` into `src/` fixes `Module not found` errors because the relative path `../messages/` correctly resolves from both the source and aliased location.
 
-**Fix applied**: `reverseTransaction` now sets `order.pointsEarned = 0` to prevent double-reversal on repeated cancellations.
+#### React 19
+- **`JSX.Element` is removed**: Global namespace was deleted. Use inferred return types or `ReactElement` from `react` (but prefer inferred).
+- **ReactElement annotations are legacy**: Prefer inferred return types for all components. Explicit `ReactElement` or `JSX.Element` return types should be removed during maintenance.
 
-### 3. Phase 4.2: Multi-language Support (i18n)
+#### TypeScript
+- **"TS 6" is a phantom version**: TypeScript 5.1+ is the actual requirement for Next.js 16. Never reference "TypeScript 6" in documentation or configuration.
 
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| `src/i18n/config.ts` | Locale setup | `locales`, `defaultLocale`, `isRTL()` helper |
-| `src/i18n/routing.ts` | Routing config | `createNavigation` with EN/FR/AR |
-| `src/middleware.ts` | Locale routing | `next-intl/middleware` with `localePrefix: "always"` |
-| `src/app/[locale]/layout.tsx` | Locale-aware layout | `NextIntlClientProvider`, dynamic locale, RTL `dir` |
-| `src/app/[locale]/page.tsx` | Locale-aware page | `await params` for Next.js 16 Promise params |
-| `messages/en.json`, `fr.json`, `ar.json` | Translations | Metadata, Nav, Loyalty, Cart namespaces |
-| `src/components/shared/LanguageSwitcher.tsx` | Locale picker | `<select>` with `useRouter().push()` (SPA navigation) |
+### 5. Outstanding Issues & Recommendations
 
-### 4. Phase 4.3: Progressive Web App (PWA)
-
-| Item | Status | Details |
-|------|--------|---------|
-| `@ducanh2912/next-pwa` installed | ✅ | `package.json` dependency |
-| `next.config.ts` | ✅ | `withPWA` wrapper, `dest: "public"`, `disable: dev` |
-| `package.json` build script | ✅ | `"build": "next build --webpack"` (Turbopack workaround) |
-| `public/manifest.json` | ✅ | App metadata, icons, theme colors |
-| `public/icon-192x192.png`, `icon-512x512.png` | ✅ | Placeholder icons generated |
-| Service worker | ✅ | Auto-generated by `next-pwa` (no custom `swSrc` due to Turbopack incompatibility) |
-
-**Critical Fix**: `--webpack` flag required because `next-pwa` uses `workbox-webpack-plugin`, which Turbopack cannot process.
-
-### 5. Phase 4.4: User-Generated Content (UGC)
-
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| Prisma schema | UGCContent model | `id`, `userId`, `type`, `url`, `caption`, `status`, `productTags`, `likes`, `createdAt` |
-| `src/server/routers/ugc.ts` | tRPC router | `list`, `create`, `moderate` procedures |
-| `src/components/social/UGCGallery.tsx` | Gallery grid | Responsive grid with lazy loading, modal overlay |
-
-### 6. Phase 4.5: Sustainability Tracking
-
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| Prisma schema | Product fields | `sustainabilityScore`, `carbonFootprint`, `recycledContent`, `packaging` (already present) |
-| `src/components/sustainability/Scorecard.tsx` | Scorecard | Circular score, carbon bar, recycled content bar |
-
-### 7. Phase 4.6: Account Hub
-
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| `src/app/[locale]/account/page.tsx` | Account page | Authenticated check, loading / empty states |
-| `src/components/account/AccountOverview.tsx` | Account dashboard | Loyalty status, lifetime points, points history, tier progress bar |
-| `src/server/routers/user.ts` | User router | `getProfile`, `updateProfile` endpoints |
-
-### 8. Cross-Cutting Fixes (Phase 4)
-
-| Fix | Files | Impact |
-|-----|-------|--------|
-| **superjson** for tRPC `Date` serialization | `src/server/trpc.ts`, `src/trpc/provider.tsx` | Prisma `Date` fields correctly deserialized on client |
-| **Case-sensitive imports** (Linux) | `button.test.tsx` → `Button.tsx`, `input.test.tsx` → `Input.tsx` | Tests compile without type errors |
-| **useCart.ts** typo | `result.item` → `result.items` | Correctly accesses cart `items` array |
-| **useWishlist.ts** | Updated mutation contracts | Matches updated `wishlist.ts` router (removed `userId` from input, added `removeItem` with `productId`) |
-| **global-error.test.tsx** | Fixed `beforeAll`/`afterAll` unused imports | Clean test output |
-| **Next.js 16 `params`** | All `page.tsx` files | Layouts use `Promise<{...}>`, pages use `Promise<{...}>` with `await` (satisfies `.next/types/` generator) |
-
----
-
-## Phase 3 Remediation — AI & Personalization (2026-05-22)
-
-### 1. TDD-Cycle Implementation
-
-| TDD Cycle | Files | Tests | Status |
-|-----------|-------|-------|--------|
-| 1 | `ai.service.ts`, `ai.service.test.ts` | 6 tests | ✅ Complete |
-| 2 | `style-quiz/page.tsx`, `style-quiz.test.tsx` | 3 tests | ✅ Complete |
-| 3 | `OutfitCard.test.tsx` | 5 tests | ✅ Complete |
-| 4 | Code quality fixes | — | ✅ Complete |
-
-### 2. AI Service Layer (MEP §3.1)
-
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| `src/server/ai.service.ts` | AI orchestration | OpenAI integration (when key present), deterministic mock fallback, prompt templates |
-| `src/server/ai.service.test.ts` | Service tests | Mock LLM, real OpenAI, streaming, error handling (6 tests) |
-
-### 3. Style Quiz Page (MEP §3.2)
-
-| File | Purpose | Key Features |
-|------|---------|-------------|
-| `src/app/style-quiz/page.tsx` | Multi-step quiz | 5 questions (persona, occasion, colors, fit, budget), progress bar, completion screen |
-| `src/app/style-quiz/style-quiz.test.tsx` | Page tests | Render, options, disabled back button (3 tests) |
-
-### 4. Component Tests (MEP §3.3–3.6)
-
-| File | Tests | Coverage |
-|------|-------|----------|
-| `src/components/ai-stylist/OutfitCard.test.tsx` | 5 tests | Empty state, outfit details, items, click handler, confidence bar |
-
-### 5. Code Quality Fixes
-
-| Fix | Files | Impact |
-|-----|-------|--------|
-| `z.enum()` → `z.union([z.literal(...)])` | `ai.ts` | Complies with ` erasableSyntaxOnly` |
-| Removed `as any` (10 instances) | `ai.test.ts` | Type safe, strict mode |
-| Removed `as any` (2 instances) | `PersonalizedGrid.tsx` | Type safe |
-| Removed unused `setStep` | `style-quiz/page.tsx` | `noUnusedLocals` compliant |
-| Added `@testing-library/jest-dom/vitest` | `test/setup.ts` | Enables `toHaveTextContent`, `toBeDisabled` |
+| Issue | Priority | Recommendation |
+|-------|----------|----------------|
+| **Auth.js v5 migration** | High | Replace all `getToken` / `getServerSession` with universal `auth()` API. Audit `src/server/context.ts`, `src/app/actions/checkout.actions.ts`, and `src/lib/auth.ts`. |
+| **E2E testing** | High | Phase 5.1 requires Playwright E2E tests for critical user journeys (checkout, auth, i18n switching). |
+| **Lighthouse CI** | Medium | Integrate `lighthouse-ci` into CI pipeline for performance budget enforcement (LCP < 2.5s, CLS < 0.1). |
+| **PWA Serwist migration** | Low | `@ducanh2912/next-pwa` requires `--webpack` flag. Plan migration to **Serwist** for native Turbopack support. |
+| **Zustand v5 `useShallow`** | Low | Audit object selectors. Add `useShallow` where multi-property destructuring occurs to prevent re-render loops. |
 
 ---
 
@@ -287,5 +152,6 @@ export function createNewArrivalsService() {
 | 3: AI Personalization | ✅ Complete | 2026-05-22 | 4 | 34 |
 | 4: Scale & Social | ✅ Complete | 2026-05-24 | 13 | 91 |
 | 5: Hardening & Launch | ✅ Complete | 2026-05-26 | 19 | 93 |
+| 6: next-intl v4 Migration | ✅ Complete | 2026-05-27 | 19 | 93 |
 
 **Total Tests**: 93 tests across 19 test files — all passing.

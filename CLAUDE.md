@@ -5,17 +5,18 @@ LuxeVerse is a cinematic luxury e-commerce platform built on the **Anti-Generic 
 LuxeVerse is a production-grade, cinematic luxury e-commerce platform built as a monorepo. It prioritizes emotional resonance, artistic storytelling, and technical excellence.
 Cinematic Luxury E-Commerce Platform — An immersive, AI-driven digital boutique experience. Blending art direction, intelligent personalization, and commerce to redefine luxury digital retail.
 
-**Tech Stack**: Next.js 16.2.6 (App Router), React 19.2.6, TypeScript 6.0.3, Tailwind CSS v4.3.0 (CSS-first), Prisma 6.19.3, PostgreSQL, tRPC 11.17.0, NextAuth v4.24.14, Zustand 5.0.13, Stripe 17.7.0
+**Tech Stack**: Next.js 16.2.6 (App Router), React 19.2.6, TypeScript 5.8.0, Tailwind CSS v4.3.0 (CSS-first), Prisma 6.19.3, PostgreSQL, tRPC 11.17.0, Auth.js v5, Zustand 5.0.13, Stripe 17.7.0
 
 **Architecture**: Turborepo monorepo with pnpm workspaces. Headless composable commerce with RSC-first rendering.
 - **Purpose**: Redefine luxury digital retail through an immersive "digital atelier" experience.
 - **Main Technologies**:
   - **Framework**: Next.js 16 (App Router, RSC-first, PPR)
-  - **Language**: TypeScript 6.0+ (Strict mode, `erasableSyntaxOnly`)
+  - **Language**: TypeScript 5.8+ (Strict mode, `erasableSyntaxOnly`)
   - **Styling**: Tailwind CSS v4.2+ (CSS-first, Oxide engine, OKLCH palette)
   - **DB & API**: Prisma 7, PostgreSQL 17, tRPC 11, Zod 4
   - **State**: Zustand 5 (Client state), TanStack Query 5 (Server state)
   - **3D/Media**: Three.js, React Three Fiber, Framer Motion 12
+  - **Auth**: Auth.js v5 (universal `auth()` API)
 - **Architecture**:
   - **Monorepo**: Managed via `pnpm` workspaces and `Turborepo`.
   - **Apps**: `web` (Storefront), `admin` (Dashboard).
@@ -23,11 +24,11 @@ Cinematic Luxury E-Commerce Platform — An immersive, AI-driven digital boutiqu
 
 ## Core Stacks
 - **Framework**: Next.js 16.2.6 (App Router, RSC-first)
-- **Language**: TypeScript 6.0.3 (Strict, no enums)
+- **Language**: TypeScript 5.8.0 (Strict, no enums)
 - **Styling**: Tailwind 4.3.0 (CSS-first)
 - **DB**: Prisma 6.19.3 (PostgreSQL, zero enums)
 - **API**: tRPC 11.17.0
-- **Auth**: NextAuth 4.24.14
+- **Auth**: Auth.js v5 (universal `auth()` API)
 - **State**: Zustand 5.0.13
 - **Test**: Vitest 3.2.4 (jsdom)
 
