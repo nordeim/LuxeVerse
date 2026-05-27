@@ -6,10 +6,7 @@
 **Date**: 2026-05-27
 **Scope**: Phases 0–5 verified (Foundation, Core Commerce, Cinematic Experience, AI Integration, Scale & Social Remediation, Hardening & Production Data Integration)
 **New Since v4.1.0**: 
-- next-intl v4 configuration migration: mandatory split of `routing.ts` (`defineRouting`) and `request.ts` (`getRequestConfig`)
-- Next.js 16 Turbopack alias (`turbopack.resolveAlias`) required for `next-intl/config` resolution
-- `middleware.ts` → `proxy.ts` rename for Next.js 16 compatibility
-- Dynamic import path resolution in aliased files vs. webpack bundle location
+      - React 19 return type convention: no explicit `JSX.Element` or `ReactElement` — prefer inferred
 - Messages directory relocation (`messages/` → `src/messages/`) for consistent module resolution
 - `getRequestConfig` factory pattern and `RequestConfig` return type strictness
 
@@ -193,42 +190,39 @@ Follow this exact sequence for every task. No code without plan alignment. No "d
 
 ## 3. Phase 5 Hardening: Server-Side Auth, Real Data & Service Factories
 
-### 3.1 Server-Side Auth in Server Actions (NextAuth v5)
+### 3.1 Server-Side Auth in Server Actions (Auth.js v5)
 
 **Problem**: `getServerSession` is Pages Router-only. In App Router Server Actions, it throws `TypeError: Cannot read properties of undefined (reading 'headers')`.
 
-**Solution**: Use `getToken` from `next-auth/jwt` + cookie header assembly
+**Solution**: Use the universal `auth()` function from `src/auth.ts` (Auth.js v5). It natively handles session extraction in Server Components, Server Actions, and Route Handlers without manual cookie assembly.
 
 ```typescript
-"use server";
-import { getToken } from "next-auth/jwt";
-import { cookies } from "next/headers";
-import { type NextRequest } from "next/server";
+// src/app/actions/checkout.actions.ts
+import { auth } from "@/auth";
 
-async function getUserFromSession() {
-  const sessionToken = (await cookies()).get("next-auth.session-token")?.value;
-  if (!sessionToken || !process.env.AUTH_SECRET) return null;
-
-  const token = await getToken({
-    req: {
-      headers: { cookie: `next-auth.session-token=${sessionToken}` },
-    } as unknown as NextRequest,
-    secret: process.env.AUTH_SECRET,
-  });
-
-  if (token?.id && typeof token.id === "string") {
-    return { id: token.id, email: (token.email as string) ?? "", role: (token.role as string) || "CUSTOMER" };
+export async function createCheckoutAction(prevState: CheckoutState, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { status: "error", message: "Authentication required." };
   }
-  return null;
+  const userId = session.user.id;
+  // ... proceed with checkout
 }
+```
+
+**Deprecated (v4 pattern — do not use)**:
+```typescript
+// ❌ WRONG — getToken and getServerSession are deprecated in v5
+import { getToken } from "next-auth/jwt"; // BANNED
+import { getServerSession } from "next-auth"; // BANNED
 ```
 
 **Critical Gotchas**
 | Issue | Root Cause | Fix |
 |---|---|---|
 | `Property 'get' does not exist on type Promise<ReadonlyRequestCookies>` | Next.js 15+ `cookies()` is async | `const cookieStore = await cookies();` |
-| `Type 'NextRequest' is not assignable...` | `getToken` expects `req` with headers, not NextAuth's Pages Router type | Cast via `as unknown as NextRequest` |
-| Hardcoded `userId: "user_mock_id"` | Forgotten mock data in server action | Extract from session or generate guest UUID |
+| `TypeError: Cannot read properties of undefined (reading 'headers')` | `getServerSession` is Pages Router only | Use `auth()` from `src/auth.ts` |
+| `User not authenticated` | `auth()` returns null for unauthenticated users | Guard with `if (!session) { redirect("/login") }` |
 
 ---
 
@@ -380,13 +374,24 @@ import type { User } from "@/types";
 
 ### 4.3 React 19 Return Types
 
-```typescript
-// ❌ WRONG — JSX namespace removed in React 19
-function Component(): JSX.Element { ... }
+React 19 removes the global `JSX.Element` type. **Always prefer inferred return types** — explicit `ReactElement` or `JSX.Element` annotations are legacy patterns.
 
-// ✅ CORRECT — inferred return type (preferred)
+```typescript
+// ❌ WRONG — JSX.Element banned in React 19; ReactElement is legacy
+function Component(): JSX.Element { ... }
+function Component(): ReactElement { ... }
+
+// ✅ CORRECT — inferred return type (preferred for all components)
 function Component() { ... }
+
+// ✅ ALSO ACCEPTABLE — if you must annotate, use the element type enum
+import type { ReactElement } from "react";
+function Component(): ReactElement { ... } // Legacy, do not use in new code
 ```
+
+**Migration path**: Remove ALL `import type { ReactElement }` and `: ReactElement` / `: Promise<ReactElement>` annotations from existing components. Use inferred return types exclusively.
+
+---
 
 ---
 
@@ -418,7 +423,7 @@ function Component() { ... }
 
 ---
 
-## 6. Zustand State Discipline
+## 6. Zustand v5 Selector Best Practices
 
 ### 6.1 Selector Subscription in JSX
 
@@ -430,7 +435,26 @@ const items = useCartStore((s) => s.items);
 const items = useCartStore.getState().items; // Never in JSX
 ```
 
-### 6.2 `partialize` — Persist Data Only
+### 6.2 `useShallow` — Recommended for Object Selectors
+
+Zustand v5 uses strict equality (`Object.is`) for comparisons. When selecting multiple properties in an object, **always use `useShallow`** to prevent unnecessary re-renders and potential infinite loops.
+
+```typescript
+import { useShallow } from "zustand/react/shallow";
+
+// ✅ CORRECT — useShallow with object selectors
+const { cart, user } = useCartStore(
+  useShallow((s) => ({ cart: s.cart, user: s.user }))
+);
+
+// ❌ WRONG — object selector returns a new object reference every render
+const { cart, user } = useCartStore((s) => ({ cart: s.cart, user: s.user }));
+// Triggers infinite re-render loop in v5
+```
+
+**Note**: `useShallow` is strongly recommended (not a hard mandate) for object/array selectors. Atomic selectors (single primitive values) do not need it.
+
+### 6.3 `partialize` — Persist Data Only
 
 ```typescript
 persist(
@@ -527,6 +551,30 @@ export default getRequestConfig(async ({ requestLocale }) => {
 - If `messages/` is at the project root, but `request.ts` is aliased from `node_modules/next-intl/`, the relative path will resolve to `node_modules/next-intl/messages/` (which doesn't exist).
 - **Fix**: Move `messages/` into `src/` so it's in the same directory tree as the aliased file, OR use a path alias.
 
+#### 8.3.1 Dynamic Import Path Resolution in Aliased Files
+
+**Problem**: When `next-intl/config` is aliased, dynamic `import()` paths inside `request.ts` are resolved from the **alias target location** (inside `node_modules/next-intl/`), not from the source tree.
+
+**Example** (broken):
+```
+/home/project/LuxeVerse/apps/web/
+├── messages/              ← at root
+├── src/
+│   └── i18n/
+│       └── request.ts     ← does import("../../../messages/...") → FAILS
+```
+
+**Example** (fixed):
+```
+/home/project/LuxeVerse/apps/web/
+├── src/
+│   ├── messages/          ← moved into src/
+│   └── i18n/
+│       └── request.ts     ← does import("../messages/...") → WORKS
+```
+
+**Rule of thumb**: Place any directory dynamically imported by an aliased file **at the same level or below** the aliased file in the source tree.
+
 ### 8.4 `next.config.ts` — Plugin & Turbopack Alias
 
 ```typescript
@@ -606,11 +654,33 @@ When `next-intl` aliases `request.ts` at build time, dynamic `import()` paths in
 
 ## 9. Next.js 16 `params` Duality
 
-| File Type | `params` Type | Access Pattern |
-|---|---|---|
-| `layout.tsx` | `Promise<{ locale: string }>` | `const { locale } = await params` |
-| `page.tsx` | Plain object `{}` | `const { slug } = params` |
-| `.next/types/*.ts` | `Promise<{...}>` | Type as `Promise<T>` to satisfy tsc |
+**CRITICAL**: Next.js 16's `.next/types/` generator types `params` as `Promise<any>` for page components, even though at runtime `params` is a plain object.
+
+| Layer | Type | Must Use |
+|-------|------|---------|
+| **Runtime** | Plain object `{}` | `const { slug } = params` (direct destructuring) |
+| **Generated Types** (`.next/types/`) | `Promise<{ ... }>` | `params: Promise<{...}>` + `await` to satisfy tsc |
+
+**For Pages (Updated for Next.js 16.2+)**:
+```tsx
+// ✅ CORRECT — satisfies both runtime and generated types
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params; // Required by .next/types/ Promise<T>
+}
+```
+
+**For Layouts** (always a real Promise):
+```tsx
+// ✅ CORRECT — layouts always receive a Promise
+export default async function Layout({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params; // Always correct for layouts
+}
+```
+
+**Why the duality**: `.next/types/` generates `Promise<any>` to enable async prop resolution. At runtime, `await` on a non-Promise returns the same value (no runtime bug). TypeScript just needs the `Promise<T>` annotation to pass `tsc --noEmit`.
 
 ---
 
