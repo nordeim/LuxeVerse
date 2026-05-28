@@ -7,6 +7,7 @@ interface ScrollRevealProps {
   className?: string;
   threshold?: number;
   delay?: number;
+  direction?: "up" | "down" | "left" | "right";
 }
 
 export function ScrollReveal({
@@ -14,6 +15,7 @@ export function ScrollReveal({
   className = "",
   threshold = 0.15,
   delay = 0,
+  direction = "up",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -25,7 +27,6 @@ export function ScrollReveal({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          // Optional delay before revealing
           if (delay > 0) {
             setTimeout(() => setIsVisible(true), delay);
           } else {
@@ -41,10 +42,17 @@ export function ScrollReveal({
     return () => observer.disconnect();
   }, [threshold, delay]);
 
+  const dirClasses = {
+    up: "",
+    down: "reveal-down",
+    left: "reveal-left",
+    right: "reveal-right",
+  };
+
   return (
     <div
       ref={ref}
-      className={`reveal ${isVisible ? "visible" : ""} ${className}`}
+      className={`reveal ${isVisible ? "visible" : ""} ${dirClasses[direction]} ${className}`}
     >
       {children}
     </div>

@@ -1,127 +1,109 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Heart, Box } from "lucide-react";
+import { ArrowRight, Heart, Search, Box } from "lucide-react";
+import { ScrollReveal } from "@/components/shared/ScrollReveal";
+
+interface AIChatBubble {
+  side: "ai" | "user";
+  text: string;
+}
 
 interface AIStylistProps {
   locale: string;
 }
 
 export function AIStylistSection({ locale }: AIStylistProps) {
-  const features =
+  const conversations: AIChatBubble[] =
     locale === "fr"
       ? [
-          {
-            title: "Recherche Visuelle",
-            desc: "Téléchargez une image — trouvez des pièces qui correspondent à son ambiance, sa palette ou sa silhouette",
-          },
-          {
-            title: "Profilage de Style",
-            desc: "Consentement explicite, zéro surveillance. Votre goût, vos données, votre contrôle",
-          },
-          {
-            title: "Essayage 3D & RA",
-            desc: "Vivez les produits dans votre espace, sur votre corps, avant de vous engager",
-          },
+          { side: "user", text: "J'ai une soirée gala demain. Que me suggères-tu ?" },
+          { side: "ai", text: "D'après ton profil, un smoking structuré avec une touche de brocart serait parfait. Voici trois options." },
         ]
       : [
-          {
-            title: "Visual Search",
-            desc: "Upload any image — find pieces that match its mood, palette, or silhouette",
-          },
-          {
-            title: "Style Profiling",
-            desc: "Explicit consent, zero surveillance. Your taste, your data, your control",
-          },
-          {
-            title: "3D & AR Try-On",
-            desc: "Experience products in your space, on your body, before you commit",
-          },
+          { side: "user", text: "I have a gala dinner tomorrow. What do you suggest?" },
+          { side: "ai", text: "Based on your profile, a structured smoking jacket with brocade detailing would be perfect. Here are three options." },
         ];
 
-  const heading =
-    locale === "fr" ? "Votre Atelier Numérique Vous Attend" : "Your Digital Atelier Awaits";
-  const tag = locale === "fr" ? "Intelligence" : "Intelligence";
-  const cta = locale === "fr" ? "Rencontrer Votre Styliste" : "Meet Your Stylist";
+  const features = [
+    { title: "Visual Search", desc: "Upload any image and find pieces that match its mood.", icon: "sparkles" },
+    { title: "Style Profiling", desc: "Explicit consent. Zero surveillance. Your taste, your data.", icon: "heart" },
+    { title: "3D & AR Try-On", desc: "Experience products in your space before you commit.", icon: "box" },
+  ];
+
+  const heading = locale === "fr" ? "Votre Styliste IA" : "Your AI Stylist";
+  const tag = locale === "fr" ? "Intelligence Artificielle" : "Artificial Intelligence";
 
   return (
     <section
       id="atelier"
       className="py-[var(--space-2xl)] md:py-[8rem] border-t border-obsidian-800"
-      aria-labelledby="atelier-heading"
+      aria-labelledby="ai-heading"
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-[var(--space-xl)]">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-[var(--space-xl)] items-center">
-          {/* Left: Visual */}
-          <div className="reveal md:col-span-5">
-            <div className="relative">
-              <div className="aspect-[3/4] bg-obsidian-900 relative overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69b041?w=600&h=800&fit=crop&q=80"
-                  alt=""
-                  role="presentation"
-                  width={600}
-                  height={800}
-                  className="w-full h-full object-cover opacity-60"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-linear-to-br from-obsidian-950/80 via-neon-cyan/5 to-metallic-champagne/10" />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-[var(--space-xl)] items-start">
+          {/* Left: Conversational Mock */}
+          <div className="md:col-span-6 lg:col-span-5">
+            <ScrollReveal>
+              <p className="text-xs tracking-[0.3em] uppercase text-neon-cyan font-medium mb-[var(--space-xs)]">
+                {tag}
+              </p>
+              <h2
+                id="ai-heading"
+                className="text-4xl md:text-5xl font-display font-light text-obsidian-50 mb-[var(--space-lg)] leading-tight"
+              >
+                {heading}
+              </h2>
+            </ScrollReveal>
 
-                {/* Floating UI elements */}
-                <div className="absolute top-[var(--space-lg)] left-[var(--space-lg)] right-[var(--space-lg)] bottom-[var(--space-lg)] border border-obsidian-600/30 rounded-sm flex flex-col justify-between p-[var(--space-md)]">
-                  <div>
-                    <p className="text-xs tracking-[0.2em] uppercase text-neon-cyan font-medium mb-1">
-                      AI Stylist
-                    </p>
-                    <p className="text-2xl font-display font-light text-obsidian-50">
-                      Your Personal<br />Curator
-                    </p>
+            {/* Chat bubbles */}
+            <div className="flex flex-col gap-[var(--space-md)] mb-[var(--space-xl)]">
+              {conversations.map((c, i) => (
+                <ScrollReveal key={i} delay={i * 0.2} direction={c.side === "user" ? "right" : "left"}>
+                  <div
+                    className={`chat-bubble ${
+                      c.side === "ai" ? "chat-bubble--ai self-start" : "chat-bubble--user self-end"
+                    }`}
+                  >
+                    {c.text}
                   </div>
-                  <div className="space-y-[var(--space-xs)]">
-                    <div className="h-1 bg-obsidian-700 rounded-full overflow-hidden">
-                      <div className="h-full w-4/5 bg-linear-to-r from-metallic-champagne to-metallic-gold rounded-full" />
-                    </div>
-                    <p className="text-xs text-obsidian-400">Style match: 94%</p>
-                  </div>
-                </div>
-              </div>
+                </ScrollReveal>
+              ))}
             </div>
+
+            <ScrollReveal delay={0.4}>
+              <Link
+                href="#"
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                {locale === "fr" ? "Rencontrer Votre Styliste" : "Meet Your Stylist"}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </ScrollReveal>
           </div>
 
-          {/* Right: Copy */}
-          <div className="reveal md:col-span-7 md:pl-[var(--space-xl)]">
-            <p className="text-xs tracking-[0.3em] uppercase text-neon-cyan font-medium mb-[var(--space-xs)]">
-              {tag}
-            </p>
-            <h2
-              id="atelier-heading"
-              className="text-4xl md:text-5xl font-display font-light text-obsidian-50 mb-[var(--space-lg)]"
-              dangerouslySetInnerHTML={{ __html: heading.replace(" ", "<br>") }}
-            />
-            <div className="w-16 h-px bg-neon-cyan/50 mb-[var(--space-lg)]" />
-            <p className="text-base text-obsidian-300 font-light mb-[var(--space-lg)] max-w-lg">
-              {locale === "fr"
-                ? "Un styliste IA qui apprend votre esthétique, comprend votre style de vie et sélectionne avec l'intuition d'un directeur de mode. Pas d'algorithmes de surveillance — juste une intelligence au service de votre goût."
-                : "An AI stylist that learns your aesthetic, understands your lifestyle, and curates with the intuition of a seasoned fashion director. No algorithms that surveillance — just intelligence that serves."}
-            </p>
-            <ul className="space-y-[var(--space-md)] mb-[var(--space-xl)]" role="list">
-              {features.map((feature, i) => (
-                <li key={i} className="flex items-start gap-[var(--space-md)]">
-                  {i === 0 && <Sparkles className="shrink-0 w-5 h-5 mt-0.5 text-neon-cyan" />}
-                  {i === 1 && <Heart className="shrink-0 w-5 h-5 mt-0.5 text-neon-cyan" />}
-                  {i === 2 && <Box className="shrink-0 w-5 h-5 mt-0.5 text-neon-cyan" />}
-                  <div>
-                    <p className="text-obsidian-100 font-medium mb-1 text-sm">{feature.title}</p>
-                    <p className="text-xs text-obsidian-400 font-light">{feature.desc}</p>
+          {/* Right: Feature list (desktop) or tabs (mobile) */}
+          <div className="md:col-span-6 lg:col-span-6 lg:col-start-7">
+            {/* Feature cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[var(--space-md)]">
+              {features.map((f, i) => (
+                <ScrollReveal key={f.title} delay={i * 0.15}>
+                  <div className="group p-[var(--space-lg)] border border-obsidian-800 hover:border-obsidian-600 transition-colors duration-300 bg-obsidian-900/50 hover:bg-obsidian-800/50 h-full">
+                    <div className="mb-[var(--space-sm)] text-neon-cyan">
+                      {f.icon === "sparkles" && <Search className="w-5 h-5" />}
+                      {f.icon === "heart" && <Heart className="w-5 h-5" />}
+                      {f.icon === "box" && <Box className="w-5 h-5" />}
+                    </div>
+                    <h3 className="text-sm font-medium text-obsidian-100 mb-[var(--space-xs)]">
+                      {f.title}
+                    </h3>
+                    <p className="text-xs text-obsidian-400 font-light leading-relaxed">
+                      {f.desc}
+                    </p>
                   </div>
-                </li>
+                </ScrollReveal>
               ))}
-            </ul>
-            <Link href="#" className="btn-primary inline-flex items-center gap-2">
-              {cta}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            </div>
           </div>
         </div>
       </div>

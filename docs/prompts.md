@@ -116,5 +116,9 @@ awesome meticulous job so far. please keep up the good work. please meticulously
 
 ---
 
+awesome meticulously job so far. please keep up the good work. now, please meticulously review @design_suggestion.md and @design_suggestion_2.md as your design inspiration and guidance to adapt and align with the codebase as appropriate before meticulously planning to create a detailed implementation plan with a detailed ToDo list for improving the UI/UX aesthetic and visual to the dynamic landing page of the codebase. review and validate your UI/UX improvement implementation plan against the current codebase to ensure alignment before proceeding to execute it meticulously.
+
+---
+
 yes, confirm all as suggested. please proceed meticulously with the corrected plan.
 

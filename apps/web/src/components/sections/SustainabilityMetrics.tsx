@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ScrollReveal } from "@/components/shared/ScrollReveal";
 
 interface SustainabilityMetricsProps {
   locale: string;
@@ -10,63 +9,57 @@ interface SustainabilityMetricsProps {
 export function SustainabilityMetrics({ locale }: SustainabilityMetricsProps) {
   const heading = locale === "fr" ? "Durable par Conception" : "Sustainable by Design";
   const tag = locale === "fr" ? "Conscient" : "Conscious";
-  const body =
-    locale === "fr"
-      ? "Pas une réflexion après coup. Pas un badge. Une proposition de valeur fondamentale mesurée, vérifiée et transparente à chaque étape."
-      : "Not an afterthought. Not a badge. A core value proposition measured, verified, and transparent at every step.";
-  const cta = locale === "fr" ? "Notre Rapport d'Impact" : "Our Impact Report";
 
   const metrics = [
-    { value: "94", label: locale === "fr" ? "Score de Durabilité" : "Sustainability Score" },
-    { value: "78", label: locale === "fr" ? "% Matériaux Recyclés" : "% Recycled Materials" },
-    { value: "12", label: locale === "fr" ? "Certifications" : "Certifications" },
-    { value: "100", label: locale === "fr" ? "% Compensation Carbone" : "% Carbon Offset" },
+    { value: "94", prefix: "", suffix: "", label: locale === "fr" ? "Score de Durabilité" : "Sustainability Score" },
+    { value: "78", prefix: "", suffix: "%", label: locale === "fr" ? "Matériaux Recyclés" : "Recycled Materials" },
+    { value: "12", prefix: "", suffix: "", label: locale === "fr" ? "Certifications" : "Certifications" },
+    { value: "100", prefix: "", suffix: "%", label: locale === "fr" ? "Compensation Carbone" : "Carbon Offset" },
   ];
 
   return (
     <section
       id="sustainability"
-      className="py-[var(--space-2xl)] md:py-[8rem] border-t border-obsidian-800"
+      className="relative py-[var(--space-2xl)] md:py-[8rem] overflow-hidden"
       aria-labelledby="sustain-heading"
     >
+      {/* Full-bleed dark base with ambient radial */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, oklch(0.12 0.02 85 / 0.08), transparent 60%)" }}
+      />
+
       <div className="max-w-[1400px] mx-auto px-6 md:px-[var(--space-xl)]">
-        <div className="reveal text-center mb-[var(--space-2xl)]">
-          <p className="text-xs tracking-[0.3em] uppercase text-metallic-champagne font-medium mb-[var(--space-xs)]">
-            {tag}
-          </p>
-          <h2
-            id="sustain-heading"
-            className="text-4xl md:text-5xl font-display font-light text-obsidian-50"
-          >
-            {heading}
-          </h2>
-          <p className="text-base text-obsidian-400 font-light mt-[var(--space-md)] max-w-xl mx-auto">
-            {body}
-          </p>
-        </div>
-
-        {/* Metrics grid */}
-        <div className="reveal grid grid-cols-2 md:grid-cols-4 gap-[var(--space-lg)]">
-          {metrics.map((metric) => (
-            <div
-              key={metric.label}
-              className="text-center p-[var(--space-lg)] border border-obsidian-800 hover:border-obsidian-600 transition-colors duration-300"
+        {/* Header — left aligned, editorial */}
+        <ScrollReveal className="mb-[var(--space-2xl)]">
+          <div className="max-w-xl">
+            <p className="text-xs tracking-[0.3em] uppercase text-neon-cyan font-medium mb-[var(--space-xs)]">
+              {tag}
+            </p>
+            <h2
+              id="sustain-heading"
+              className="text-4xl md:text-5xl font-display font-light text-obsidian-50 leading-tight"
             >
-              <p className="text-4xl md:text-5xl font-display font-light text-metallic-champagne tabular-nums">
-                {metric.value}
-              </p>
-              <p className="text-xs tracking-widest uppercase text-obsidian-400 mt-[var(--space-xs)]">
-                {metric.label}
-              </p>
-            </div>
-          ))}
-        </div>
+              {heading}
+            </h2>
+            <div className="w-16 h-px bg-neon-cyan/40 mt-[var(--space-md)]" />
+          </div>
+        </ScrollReveal>
 
-        <div className="reveal text-center mt-[var(--space-xl)]">
-          <Link href="/editorial" className="btn-secondary inline-flex items-center gap-2">
-            {cta}
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+        {/* Floating metric stats — NOT cards, just typographic elements */}
+        <div className="flex flex-wrap md:flex-nowrap gap-[var(--space-xl)] md:gap-[var(--space-3xl)] items-baseline">
+          {metrics.map((metric, i) => (
+            <ScrollReveal key={metric.label} delay={i * 0.15}>
+              <div className="text-center md:text-left">
+                <p className="stat-float text-5xl md:text-7xl font-display font-light text-metallic-champagne tabular-nums leading-none">
+                  {metric.prefix}{metric.value}{metric.suffix}
+                </p>
+                <p className="text-xs tracking-[0.2em] uppercase text-obsidian-400 mt-[var(--space-xs)] font-light">
+                  {metric.label}
+                </p>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </div>
     </section>
