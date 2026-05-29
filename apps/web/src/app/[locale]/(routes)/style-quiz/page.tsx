@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect } from "react";
 import { cn } from "@luxeverse/utils";
-import { useStyleQuizStore } from "../../stores/style-quiz";
-import { useStyleProfileStore } from "../../stores/style-profile";
+import { useStyleQuizStore } from "@/stores/style-quiz";
+import { useStyleProfileStore } from "@/stores/style-profile";
 
 function clearQuizDraft(): void {
   if (typeof window !== "undefined") {

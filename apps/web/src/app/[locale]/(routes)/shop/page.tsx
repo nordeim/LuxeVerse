@@ -6,7 +6,15 @@ import { ProductGridSkeleton } from "@/components/product/ProductGridSkeleton";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
-export default async function ShopPage() {
+// Next.js 16: params is a real Promise, always await it.
+interface ShopPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function ShopPage({ params }: ShopPageProps) {
+  const _params = await params; // Next.js 16: params is a real Promise, always await it
+  void _params.locale; // available for i18n data fetching
+
   const service = createProductService();
   const products = await service.list({ limit: 12 });
 
