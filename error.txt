@@ -1,0 +1,70 @@
+$ pnpm build
+
+> @luxeverse/web@0.1.0 build /home/project/LuxeVerse/apps/web
+> next build --webpack
+
+▲ Next.js 16.2.6 (webpack)
+- Environments: .env
+
+  Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: /home/project/LuxeVerse/apps/web/public/sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+✓ Compiled successfully in 20.4s
+✓ Finished TypeScript in 12.5s    
+✓ Collecting page data using 3 workers in 1013ms    
+✓ Generating static pages using 3 workers (4/4) in 521ms
+✓ Collecting build traces in 14.2s    
+✓ Finalizing page optimization in 14.2s    
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/account
+├ ƒ /[locale]/checkout
+├ ƒ /[locale]/editorial
+├ ƒ /[locale]/editorial/[slug]
+├ ƒ /[locale]/login
+├ ƒ /[locale]/loyalty
+├ ƒ /[locale]/pwa-test
+├ ƒ /[locale]/register
+├ ƒ /[locale]/search
+├ ƒ /[locale]/shop
+├ ƒ /[locale]/shop/[category]/[slug]
+├ ƒ /[locale]/style-quiz
+├ ƒ /api/ai/stream
+├ ƒ /api/auth/[...nextauth]
+└ ƒ /api/trpc
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+(venv) pete@pop-os:/home/project/LuxeVerse/apps/web
+$ pnpm dev
+
+> @luxeverse/web@0.1.0 dev /home/project/LuxeVerse/apps/web
+> next dev --turbopack
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.2.132:3000
+- Environments: .env
+✓ Ready in 722ms
+
+○ Compiling /[locale] ...
+ GET /en 200 in 6.1s (next.js: 5.3s, proxy.ts: 8ms, application-code: 803ms)
+ GET /favicon.ico 200 in 205ms (next.js: 71ms, application-code: 134ms)
+ GET /en 200 in 300ms (next.js: 53ms, proxy.ts: 9ms, application-code: 238ms)
+⨯ upstream image response failed for https://images.unsplash.com/photo-1556909211-a85df5706211?w=1920&h=900&fit=crop&q=80 404
+ GET /favicon.ico 200 in 173ms (next.js: 52ms, application-code: 120ms)
+ GET /en/shop 200 in 1753ms (next.js: 1604ms, proxy.ts: 10ms, application-code: 138ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /favicon.ico 200 in 230ms (next.js: 85ms, application-code: 144ms)
+

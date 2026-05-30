@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { NextIntlClientProvider } from "next-intl";
 import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { locales } from "@/i18n/routing";
 import { isRTL } from "@/i18n/config";
@@ -7,6 +6,7 @@ import { SkipLink } from "@/components/shared/SkipLink";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { ClientProviders } from "@/components/providers/ClientProviders";
 import "../globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -59,7 +59,7 @@ export default async function LocaleLayout({
       className={`${cormorant.variable} ${dmSans.variable} ${jetbrains.variable}`}
     >
       <body className="bg-obsidian-50 text-obsidian-900 antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <ClientProviders locale={locale} messages={messages}>
           <SkipLink />
           <ErrorBoundary>
             <Navbar />
@@ -71,7 +71,7 @@ export default async function LocaleLayout({
             </main>
             <Footer locale={locale} />
           </ErrorBoundary>
-        </NextIntlClientProvider>
+        </ClientProviders>
       </body>
     </html>
   );
