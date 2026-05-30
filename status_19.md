@@ -25,3 +25,39 @@ Plan:
 [ ] VERIFY: Run typecheck, lint, test after hydration fix
 [ ] DOCUMENT: Add hydration mismatch prevention to SKILL.md (root layout should not render <html>/<body> when locale layout handles them)
 
+---
+
+# Todos
+[✓] FIX: Remove <html>/<body> from root layout.tsx to resolve hydration mismatch
+[✓] VERIFY: Run typecheck, lint, test after hydration fix
+[✓] DOCUMENT: Add hydration mismatch prevention to SKILL.md (root layout should not render <html>/<body> when locale layout handles them)
+Hydration Mismatch Fix: COMPLETE ✅
+Root Cause
+The hydration mismatch occurred because both app/layout.tsx and app/[locale]/layout.tsx were rendering <html> and <body> tags with conflicting attributes.
+- Root layout: <html lang="en"> (static)
+- Locale layout: <html lang={locale} dir={isRTL(locale)} className={fontVars}> (dynamic)
+When Next.js server-rendered the page using the root layout's <html lang="en">, the client then re-hydrated expecting the locale layout's <html lang={locale}> with additional attributes. This produced conflicting attribute values for the same DOM elements, triggering the React hydration warning.
+Fix Applied
+Removed <html> and <body> from the root layout, returning only <>{children}</>. The locale layout remains the sole owner of <html>/<body>, ensuring a single source of truth for document-level attributes.
+Before (broken):
+// app/layout.tsx
+return (
+  <html lang="en">
+    <body>{children}</body>
+  </html>
+);
+After (fixed):
+// app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+Skill.md Updated
+- §7.3: Added new section "Hydration Mismatch: Root Layout vs. Locale Layout" documenting the exact error, root cause, and fix with code examples.
+- §13 (Anti-Patterns Index): Added entry: "Root layout with <html>/<body> when [locale]/layout.tsx also has them → Hydration mismatch → Remove from root, let locale layout own them."
+Verification
+Check	Command	Result
+TypeScript	pnpm typecheck	✅ Zero errors
+Lint	pnpm lint	✅ All checks passed
+Test	pnpm test	✅ 92/92 tests passing
+The architecture now follows the correct Next.js App Router i18n pattern, eliminating the hydration warning while maintaining type safety and all verification gates green.
+

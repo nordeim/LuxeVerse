@@ -432,6 +432,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
+**BUT**: When using `[locale]/layout.tsx` that also renders `<html>`/`<body>`, you MUST remove them from the root layout to prevent a **hydration mismatch** (see §7.3).
+
 **Root layout anti-patterns**:
 - ❌ Do NOT put `<Navbar>` or `<Footer>` in the root layout. Those are locale-dependent and belong in `[locale]/layout.tsx`.
 - ❌ Do NOT put `<NextIntlClientProvider>` or any i18n context in the root layout. Put it in `[locale]/layout.tsx`.
@@ -476,7 +478,61 @@ app/
 4. Delete old root-level directories to avoid duplicate routes.
 5. **Clear `.next/` cache**: `rm -rf .next/` (stale generated types will crash tsc).
 6. Run `pnpm typecheck` — if TS2307 "Cannot find module" appears, it means stale `.d.ts` still references the deleted routes. Re-clear `.next/` and repeat.
-7. Verify `pnpm typecheck && pnpm lint && pnpm test` all pass.
+7. Verify `pnpm typecheck && pnpm lint &&pnpm test` all pass.
+
+### 7.3 Hydration Mismatch: Root Layout vs. Locale Layout
+
+**Error from Next.js**: `A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up.`
+
+**When it happens**: Both `app/layout.tsx` AND `app/[locale]/layout.tsx` render `<html>` and `<body>` tags with conflicting attributes (e.g., `lang="en"` vs `lang={locale}`).
+
+Result: Next.js server-renders one set of attributes on `<html>`/`<body>`, but the React client expects a different set from the locale layout, causing a hydration mismatch.
+
+**Root cause analysis**: The error trace from `error.txt` shows the exact conflict:
+```
+<html lang="en" dir="ltr" className="font-variables...">
+  <body className="bg-obsidian-50 text-obsidian-900 antialiased">
+```
+However, `app/[locale]/layout.tsx` renders:
+```
+<html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"} className={fontVars}>
+  <body className="bg-obsidian-50 text-obsidian-900 antialiased">
+```
+The server might render from the root layout, then the client re-hydrates with the locale layout, producing different attribute values for the same `<html>` and `<body>` DOM elements.
+
+**Fix**: Remove `<html>` and `<body>` from the root layout. Render them **only** in `app/[locale]/layout.tsx`.
+
+```tsx
+// app/layout.tsx (ROOT layout — should NOT render <html>/<body>)
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "LuxeVerse | Cinematic Luxury Commerce",
+  description: "...",
+};
+
+// ❌ DO NOT render <html> or <body> here if [locale]/layout.tsx renders them
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+```
+
+```tsx
+// app/[locale]/layout.tsx (LOCALE layout — MUST render <html>/<body>)
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params;
+
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"} className={fontVars}>
+      <body className="bg-obsidian-50 text-obsidian-900 antialiased">
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+**Why this works**: Next.js uses the innermost layout that renders `<html>`/`<body>` as the effective root layout. When the root layout removes them, the locale layout becomes the sole owner of these tags, eliminating the conflict.
 
 ---
 
@@ -673,6 +729,7 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 | Monolithic `i18n.ts` | Runtime crash in next-intl v4 | Split into `routing.ts` + `request.ts` |
 | Stale `.next/` after route changes | TS2307 "Cannot find module" from old generated types | `rm -rf .next/` |
 | Root `layout.tsx` without `<html>`/`<body>` | `/missing-root-layout-tags` runtime error | Always include `<html><body>{children}</body></html>` |
+| Root `layout.tsx` WITH `<html>`/`<body>` when `[locale]/layout.tsx` also has them | Hydration mismatch: conflicting `lang`, `dir`, `className` attributes | Remove `<html>`/`<body>` from root layout; let locale layout own them exclusively |
 | Relative imports (`../../`) in moved pages | Breaks after route restructuring | Use path aliases (`@/...`) |
 | Persisting UI state in Zustand | `isOpen` restored to `true` on page load, causing jarring popups | `partialize` to data fields only |
 | Direct Prisma in pages | Tight coupling, hard to test, no typed boundaries | **Service factory** (`createXxxService()`) |
