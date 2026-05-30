@@ -534,6 +534,53 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
 **Why this works**: Next.js uses the innermost layout that renders `<html>`/`<body>` as the effective root layout. When the root layout removes them, the locale layout becomes the sole owner of these tags, eliminating the conflict.
 
+### 7.4 tRPC Provider Must Be Mounted in Layout
+
+**Error**: `Unable to find tRPC Context. Did you forget to wrap your App inside TRPCProvider HoC?`
+
+**Root cause**: The tRPC React hooks (like `trpc.cart.addItem.useMutation()`) require a `<TRPCProvider>` context to be present in the component tree. If the `TRPCProvider` is defined but never included in any layout, the hooks will throw at runtime.
+
+**Pattern**: Create a single `ClientProviders` component (marked with `"use client"`) that wraps both `NextIntlClientProvider` and `TRPCProvider`, then use it in your locale layout.
+
+```tsx
+// src/components/providers/ClientProviders.tsx
+"use client";
+import { NextIntlClientProvider } from "next-intl";
+import { TRPCProvider } from "@/trpc/provider";
+
+export function ClientProviders({ locale, messages, children }) {
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <TRPCProvider>{children}</TRPCProvider>
+    </NextIntlClientProvider>
+  );
+}
+```
+
+```tsx
+// src/app/[locale]/layout.tsx
+import { ClientProviders } from "@/components/providers/ClientProviders";
+
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
+  const messages = (await import(`../../messages/${locale}.json`)).default;
+
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"} className={fontVars}>
+      <body className="bg-obsidian-50 text-obsidian-900 antialiased">
+        <ClientProviders locale={locale} messages={messages}>
+          {children}
+        </ClientProviders>
+      </body>
+    </html>
+  );
+}
+```
+
+**Why this is necessary**: In the Next.js App Router, layouts are Server Components by default. Client-side providers like tRPC and next-intl require React Context, which is only available in client components. A dedicated `ClientProviders` component is the idiomatic bridge between the server layout and the client-side context.
+
+**Anti-pattern**: Importing `trpc` hooks in a component that is NOT wrapped in `TRPCProvider` (either directly or via a parent layout) will cause the context error. Always ensure the provider is mounted at the layout level.
+
 ---
 
 ## 8. Post-Route-Restructure Hygiene
@@ -733,6 +780,7 @@ pnpm typecheck && pnpm lint && pnpm test && pnpm build
 | Relative imports (`../../`) in moved pages | Breaks after route restructuring | Use path aliases (`@/...`) |
 | Persisting UI state in Zustand | `isOpen` restored to `true` on page load, causing jarring popups | `partialize` to data fields only |
 | Direct Prisma in pages | Tight coupling, hard to test, no typed boundaries | **Service factory** (`createXxxService()`) |
+| tRPC hooks used without `TRPCProvider` | `Unable to find tRPC Context` runtime error | Mount `<TRPCProvider>` in a `'use client'` component inside your layout |
 
 ---
 
