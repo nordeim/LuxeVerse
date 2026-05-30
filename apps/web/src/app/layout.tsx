@@ -6,14 +6,12 @@ export const metadata: Metadata = {
     "Redefining luxury commerce through cinematic experiences and intelligent personalization.",
 };
 
+// Root layout: must NOT render <html> or <body> when [locale]/layout.tsx handles them.
+// Rendering both causes a hydration mismatch because Next.js sees conflicting attributes.
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+  return <>{children}</>;
 }
