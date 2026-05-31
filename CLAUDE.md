@@ -126,6 +126,33 @@ TS errors like `TS2339` (missing property) are usually solved by regenerating.
 2. Duplicate component rendering — root layout AND `app/[locale]/layout.tsx` both render the same site components
 3. SSR hydration issues when `defaultLocale` is hardcoded in root layout vs dynamic locale in `[locale]/layout.tsx`
 
+**Fix**: Remove `<html>` and `<body>` from the root layout. Render them only in `app/[locale]/layout.tsx`.
+
+```tsx
+// app/layout.tsx — MINIMAL pass-through, no <html>/<body>
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+```
+
+```tsx
+// app/[locale]/layout.tsx — SOLE provider of <html>/<body>
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params;
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### 5.8 next-intl v4: Root Layout Must Not Render Site Components
+**Issue**: In `next-intl` v4 with App Router, the **root layout** (`app/layout.tsx`) must be a **minimal pass-through**. Rendering `Navbar`, `Footer`, `SkipLink`, or `ErrorBoundary` in the root layout causes:
+1. `Error: Couldn't find next-intl config file` — because the render tree tries to access i18n context before `NextIntlClientProvider` is mounted
+2. Duplicate component rendering — root layout AND `app/[locale]/layout.tsx` both render the same site components
+3. SSR hydration issues when `defaultLocale` is hardcoded in root layout vs dynamic locale in `[locale]/layout.tsx`
+
 **Fix**: Root layout should be a minimal pass-through; all site components live in `app/[locale]/layout.tsx` wrapped by `NextIntlClientProvider`.
 
 ```tsx
@@ -297,9 +324,64 @@ vi.mock("next-auth/jwt", () => ({ getToken: vi.fn(() => Promise.resolve(null)) }
 vi.mock("@/lib/prisma", () => ({
   prisma: { order: { create: vi.fn().mockResolvedValue({ id: "test" }) } },
 }));
+### 5.9 Route Restructuring: Move Root-Level Pages to `[locale]/(routes)/`
+**Issue**: Pages placed at the root level (`app/shop/page.tsx`) do not inherit `i18n` context from `app/[locale]/layout.tsx`. They also inherit the root layout, which lacks `<html>`/`<body>` if removed.
+
+**Fix**: Move all locale-dependent pages into a `(routes)` group inside the `[locale]` directory:
+
+```
+app/
+├── layout.tsx              # Root shell (no <html>/<body>)
+└── [locale]/
+    ├── layout.tsx          # Locale shell (owns <html>/<body>)
+    └── (routes)/            # Group wrapper for locale-dependent pages
+        ├── shop/
+        │   ├── page.tsx
+        │   └── [category]/[slug]/page.tsx
+        ├── editorial/
+        └── ...
 ```
 
----
+**Why**: The `(routes)` group does not affect the URL path but ensures all pages inside it inherit the `[locale]/layout.tsx` (which has `<html>`/`<body>` and `NextIntlClientProvider`).
+
+**After restructuring**:
+1. `pnpm typecheck` — zero errors
+2. `pnpm lint` — all scripts passed
+3. `pnpm test` — all tests passing
+
+## Phase 7: Route Architecture & Hydration Remediation (2026-05-28) ✅ COMPLETE
+
+### Route Restructuring to `[locale]/(routes)/`
+**Issue**: Root-level pages (`app/shop/page.tsx`) did not inherit i18n context and fell back to root layout.
+
+**Fix**: Move all locale-dependent pages into a `(routes)` group inside `[locale]`:
+```
+app/
+├── layout.tsx              # Root shell (no <html>/<body>)
+└── [locale]/
+    ├── layout.tsx          # Locale shell (owns <html>/<body>)
+    └── (routes)/            # Group for locale-dependent pages
+        ├── shop/
+        ├── editorial/
+        └── ...
+```
+
+### Hydration Mismatch Fix
+**Issue**: Both `app/layout.tsx` and `app/[locale]/layout.tsx` rendered `<html>`/`<body>`, causing attribute conflicts during client-side hydration.
+
+**Fix**: Root layout now returns only `children`. Locale layout exclusively owns `<html>`/`<body>`.
+
+### tRPC Provider Fix
+**Issue**: `useCart` hook threw `Unable to find tRPC Context` because `TRPCProvider` was never mounted.
+
+**Fix**: Created a `'use client'` `ClientProviders` component wrapping `NextIntlClientProvider` and `TRPCProvider`. Mounted it in `app/[locale]/layout.tsx`.
+
+### Verification
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All scripts passed |
+| `pnpm test` | ✅ 92/92 tests passing |
 
 ## Phase 5 Remediation (2026-05-26) ✅ COMPLETE
 

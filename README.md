@@ -105,6 +105,7 @@ luxeverse/
 │   ├── 📂 design-system/       # OKLCH tokens, typography, animations
 │   ├── 📂 db/                  # Prisma schema + migrations
 │   └── 📂 config/              # Shared TS, ESLint, Tailwind configs
+├── 📄 skills/luxeverse-architect-skill/SKILL.md # Battle-tested architectural decisions & gotchas
 ├── 📄 turbo.json               # Turborepo pipeline config
 ├── 📄 pnpm-workspace.yaml      # Monorepo workspace definition
 ├── 📄 .env.example             # Environment variable template
@@ -309,7 +310,22 @@ open https://vercel.com/luxeverse/web/deployments
 | 4: Scale, Loyalty & Social | ✅ Complete | 2026-05-24 | Loyalty engine (12 tests), i18n (EN/FR/AR), PWA (webpack mode), UGC, Sustainability, Account Hub |
 | 5: Hardening & Launch | ✅ Complete | 2026-05-26 | E2E tests, perf audit, docs, launch |
 
-**Overall Progress**: ~95% (Phases 0–5 complete)
+## ✅ Phase 7: Route Architecture & Provider Integration (Completed 2026-05-28)
+
+| Fix | Description | Impact |
+|-----|-------------|--------|
+| **ROUTES-001** | Moved all root-level pages to `app/[locale]/(routes)/` | i18n context correctly inherited by all pages; no duplicate routes |
+| **HYDRATE-001** | Removed `<html>`/`<body>` from root layout | Eliminated hydration mismatch between `app/layout.tsx` and `app/[locale]/layout.tsx` |
+| **HYDRATE-002** | Locale layout exclusively owns `<html>`/`<body>` | Single source of truth for document structure; `lang`, `dir`, `className` consistent on SSR + client |
+| **tRPC-001** | Created `ClientProviders` component (`'use client'`) | Wraps `NextIntlClientProvider` + `TRPCProvider` for correct React Context propagation |
+| **tRPC-002** | Mounted `ClientProviders` in `app/[locale]/layout.tsx` | `useCart` hook now has tRPC context; `trpc.cart.addItem.useMutation()` works |
+
+### Verification (Phase 7)
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All scripts passed |
+| `pnpm test` | ✅ 92/92 tests passing (19 test files) |
 
 ## ✅ Critical Remediation Round 1 (Completed 2026-05-23)
 
@@ -448,13 +464,102 @@ export default async function Layout({ params }: { params: Promise<{ locale: str
 * **Symptom**: Accessibility audit fails with "HTML lang attribute does not match page language"
 * **Fix**: Use `defaultLocale` from `i18n/config` in root `layout.tsx`, and `locale` from `params` in `[locale]/layout.tsx`
   ```tsx
-  // Root layout (fallback)
-  <html lang={defaultLocale}>
+  // Root layout (fallback — must NOT render <html>/<body> when locale layout handles them)
+  // ❌ DON'T: return <html lang="en"><body>{children}</body></html> — causes hydration mismatch
+  // ✅ DO: return <>{children}</>;
   
-  // Locale layout (localized)
-  <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}
+  // Locale layout (localized — SOLE owner of <html>/<body>)
+  <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+    <body>{children}</body>
+  </html>
   ```
 * **File**: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`
+
+### Route Restructuring: Move Root-Level Pages to `[locale]/(routes)/`
+**Issue**: Pages placed at the root level (`app/shop/page.tsx`) do not inherit i18n context and may hit the root layout which lacks `<html>`/`<body>` (if removed to prevent hydration mismatch).
+
+**Fix**: Move all locale-dependent pages into a `(routes)` group inside `[locale]`:
+```
+app/
+├── layout.tsx              # Root shell (no <html>/<body>)
+└── [locale]/
+    ├── layout.tsx          # Locale shell (owns <html>/<body>)
+    └── (routes)/            # Group for locale-dependent pages
+        ├── shop/
+        ├── editorial/
+        └── ...
+```
+* **Why**: The `(routes)` group does not affect the URL path but ensures all pages inside it inherit the `[locale]/layout.tsx` (which has `<html>`/`<body>` and `NextIntlClientProvider`).
+* **After restructuring**: `pnpm typecheck` — zero errors; `pnpm lint` — all scripts pass; `pnpm test` — all tests pass.
+* **Files**: `src/app/[locale]/(routes)/` (created), `src/app/shop/` (moved), `src/app/editorial/` (moved), etc.
+
+### tRPC Provider Must Be Mounted in Layout
+**Issue**: `useCart` hook throws `Unable to find tRPC Context` because `TRPCProvider` was defined but never included in any layout.
+
+**Fix**: Create a single `'use client'` `ClientProviders` component that wraps both `NextIntlClientProvider` and `TRPCProvider`, then use it in the locale layout:
+
+```tsx
+// src/components/providers/ClientProviders.tsx
+"use client";
+import { NextIntlClientProvider } from "next-intl";
+import { TRPCProvider } from "@/trpc/provider";
+
+export function ClientProviders({ locale, messages, children }) {
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <TRPCProvider>{children}</TRPCProvider>
+    </NextIntlClientProvider>
+  );
+}
+```
+
+```tsx
+// src/app/[locale]/layout.tsx
+import { ClientProviders } from "@/components/providers/ClientProviders";
+
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
+  const messages = (await import(`../../messages/${locale}.json`)).default;
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body>
+        <ClientProviders locale={locale} messages={messages}>
+          {children}
+        </ClientProviders>
+      </body>
+    </html>
+  );
+}
+```
+* **Files**: `src/components/providers/ClientProviders.tsx` (created), `src/app/[locale]/layout.tsx` (updated)
+
+### Hydration Mismatch: Root Layout vs. Locale Layout
+**Issue**: Both `app/layout.tsx` and `app/[locale]/layout.tsx` render `<html>`/`<body>`, causing React to see conflicting attributes during client-side hydration.
+
+**Fix**: Root layout returns only `children` or a fragment. Locale layout exclusively owns `<html>`/`<body>`.
+
+```tsx
+// app/layout.tsx — minimal pass-through
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
+}
+```
+
+```tsx
+// app/[locale]/layout.tsx — SOLE provider of <html>/<body>
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const { locale } = await params;
+  return (
+    <html lang={locale} dir={isRTL(locale) ? "rtl" : "ltr"}>
+      <body className="bg-obsidian-50 text-obsidian-900 antialiased">
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+* **Why**: Next.js allows only one layout in the tree to be the "document root". When the root layout removes `<html>`/`<body>`, the locale layout becomes the effective document root, eliminating the hydration conflict.
+* **Files**: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`
 
 ### Duplicate i18n Routes
 * **Symptom**: Both `/account` and `/en/account` exist, serving duplicate content with potential SEO penalties
@@ -539,6 +644,8 @@ Before submitting a PR, verify:
 | CSS tokens unused | Run dead code audit: `grep -r "var(--token)" src/` |
 | `next-pwa` build fails | Add `--webpack` to build script; remove `swSrc` (use auto-generated SW) |
 | Dates are strings on client | Verify `superjson` is configured in BOTH server and client tRPC |
+| Hydration mismatch on `<html>` | Remove `<html>`/`<body>` from root layout; let locale layout own them |
+| `Unable to find tRPC Context` | Mount `TRPCProvider` in a `'use client'` component inside the layout |
 
 ## 📜 License
 
@@ -547,7 +654,14 @@ See [LICENSE](LICENSE) for full terms.
 
 ---
 
-> **Last Updated**: 2026-05-27 (next-intl v4 migration: routing/request split, Turbopack alias, proxy.ts, dynamic import resolution)
+## 📜 License
+
+Proprietary. All rights reserved.  
+See [LICENSE](LICENSE) for full terms.
+
+---
+
+> **Last Updated**: 2026-05-28 (route restructuring: locale route groups `[locale]/(routes)/`, hydration fix: removed `<html>`/`<body>` from root layout, tRPC provider fix: mounted `TRPCProvider` in `ClientProviders`)
 > **Next Review**: 2026-06-15
 > **Env**: Node 22, Next.js 16.2.6, React 19.2.6, TypeScript 6.0.3, Tailwind 4.3.0, Prisma 6.19.3
 > **Status**: Phases 0-5 complete (93 tests passing, all gates green), Phase 5.1 (E2E + Lighthouse) pending

@@ -154,4 +154,67 @@ Completed a comprehensive migration of the internationalization system from the 
 | 5: Hardening & Launch | ✅ Complete | 2026-05-26 | 19 | 93 |
 | 6: next-intl v4 Migration | ✅ Complete | 2026-05-27 | 19 | 93 |
 
-**Total Tests**: 93 tests across 19 test files — all passing.
+---
+
+## Phase 7: Root Layout & Route Architecture (2026-05-28) ✅ COMPLETE
+
+### Summary
+Restructured the Next.js App Router to eliminate runtime hydration mismatches and ensure all i18n-dependent pages are consistently wrapped by the locale layout.
+
+### 1. Route Restructuring (P0)
+
+| Task | Files | Status |
+|------|-------|--------|
+| **Create route group** | `src/app/[locale]/(routes)/` | ✅ Group directory created |
+| **Move pages** | All root-level pages (`shop/`, `editorial/`, `checkout/`, `search/`, `loyalty/`, `style-quiz/`, `(auth)/`) | ✅ Moved under `[locale]/(routes)/` |
+| **Delete old routes** | Root-level directories | ✅ Removed to prevent duplicate routes |
+| **Fix imports** | All moved pages | ✅ Relative paths (`../../stores`) updated to aliases (`@/stores`) |
+
+### 2. Hydration Mismatch Fix (P0)
+
+| Task | Files | Status |
+|------|-------|--------|
+| **Root layout fix** | `src/app/layout.tsx` | ✅ Removed `<html>`/`<body>` to prevent conflict with locale layout |
+| **Locale layout fix** | `src/app/[locale]/layout.tsx` | ✅ Confirmed as sole provider of `<html>`/`<body>` |
+
+**Root cause**: Both `app/layout.tsx` and `app/[locale]/layout.tsx` were rendering `<html>`/`<body>`, causing Next.js to see conflicting attributes during client-side hydration.
+
+**Fix**: Root layout removed `<html>`/`<body>`, locale layout now owns them exclusively.
+
+### 3. tRPC Provider Fix (P0)
+
+| Task | Files | Status |
+|------|-------|--------|
+| **Create ClientProviders** | `src/components/providers/ClientProviders.tsx` | ✅ Combined `NextIntlClientProvider` + `TRPCProvider` in a client component |
+| **Update layout** | `src/app/[locale]/layout.tsx` | ✅ Wrapped app in `<ClientProviders>` |
+
+**Root cause**: `useCart` hook called `trpc.cart.addItem.useMutation()` without the `TRPCProvider` being present in the component tree.
+
+**Fix**: Created a `'use client'` `ClientProviders` component, imported it in the locale layout, and wrapped the app.
+
+### 4. Verification Pipeline
+
+| Command | Result |
+|---------|--------|
+| `pnpm typecheck` | ✅ Zero errors |
+| `pnpm lint` | ✅ All scripts passed |
+| `pnpm test` | ✅ 92/92 tests passing (19 test files) |
+
+### 5. Key Gotchas & Lessons Learned
+
+#### Next.js 16 App Router
+- **Root layout must NOT render `<html>`/`<body>` if a nested locale layout also renders them**: This causes a React hydration mismatch. The root layout should return only `children` (or a fragment) when a locale layout handles the document shell.
+- **Route restructuring requires `.next` cache clearing**: Always run `rm -rf .next/` after moving or deleting pages to prevent stale generated types from causing cryptic errors.
+- **Use path aliases after restructuring**: Converting `../../stores` to `@/stores` prevents import breakages and makes the code more resilient to future moves.
+
+#### tRPC Integration
+- **tRPC client hooks require `TRPCProvider` in the component tree**: If you define a provider but never mount it, hooks will throw `Unable to find tRPC Context`.
+- **Combine client providers in a single component**: A `ClientProviders.tsx` component (marked `'use client'`) that wraps `NextIntlClientProvider` inside `TRPCProvider` is the cleanest way to inject both contexts at the layout level.
+
+### 6. Outstanding Issues & Recommendations
+
+| Issue | Priority | Recommendation |
+|-------|----------|----------------|
+| **PWA Serwist migration** | Low | `@ducanh2912/next-pwa` requires `--webpack` flag. Plan migration to **Serwist** for native Turbopack support. |
+| **Lighthouse CI** | Medium | Integrate `lighthouse-ci` into CI pipeline for performance budget enforcement (LCP < 2.5s, CLS < 0.1). |
+| **E2E testing** | High | Phase 5.1 requires Playwright E2E tests for critical user journeys (checkout, auth, i18n switching). |
